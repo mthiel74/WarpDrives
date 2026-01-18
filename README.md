@@ -5,7 +5,13 @@ A Python library for simulating and visualizing General Relativistic warp bubble
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.11+-green.svg)
 
-![Warp Bubble Evolution](images/bubble_evolution.gif)
+<p align="center">
+  <img src="images/warp_drive_hero.gif" alt="Alcubierre Warp Drive Simulation" width="800">
+</p>
+
+<p align="center">
+  <em>3D visualization of an Alcubierre warp bubble warping spacetime as a spacecraft travels at the speed of light. The cyan grid shows the distortion of space - contracting in front and expanding behind the bubble. Red regions indicate where exotic matter (negative energy density) would be required.</em>
+</p>
 
 ## Overview
 
@@ -55,6 +61,12 @@ The Alcubierre metric creates expansion of space behind the bubble and contracti
 Visualization of how the warp bubble distorts the coordinate grid as it propagates:
 
 ![Grid Distortion](images/grid_distortion.gif)
+
+### Top-Down Warp Field View
+
+A clear top-down view showing the spacetime distortion and exotic matter distribution:
+
+![Top-Down Warp View](images/warp_drive_topdown.gif)
 
 ### Shape Functions
 
