@@ -5,6 +5,8 @@ A Python library for simulating and visualizing General Relativistic warp bubble
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.11+-green.svg)
 
+![Warp Bubble Evolution](images/bubble_evolution.gif)
+
 ## Overview
 
 WarpDrives provides tools for exploring the mathematics of warp drive spacetimes, including:
@@ -18,11 +20,65 @@ WarpDrives provides tools for exploring the mathematics of warp drive spacetimes
 
 **Note**: This is a mathematical simulation tool. No claims about physical feasibility are made.
 
+## Visualizations
+
+### Alcubierre Warp Bubble Energy Density
+
+The classic Alcubierre metric requires **negative energy density** (exotic matter) in the bubble wall region:
+
+![Alcubierre Energy Density](images/alcubierre_energy_density.png)
+
+The red regions indicate where exotic matter is required - a fundamental challenge for physical realization.
+
+### Metric Comparison
+
+Comparison of energy density distributions across all six implemented warp drive metrics:
+
+![Metric Comparison](images/metric_comparison.png)
+
+### Geodesics in Warp Bubble Spacetime
+
+Test particles follow geodesics through the curved spacetime. Particles near the bubble are "swept along" by the warped space:
+
+![Geodesics](images/geodesics.png)
+
+![Geodesics Animation](images/geodesics_animation.gif)
+
+### Expansion and Contraction
+
+The Alcubierre metric creates expansion of space behind the bubble and contraction in front:
+
+![Expansion Scalar](images/expansion_scalar.png)
+
+### Grid Distortion
+
+Visualization of how the warp bubble distorts the coordinate grid as it propagates:
+
+![Grid Distortion](images/grid_distortion.gif)
+
+### Shape Functions
+
+Different mathematical functions can define the bubble profile:
+
+![Shape Functions](images/shape_functions.png)
+
+### Energy Conditions
+
+Classical energy conditions are violated in the bubble wall:
+
+![Energy Conditions](images/energy_conditions.png)
+
+### Subluminal vs Superluminal
+
+Bobrick & Martire (2021) showed that **subluminal** warp drives can use positive energy, while superluminal drives require exotic matter:
+
+![Subluminal vs Superluminal](images/subluminal_vs_superluminal.png)
+
 ## Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/WarpDrives.git
+git clone https://github.com/mthiel74/WarpDrives.git
 cd WarpDrives
 
 # Install with pip
@@ -130,27 +186,16 @@ coords = np.array([0, 1.0, 0.3, 0])
 conditions = check_energy_conditions(metric_func, coords)
 
 for name, (satisfied, value) in conditions.items():
-    status = "✓" if satisfied else "✗"
+    status = "SATISFIED" if satisfied else "VIOLATED"
     print(f"{name}: {status} (value: {value:.2e})")
 ```
-
-## Output Examples
-
-Running `make demo` produces:
-
-- `out/alcubierre_fields.png` - Combined field visualization
-- `out/alcubierre_geodesics.mp4` - Animated geodesics
-- `out/alcubierre_grid_distortion.gif` - Grid distortion animation
-- `out/natario_fields.png` - Natário metric fields
-- `out/bobrick_martire_conditions.png` - Energy condition map
-- `out/lentz_fields.png` - Lentz soliton fields
 
 ## Conventions
 
 - **Metric signature**: (-,+,+,+)
 - **Index ordering**: (t,x,y,z) = (0,1,2,3)
 - **Units**: G = c = 1 (geometric units)
-- **Einstein equations**: G_{μν} = 8π T_{μν}, so T_{μν} = G_{μν}/(8π)
+- **Einstein equations**: G_{\mu\nu} = 8\pi T_{\mu\nu}, so T_{\mu\nu} = G_{\mu\nu}/(8\pi)
 
 ## Documentation
 
@@ -158,6 +203,20 @@ Running `make demo` produces:
 - [Metrics](docs/metrics.md) - Detailed metric descriptions
 - [Numerics](docs/numerics.md) - Numerical methods
 - [Visualizations](docs/visualizations.md) - Visualization guide
+
+## Notebooks
+
+Interactive Jupyter notebooks for each metric:
+
+| Notebook | Description |
+|----------|-------------|
+| [00_quickstart.ipynb](notebooks/00_quickstart.ipynb) | Quick introduction to WarpDrives |
+| [01_alcubierre.ipynb](notebooks/01_alcubierre.ipynb) | Deep dive into the Alcubierre metric |
+| [02_natario.ipynb](notebooks/02_natario.ipynb) | Expansion-free Natário metric |
+| [03_vdbroek.ipynb](notebooks/03_vdbroek.ipynb) | Van Den Broeck pocket geometry |
+| [04_white_toroidal.ipynb](notebooks/04_white_toroidal.ipynb) | White's toroidal configuration |
+| [05_bobrick_martire.ipynb](notebooks/05_bobrick_martire.ipynb) | Physical warp drives |
+| [06_lentz.ipynb](notebooks/06_lentz.ipynb) | Lentz soliton warp drive |
 
 ## Testing
 
@@ -181,6 +240,7 @@ WarpDrives/
 ├── tests/           # Test suite
 ├── notebooks/       # Jupyter notebooks
 ├── scenarios/       # YAML configuration files
+├── images/          # Generated visualizations
 └── docs/            # Documentation
 ```
 
@@ -192,7 +252,7 @@ If you use this code in research, please cite:
 @software{warpdrives,
   title = {WarpDrives: GR Warp Bubble Spacetime Simulator},
   year = {2024},
-  url = {https://github.com/yourusername/WarpDrives}
+  url = {https://github.com/mthiel74/WarpDrives}
 }
 ```
 

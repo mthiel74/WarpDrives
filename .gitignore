@@ -150,6 +150,8 @@ out/
 *.gif
 *.png
 !docs/*.png
+!images/*.png
+!images/*.gif
 *.pdf
 !docs/*.pdf
 
