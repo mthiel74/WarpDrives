@@ -152,8 +152,12 @@ out/
 !docs/*.png
 !images/*.png
 !images/*.gif
+!images/*.mp4
 *.pdf
 !docs/*.pdf
+
+# Social media posts (not for public repo)
+LINKEDIN_POST.md
 
 # OS
 .DS_Store

@@ -86,6 +86,17 @@ Bobrick & Martire (2021) showed that **subluminal** warp drives can use positive
 
 ![Subluminal vs Superluminal](images/subluminal_vs_superluminal.png)
 
+## Interactive Simulator
+
+**Try the warp drive simulator in your browser!** Open `interactive/index.html` to explore warp bubble physics interactively:
+
+- Choose between 4 different warp drive metrics (Alcubierre, Natário, Van Den Broeck, Bobrick-Martire)
+- Adjust velocity, bubble radius, and wall thickness in real-time
+- Watch spacetime distortion, energy density distribution, and geodesic paths
+- Toggle visualization layers: grid distortion, energy density, bubble outline, spacecraft
+
+No installation required - just open the HTML file in any modern browser.
+
 ## Installation
 
 ```bash
