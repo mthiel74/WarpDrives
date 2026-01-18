@@ -1,0 +1,19 @@
+# Lentz Soliton Warp Drive Demo
+# Einstein-Maxwell-plasma sourced configuration
+
+metric_params:
+  v0: 0.5
+  R: 1.0
+  sigma: 5.0
+  amplitude: 0.1
+  hyperbolic_param: 0.5
+  x0: 0.0
+
+visualization:
+  x_range: [-5, 5]
+  y_range: [-5, 5]
+  t: 0.0
+  resolution: 128
+
+# Note: [ASSUMPTION] - specific parameters are interpretations
+# of Lentz's construction. See code documentation.

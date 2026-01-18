@@ -1,0 +1,25 @@
+# Alcubierre Warp Drive Demo Scenario
+# Classic warp bubble configuration
+
+metric_params:
+  v0: 1.0        # Bubble velocity (units of c)
+  R: 1.0         # Bubble radius
+  sigma: 8.0     # Wall steepness (higher = sharper)
+  x0: 0.0        # Initial position
+  shape: tanh    # Shape function type
+
+visualization:
+  x_range: [-5, 5]
+  y_range: [-5, 5]
+  t: 0.0
+  resolution: 128
+
+animation:
+  t_range: [0, 10]
+  n_frames: 100
+  fps: 30
+
+geodesics:
+  n_particles: 10
+  initial_region: [-3, 3]  # x-range for initial positions
+  t_max: 10.0

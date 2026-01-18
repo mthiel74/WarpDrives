@@ -1,0 +1,22 @@
+# Bobrick & Martire Physical Warp Drive Demo
+# Subluminal positive-energy configuration
+
+metric_params:
+  v0: 0.5           # Subluminal velocity
+  R_inner: 1.0      # Inner shell radius
+  R_outer: 2.0      # Outer shell radius
+  shell_amplitude: 0.1
+  positive_energy: true
+  sigma: 5.0
+  x0: 0.0
+
+visualization:
+  x_range: [-5, 5]
+  y_range: [-5, 5]
+  t: 0.0
+  resolution: 128
+
+animation:
+  t_range: [0, 20]  # Longer for subluminal
+  n_frames: 100
+  fps: 30

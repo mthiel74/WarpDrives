@@ -1,0 +1,19 @@
+# Natário Expansion-Free Warp Drive Demo
+# Divergence-free shift vector configuration
+
+metric_params:
+  v0: 1.0
+  R: 1.0
+  sigma: 8.0
+  x0: 0.0
+
+visualization:
+  x_range: [-5, 5]
+  y_range: [-5, 5]
+  t: 0.0
+  resolution: 128
+
+animation:
+  t_range: [0, 10]
+  n_frames: 100
+  fps: 30

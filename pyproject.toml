@@ -1,0 +1,88 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "warpbubblesim"
+version = "0.1.0"
+description = "GR simulation and visualization of warp bubble spacetimes"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+authors = [
+    {name = "WarpDrives Contributors"}
+]
+keywords = ["general-relativity", "warp-drive", "alcubierre", "spacetime", "simulation", "physics"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+
+dependencies = [
+    "numpy>=1.24.0",
+    "scipy>=1.11.0",
+    "matplotlib>=3.7.0",
+    "pyvista>=0.42.0",
+    "jax>=0.4.20",
+    "jaxlib>=0.4.20",
+    "pyyaml>=6.0",
+    "click>=8.1.0",
+    "tqdm>=4.65.0",
+    "imageio>=2.31.0",
+    "imageio-ffmpeg>=0.4.8",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.5.0",
+]
+docs = [
+    "sphinx>=7.0.0",
+    "sphinx-rtd-theme>=1.3.0",
+    "nbsphinx>=0.9.0",
+]
+notebooks = [
+    "jupyter>=1.0.0",
+    "jupyterlab>=4.0.0",
+    "ipywidgets>=8.0.0",
+]
+
+[project.scripts]
+warpsim = "warpbubblesim.cli.main:cli"
+
+[project.urls]
+Homepage = "https://github.com/yourusername/WarpDrives"
+Documentation = "https://github.com/yourusername/WarpDrives/tree/main/docs"
+Repository = "https://github.com/yourusername/WarpDrives"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["warpbubblesim*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --tb=short"
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+select = ["E", "F", "W", "I", "UP", "B", "C4"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_ignores = true

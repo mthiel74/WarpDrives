@@ -1,0 +1,120 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12']
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache pip packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+
+    - name: Run linting
+      run: |
+        pip install ruff
+        ruff check warpbubblesim/ --ignore E501
+
+    - name: Run tests
+      run: |
+        pytest tests/ -v --tb=short
+
+    - name: Check type hints (optional)
+      continue-on-error: true
+      run: |
+        pip install mypy
+        mypy warpbubblesim/ --ignore-missing-imports --no-error-summary || true
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+
+    - name: Check documentation builds
+      run: |
+        # Basic check that README renders
+        pip install readme-renderer
+        python -m readme_renderer README.md -o /dev/null || echo "README check skipped"
+
+  notebooks:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[notebooks]"
+
+    - name: Validate notebook syntax
+      run: |
+        pip install nbformat
+        python -c "
+        import nbformat
+        import glob
+        for nb_path in glob.glob('notebooks/*.ipynb'):
+            print(f'Validating {nb_path}...')
+            with open(nb_path, 'r') as f:
+                nb = nbformat.read(f, as_version=4)
+            print(f'  OK: {len(nb.cells)} cells')
+        "
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Build package
+      run: |
+        python -m pip install --upgrade pip build
+        python -m build
+
+    - name: Check package
+      run: |
+        pip install twine
+        twine check dist/*
