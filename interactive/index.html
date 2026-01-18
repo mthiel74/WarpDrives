@@ -591,10 +591,16 @@
             const xBubble = getBubbleCenter(t, velocity);
 
             const gridSpacing = 0.5;
-            const xMin = xBubble - 8;
-            const xMax = xBubble + 5;
-            const yMin = -4;
-            const yMax = 4;
+
+            // Calculate world coordinates at screen edges
+            const worldXMin = (0 - offsetX) / scale + xBubble - 5;
+            const worldXMax = (width - offsetX) / scale + xBubble - 5;
+            const yMin = -5;
+            const yMax = 5;
+
+            // Extend grid beyond visible area and snap to grid spacing
+            const xMin = Math.floor(worldXMin / gridSpacing) * gridSpacing - gridSpacing;
+            const xMax = Math.ceil(worldXMax / gridSpacing) * gridSpacing + gridSpacing;
 
             ctx.lineWidth = 1;
 
@@ -610,11 +616,15 @@
 
                     const screen = toScreen(distortedX - xBubble + 5, distortedY);
 
-                    // Calculate alpha based on warp field strength
-                    const rs = Math.sqrt((x - xBubble) ** 2 + y ** 2);
-                    const shape = getShapeFunction(metricType);
-                    const f = shape(rs, radius, sigma);
-                    const alpha = 0.2 + 0.5 * f;
+                    // Skip points far outside canvas
+                    if (screen.x < -50 || screen.x > width + 50) {
+                        if (!firstPoint) {
+                            ctx.stroke();
+                            ctx.beginPath();
+                            firstPoint = true;
+                        }
+                        continue;
+                    }
 
                     if (firstPoint) {
                         ctx.moveTo(screen.x, screen.y);
@@ -628,7 +638,7 @@
                 ctx.stroke();
             }
 
-            // Draw vertical lines
+            // Draw vertical lines - continuous injection as ship moves
             for (let x = xMin; x <= xMax; x += gridSpacing) {
                 ctx.beginPath();
                 let firstPoint = true;
@@ -639,6 +649,16 @@
                     const distortedY = y + shift.y * 0.3;
 
                     const screen = toScreen(distortedX - xBubble + 5, distortedY);
+
+                    // Skip points far outside canvas
+                    if (screen.x < -50 || screen.x > width + 50) {
+                        if (!firstPoint) {
+                            ctx.stroke();
+                            ctx.beginPath();
+                            firstPoint = true;
+                        }
+                        continue;
+                    }
 
                     if (firstPoint) {
                         ctx.moveTo(screen.x, screen.y);
@@ -659,7 +679,11 @@
 
             const resolution = 4;
 
-            for (let sx = 0; sx < width; sx += resolution) {
+            // Only render energy density near the bubble (optimization)
+            const bubbleScreenX = toScreen(5, 0).x;
+            const renderRadius = (radius + 2) * scale;
+
+            for (let sx = Math.max(0, bubbleScreenX - renderRadius); sx < Math.min(width, bubbleScreenX + renderRadius); sx += resolution) {
                 for (let sy = 0; sy < height; sy += resolution) {
                     const x = (sx - offsetX) / scale + xBubble - 5;
                     const y = (centerY - sy) / scale;
@@ -944,13 +968,17 @@
         }
 
         // Button handlers
-        document.getElementById('playPause').addEventListener('click', (e) => {
+        const playPauseBtn = document.getElementById('playPause');
+        playPauseBtn.addEventListener('click', function() {
             state.playing = !state.playing;
-            e.target.textContent = state.playing ? '⏸ Pause' : '▶ Play';
+            this.textContent = state.playing ? '⏸ Pause' : '▶ Play';
+            console.log('Play state:', state.playing); // Debug
         });
 
-        document.getElementById('reset').addEventListener('click', () => {
+        document.getElementById('reset').addEventListener('click', function() {
             state.time = 0;
+            state.playing = true;
+            playPauseBtn.textContent = '⏸ Pause';
         });
 
         // Start simulation
