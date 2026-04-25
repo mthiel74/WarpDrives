@@ -1102,7 +1102,9 @@ predecessor:\n",
    StyleBox["Nat\[AAcute]rio 2002", FontWeight -> Bold],
    " \[LongDash] same speed, but constructed so the shift vector is \
 divergence-free.  No volume expansion or contraction \[LongDash] \
-the bubble \"slides\" through space rather than \"pushing\" it.\n",
+the bubble \"slides\" through space rather than \"pushing\" it.  \
+Negative energy is still required (NEC violation does not depend \
+on the divergence of the shift).\n",
    "\[Bullet] ",
    StyleBox["Van Den Broeck 1999", FontWeight -> Bold],
    " \[LongDash] adds a \"pocket\" interior so the external bubble \
