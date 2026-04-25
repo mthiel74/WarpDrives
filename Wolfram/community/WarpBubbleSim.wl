@@ -4,7 +4,7 @@
 (*WarpBubbleSim  \[Dash]  single-file Wolfram Language package*)
 
 (* ::Text:: *)
-(*Self-contained consolidation of the 10 sub-packages*)
+(*Self-contained consolidation of the 9 sub-packages*)
 (*    ShapeFunctions, Metrics, Tensors, ADM, Energy, Conditions,*)
 (*    Invariants, Geodesics, Visualize*)
 (*so the user only has to load this one file:*)
