@@ -465,7 +465,7 @@ Wolfram Community viewer.  If you'd like to rerun or tweak any of \
 them locally, the Input cell above each figure contains the exact \
 call.  Everything needed sits in a single self-contained package, ",
    StyleBox["WarpBubbleSim.wl", "Input"],
-   " (~30 KB, attached to this post).  Drop it next to the notebook, \
+   " (~37 KB, attached to this post).  Drop it next to the notebook, \
 evaluate the cell below once, and every public symbol used later \
 (",
    StyleBox["AlcubierreMetric", "Input"], ", ",
@@ -475,8 +475,9 @@ evaluate the cell below once, and every public symbol used later \
 available:"}], "Text"],
 
  inputCell["SetDirectory[NotebookDirectory[]];
-Get[\"WarpBubbleSim.wl\"];   (* one file: 64 public functions + 2 options covering
-                                 shape functions, six warp metrics,
+Get[\"WarpBubbleSim.wl\"];   (* one file (~37 KB), 66 public symbols
+                                 (64 functions + EvalAt + NSamples options)
+                                 covering shape functions, six warp metrics,
                                  Christoffel/Riemann/Einstein tensors,
                                  ADM tools, energy conditions,
                                  geodesics, plotting helpers. *)"],
