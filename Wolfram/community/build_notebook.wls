@@ -957,10 +957,19 @@ space contracts and where it expands:"}], "Text"],
  imgCell[loadAnim["anim_hero_topdown.gif", 680, 36, 10],
    "Figure 5. Top-down view of the same scene.  Same metric, same \
 bubble velocity, same spacecraft, but no z-axis cosmetics so the \
-geometry is unobstructed.  The red ring is the actual analytic \
-\[Rho] (more red = more exotic matter required); the cyan grid is \
-the coordinate mesh advected by the shift field; the dashed white \
-circle is the nominal bubble radius."],
+geometry is unobstructed.  The red crescents are the actual \
+analytic Eulerian \[Rho] (more red = more exotic matter required); \
+the cyan grid is the ",
+StyleBox["instantaneous", FontSlant -> Italic],
+" coordinate distortion ",
+"\!\(\*StyleBox[\"x\", \"TI\"]\) \[RightArrow] \!\(\*StyleBox[\"x\", \"TI\"]\) + \
+0.5\!\(\*SuperscriptBox[\"\[Beta]\", \"x\"]\)(\!\(\*StyleBox[\"t\", \"TI\"]\))",
+" \[LongDash] a snapshot of the metric geometry at each frame, \
+scaled by 0.5 for visibility \[LongDash] not a Lagrangian-advected \
+mesh, so it returns to a flat grid wherever the bubble is far \
+away.  Compare with Figure 6 below, which shows the genuinely \
+cumulative displacement of comoving test particles.  The dashed \
+white circle is the nominal bubble radius."],
 
  Cell[TextData[{"Both animations are rendered entirely from the \
 analytic Alcubierre formulas \[LongDash] no GR solver, no NDSolve, \
@@ -999,8 +1008,11 @@ advect[{x0_, y0_}, t_, nstep_] := Module[{x = x0, y = y0, dt = t/nstep},
   {x, y}];
 
 frame[t_] := Show[
-  DensityPlot[Abs[alcShift[t, x, y]], {x, -3, 3}, {y, -2.5, 2.5},
-    ColorFunction -> \"SunsetColors\", Frame -> True],
+  DensityPlot[
+    AlcubierreExpansionScalar[{1, 1, 8}, {t, x, y, 0}],
+    {x, -3, 3}, {y, -2.5, 2.5},
+    ColorFunction -> \"RedBlueTones\", Frame -> True,
+    PlotLegends -> Automatic],
   Graphics[{Thickness[0.0015], Black,
     Table[Line[Table[advect[{x, yi}, t, 14], {x, -3, 3, 6/60}]],
           {yi, -3, 3, 6/14}],
@@ -1009,11 +1021,21 @@ frame[t_] := Show[
 ListAnimate[Table[frame[t], {t, 0, 2, 2/29.}]]"],
 
  imgCell[loadAnim["anim_grid_distortion.gif", 540, 30, 6],
-   "Figure 6. A regular Cartesian grid distorted by the Alcubierre \
-shift field as the bubble sweeps from left to right.  The colour \
-shows the shift magnitude.  Inside the bubble all four points of any \
-small grid cell move together \[LongDash] no internal stretching, \
-no tidal forces.  All the deformation is concentrated in the wall."],
+   "Figure 6. A regular Cartesian grid ",
+StyleBox["cumulatively", FontSlant -> Italic],
+" advected by the Alcubierre shift field as the bubble sweeps from \
+left to right.  Each grid intersection is a comoving test particle: \
+once the bubble has pushed it, it stays at its new position because \
+the shift field provides no restoring force \[LongDash] this is \
+why the grid stays deformed behind the bubble, in contrast to the \
+",
+StyleBox["instantaneous", FontSlant -> Italic],
+" coordinate-distortion mesh in Figure 5.  The background colour \
+is the Eulerian expansion scalar \[Theta] (red = contraction in \
+front of the bubble, blue = expansion behind).  Inside the bubble \
+all four points of any small grid cell move together \[LongDash] \
+no internal stretching, no tidal forces.  All the deformation is \
+concentrated in the wall."],
 
  (* ----------- Section 7: Geodesics ---------- *)
 
@@ -1079,9 +1101,10 @@ sweep[{x0_, y0_}, ts_] := With[{dt = ts[[2]] - ts[[1]]},
 ts = Range[0., 4., 0.05];
 trajs = Table[sweep[{2., y0}, ts], {y0, Range[-1.4, 1.4, 0.35]}];
 ListAnimate @ Table[
-  Show[DensityPlot[Abs[alcShift[ts[[k]], x, y]], {x, -1, 6},
-                   {y, -2, 2}, PlotPoints -> 90,
-                   ColorFunction -> \"BlueGreenYellow\"],
+  Show[DensityPlot[
+         AlcubierreExpansionScalar[{1, 1, 8}, {ts[[k]], x, y, 0}],
+         {x, -1, 6}, {y, -2, 2}, PlotPoints -> 90,
+         ColorFunction -> \"RedBlueTones\", PlotLegends -> Automatic],
        Graphics[{Black, Thick, Line /@ (Take[#, k] & /@ trajs),
          Red, PointSize[0.022], Point /@ (#[[k]] & /@ trajs)}]],
   {k, 1, Length[ts], 2}]"],
@@ -1094,8 +1117,10 @@ spatial 3-velocity ",
 " \[LongDash] the Eulerian-observer law for \[Alpha]=1.  Particles near the \
 axis (small |y|) get the deepest grip and are dragged fastest; off-axis \
 particles are partly missed by the wall and barely move.  Black tails \
-are trajectories so far; red dots are current positions; the colourmap \
-shows the shift magnitude."],
+are trajectories so far; red dots are current positions; the background \
+colourmap shows the expansion scalar \[Theta] (red = contraction in front \
+of the bubble, blue = expansion behind), the front\[Dash]back asymmetry \
+that makes the bubble carry the ship along."],
 
  Cell[TextData[{"For a real geodesic integration (full 4-velocity, \
 Christoffel-symbol-driven) the package ships ",

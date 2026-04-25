@@ -149,12 +149,13 @@ advectGrid[v_, R_, sigma_, tEnd_, nLines_, nSamp_, nStep_] :=
 makeGridFrame[v_, R_, sigma_, tEnd_] :=
   Show[
     DensityPlot[
-      alcDensity[v, R, sigma, tEnd, x, y, 0.],
+      alcExpansion[v, R, sigma, tEnd, x, y, 0.],
       {x, -3, 3}, {y, -2.5, 2.5}, PlotPoints -> 110,
-      ColorFunction -> "SunsetColors", ColorFunctionScaling -> True,
+      ColorFunction -> "RedBlueTones", ColorFunctionScaling -> True,
       PlotRangePadding -> 0, Frame -> True, FrameLabel -> {"x", "y"},
       PlotLabel -> Style[
-        Row[{"Bubble swept across grid  (t = ", NumberForm[tEnd, {3, 2}], ")"}],
+        Row[{"Bubble swept across grid  (t = ", NumberForm[tEnd, {3, 2}],
+             "); red=contraction, blue=expansion"}],
         Bold, 13]],
     Graphics[{Lighter[Black, 0.2], Thickness[0.0015],
               advectGrid[v, R, sigma, tEnd, 14, 60, 14]}],
@@ -194,13 +195,14 @@ trajs    = Table[swept[1., 1., 8., 2., y0, tGrid], {y0, geoYs}];
 makeGeoFrame[k_] :=
   Show[
     DensityPlot[
-      alcShiftMag[1., 1., 8., tGrid[[k]], x, y],
+      alcExpansion[1., 1., 8., tGrid[[k]], x, y, 0.],
       {x, -1., 6.}, {y, -2., 2.},
-      PlotPoints -> 90, ColorFunction -> "BlueGreenYellow",
+      PlotPoints -> 90, ColorFunction -> "RedBlueTones",
       ColorFunctionScaling -> True, PlotRangePadding -> 0,
       Frame -> True, FrameLabel -> {"x", "y"},
       PlotLabel -> Style[Row[{"Test particles swept up by warp bubble  (t=",
-                              NumberForm[tGrid[[k]], {3, 2}], ")"}],
+                              NumberForm[tGrid[[k]], {3, 2}],
+                              "); red=contraction, blue=expansion"}],
                          Bold, 13]],
     Graphics[{
       (* trajectories so far *)
