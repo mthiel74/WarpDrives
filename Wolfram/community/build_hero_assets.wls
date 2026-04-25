@@ -238,7 +238,7 @@ heroTrail[t_] :=
     {Glow[Cyan],
      MapIndexed[
        {Cyan, Opacity[(1 - First[#2]/N[n])],
-        Sphere[{#1, 0, 0}, 0.05 (1 - First[#2]/N[n])]} &,
+        Sphere[{#1, 0, 0}, Max[0.005, 0.05 (1 - First[#2]/N[n])]]} &,
        xs]}];
 
 heroFrame[t_] :=
