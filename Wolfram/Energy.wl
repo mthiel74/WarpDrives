@@ -7,7 +7,8 @@
 (*Stress-energy tensor and its decomposition, obtained from*)
 (*T_{\[Mu]\[Nu]} = G_{\[Mu]\[Nu]}/(8\[Pi]).*)
 
-BeginPackage["WarpBubbleSim`Energy`", {"WarpBubbleSim`Tensors`"}];
+BeginPackage["WarpBubbleSim`Energy`",
+             {"WarpBubbleSim`Tensors`", "WarpBubbleSim`ADM`"}];
 
 StressEnergyTensor::usage =
   "StressEnergyTensor[g, coords] = EinsteinTensor[g, coords]/(8 Pi).";
@@ -16,8 +17,13 @@ EnergyDensity::usage =
   "EnergyDensity[g, coords, u] = T_{\[Mu]\[Nu]} u^{\[Mu]} u^{\[Nu]}. Default observer = static (1,0,0,0).";
 
 EulerianEnergyDensity::usage =
-  "EulerianEnergyDensity[g, coords, shift] = T_{\[Mu]\[Nu]} n^{\[Mu]} n^{\[Nu]} with n the Eulerian \
-observer (\[Alpha]=1 assumed).";
+  "EulerianEnergyDensity[g, coords] returns T_{\[Mu]\[Nu]} n^{\[Mu]} n^{\[Nu]} with n the Eulerian \
+observer.  The lapse \[Alpha] and shift \[Beta]^i are extracted from g via MetricToADM, so n^{\[Mu]} = \
+(1/\[Alpha])(1, -\[Beta]^i) is correctly normalized for any ADM metric.  The \
+3-argument form EulerianEnergyDensity[g, coords, shift] is kept for backward \
+compatibility and assumes \[Alpha]=1 (correct for Alcubierre, Nat\[AAcute]rio, \
+White toroidal; wrong for Bobrick\[Dash]Martire and Lentz where \[Alpha] is \
+position-dependent).";
 
 MomentumDensity::usage =
   "MomentumDensity[g, coords, u] = -T^{\[Mu]}_{\[Nu]} u^{\[Nu]}.";
@@ -50,8 +56,15 @@ EnergyDensity[g_, coords_List, u_:{1, 0, 0, 0}] :=
   Module[{T = StressEnergyTensor[g, coords]},
     Sum[T[[m, n]] u[[m]] u[[n]], {m, 4}, {n, 4}]];
 
+EulerianEnergyDensity[g_, coords_List] :=
+  Module[{T = StressEnergyTensor[g, coords], lapse, shift, gamma, n4, m, nn},
+    {lapse, shift, gamma} = MetricToADM[g];
+    n4 = Prepend[-shift, 1]/lapse;
+    Sum[T[[m, nn]] n4[[m]] n4[[nn]], {m, 4}, {nn, 4}]];
+
 EulerianEnergyDensity[g_, coords_List, shiftVec_?VectorQ] :=
-  Module[{T = StressEnergyTensor[g, coords], n4 = Prepend[-shiftVec, 1]},
+  Module[{T = StressEnergyTensor[g, coords], n4 = Prepend[-shiftVec, 1],
+          m, nn},
     Sum[T[[m, nn]] n4[[m]] n4[[nn]], {m, 4}, {nn, 4}]];
 
 MomentumDensity[g_, coords_List, u_:{1, 0, 0, 0}] :=

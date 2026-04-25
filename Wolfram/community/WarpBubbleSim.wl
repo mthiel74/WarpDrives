@@ -117,7 +117,10 @@ StressEnergyTensor::usage =
 EnergyDensity::usage =
   "EnergyDensity[g, coords, u] = T_{\[Mu]\[Nu]} u^{\[Mu]} u^{\[Nu]}.";
 EulerianEnergyDensity::usage =
-  "EulerianEnergyDensity[g, coords, shift] = T_{\[Mu]\[Nu]} n^{\[Mu]} n^{\[Nu]}.";
+  "EulerianEnergyDensity[g, coords] returns T_{\[Mu]\[Nu]} n^{\[Mu]} n^{\[Nu]} with n the Eulerian observer; \
+lapse and shift are extracted from g via MetricToADM so the result is correct \
+for any ADM metric.  EulerianEnergyDensity[g, coords, shift] is kept for \
+backward compatibility and assumes \[Alpha]=1.";
 MomentumDensity::usage =
   "MomentumDensity[g, coords, u] = -T^{\[Mu]}_{\[Nu]} u^{\[Nu]}.";
 PressureDecomposition::usage =
@@ -482,6 +485,13 @@ StressEnergyTensor[g_, coords_List] := EinsteinTensor[g, coords]/(8 Pi);
 EnergyDensity[g_, coords_List, u_:{1, 0, 0, 0}] :=
   Module[{T = StressEnergyTensor[g, coords], m, n},
     Sum[T[[m, n]] u[[m]] u[[n]], {m, 4}, {n, 4}]];
+
+EulerianEnergyDensity[g_, coords_List] :=
+  Module[{T = StressEnergyTensor[g, coords], lapse, shift, gamma, n4,
+          m, nn},
+    {lapse, shift, gamma} = MetricToADM[g];
+    n4 = Prepend[-shift, 1]/lapse;
+    Sum[T[[m, nn]] n4[[m]] n4[[nn]], {m, 4}, {nn, 4}]];
 
 EulerianEnergyDensity[g_, coords_List, shiftVec_?VectorQ] :=
   Module[{T = StressEnergyTensor[g, coords], n4 = Prepend[-shiftVec, 1],
