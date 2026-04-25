@@ -134,9 +134,9 @@ Print["[6/9] grid-distortion animation"];
 
 advectGrid[v_, R_, sigma_, tEnd_, nLines_, nSamp_, nStep_] :=
   Module[{lines, dt = tEnd/nStep, push},
-    push[{x_, y_}] := Module[{xc = x, yc = y, t},
-      Do[t = (k - 1) dt;
-         xc = xc + dt alcShiftMag[v, R, sigma, t, xc, yc],
+    push[{x0_, y0_}] := Module[{xc = x0, yc = y0, tk, k},
+      Do[tk = (k - 1) dt;
+         xc = xc + dt alcShiftMag[v, R, sigma, tk, xc, yc],
          {k, 1, nStep}];
       {xc, yc}];
     lines = Join[
