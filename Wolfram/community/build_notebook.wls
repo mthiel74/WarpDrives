@@ -17,6 +17,10 @@ hereDir = DirectoryName[If[$ScriptCommandLine =!= {}, $InputFileName,
                            NotebookFileName[]]];
 resDir  = FileNameJoin[{hereDir, "results"}];
 
+(* Load the package so build-time evaluations (live Graphics3D
+   embeds, etc.) can use the same API the input cells advertise. *)
+Get[FileNameJoin[{hereDir, "WarpBubbleSim.wl"}]];
+
 imgWidth = 720;
 
 (* ---------- math typesetting helpers -------------------------------- *)
@@ -61,6 +65,21 @@ imgCell[content_, caption_String:""] :=
   Cell[BoxData[ToBoxes[
     If[caption === "", content,
       Column[{content,
+              Pane[Style[caption, Italic, FontSize -> 10,
+                         FontFamily -> "Helvetica"],
+                   imgWidth, Alignment -> Center]},
+             Alignment -> Center, Spacings -> 0.6]]]],
+    "Output", ShowCellLabel -> False,
+    TextAlignment -> Center,
+    CellMargins -> {{20, 20}, {10, 14}}];
+
+(* outputCell: embed a live Wolfram expression as an Output cell.
+   Used for Graphics3D so the reader can mouse-rotate the surface
+   directly in Mathematica or Wolfram Player. *)
+outputCell[expr_, caption_String:""] :=
+  Cell[BoxData[ToBoxes[
+    If[caption === "", expr,
+      Column[{expr,
               Pane[Style[caption, Italic, FontSize -> 10,
                          FontFamily -> "Helvetica"],
                    imgWidth, Alignment -> Center]},
@@ -777,25 +796,42 @@ crescents in the bubble wall \[LongDash] one in front of the ship, \
 one behind \[LongDash] are where exotic matter must live.  The same \
 quantity is rendered as a 3D surface in Figure 1 below."],
 
- Cell[TextData[{"And the same energy density rendered as a 3D \
-surface brings out the wall structure (the input cell above produces \
-a live ", StyleBox["Plot3D", "Input"],
-   ", which is rotatable with the mouse if the notebook is \
-evaluated locally; the embedded image below is a static raster of \
-the same plot for the browser viewer):"}], "Text"],
+ Cell[TextData[{"The same energy density rendered as a 3D surface \
+brings out the wall structure.  Figure 1 is a live ",
+   StyleBox["Plot3D", "Input"],
+   " output cell, so in Mathematica or Wolfram Player you can \
+click-and-drag to rotate the surface (the browser preview shows a \
+default viewpoint)."}], "Text"],
 
- imgCell[loadPng["energy_density_3d.png"],
+ inputCell[
+"Plot3D[
+  AlcubierreAnalyticEnergyDensity[{1, 1, 8}, {0, x, y, 0}],
+  {x, -1.8, 1.8}, {y, -1.8, 1.8},
+  PlotPoints -> 60, MaxRecursion -> 1, Mesh -> None,
+  ColorFunction -> Function[{x, y, z},
+    ColorData[\"TemperatureMap\"][Rescale[z, {-0.00006, 0}]]],
+  ColorFunctionScaling -> False,
+  Lighting -> \"Neutral\", Boxed -> False, Axes -> False,
+  BoxRatios -> {1, 1, 0.55}, ImageSize -> 600,
+  PlotLabel -> Style[\"Eulerian \[Rho](x, y, 0) -- v=c, R=1, \[Sigma]=8\",
+                     Bold, 13]]"],
+
+ outputCell[
+   Plot3D[
+     Evaluate[
+       AlcubierreAnalyticEnergyDensity[{1.0, 1.0, 8.0}, {0., x, y, 0.0001}]],
+     {x, -1.8, 1.8}, {y, -1.8, 1.8},
+     PlotPoints -> 50, MaxRecursion -> 1, Mesh -> None,
+     ColorFunction -> Function[{x, y, z},
+       ColorData["TemperatureMap"][Rescale[z, {-0.00006, 0}]]],
+     ColorFunctionScaling -> False,
+     Lighting -> "Neutral", Boxed -> False, Axes -> False,
+     BoxRatios -> {1, 1, 0.55}, ImageSize -> 540],
    "Figure 1. Eulerian energy density of an Alcubierre bubble (v=c, \
-R=1, \[Sigma]=8).  Two depressions in the bubble wall \[LongDash] one \
-in front of the ship, one behind \[LongDash] is where the exotic \
-matter (\[Rho] < 0) must live."],
-
- imgCell[loadAnim["anim_density_rotate.gif", 600, 24, 6],
-   "Figure 1b. The same 3D bubble wall, with a camera orbiting once \
-around the vertical axis so the front-back dipole and the rotational \
-symmetry around the direction-of-motion axis are both visible.  An \
-inline auto-rotation that approximates the live mouse-rotation a \
-reader would get by evaluating the input cell above."],
+R=1, \[Sigma]=8) as a 3D surface.  Two depressions in the bubble \
+wall \[LongDash] one in front of the ship, one behind \[LongDash] \
+is where the exotic matter (\[Rho] < 0) must live.  Click-and-drag \
+to rotate in a live Mathematica session."],
 
  (* ----------- Section 4: The expansion scalar ---------- *)
 
@@ -956,7 +992,7 @@ spacecraft3D[{xc_, yc_, zc_}, scale_] :=
 an orbiting camera and a starfield, the result is the cover \
 animation reproduced below at full size:"}], "Text"],
 
- imgCell[loadAnim["anim_hero_3d.gif", 640, 40, 10],
+ imgCell[loadAnim["anim_hero_3d.gif", 540, 24, 8],
    "Figure 4. The spacecraft hero animation.  The cyan grid is a \
 height-field visualisation of \[Minus]f(r) (geometric distortion of \
 the warp surface) plus the shift-component cosmetic offset \
@@ -975,7 +1011,7 @@ distorted by the shift field, and a triangular silhouette of the \
 ship with two glowing nacelle dots.  Annotations point at where \
 space contracts and where it expands:"}], "Text"],
 
- imgCell[loadAnim["anim_hero_topdown.gif", 680, 36, 10],
+ imgCell[loadAnim["anim_hero_topdown.gif", 540, 24, 8],
    "Figure 5. Top-down view of the same scene.  Same metric, same \
 bubble velocity, same spacecraft, but no z-axis cosmetics so the \
 geometry is unobstructed.  The red crescents are the actual \

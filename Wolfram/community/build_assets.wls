@@ -247,31 +247,9 @@ Export[FileNameJoin[{resDir, "anim_bubble_flying.gif"}],
        "DisplayDurations" -> 0.10,
        "AnimationRepetitions" -> Infinity];
 
-(* ----------------------------------------------------------------
-   9. 3D wall "rotation" animation (orbit camera around bubble wall)
-   ---------------------------------------------------------------- *)
-Print["[9/9] 3D rotation animation"];
-
-frame3D[theta_] :=
-  Plot3D[
-    alcDensity[1., 1., 8., 0., x, y, 0.],
-    {x, -1.8, 1.8}, {y, -1.8, 1.8},
-    PlotPoints -> 60, MaxRecursion -> 1,
-    ColorFunction -> Function[{x, y, z}, ColorData["TemperatureMap"][Rescale[z, {-0.00006, 0}]]],
-    ColorFunctionScaling -> False,
-    Mesh -> None, Lighting -> "Neutral",
-    PlotStyle -> Directive[Specularity[White, 30], Opacity[0.93]],
-    Boxed -> False, Axes -> False, BoxRatios -> {1, 1, 0.55},
-    ViewPoint -> 2.5 {Cos[theta], Sin[theta], 0.55},
-    ViewVertical -> {0, 0, 1},
-    ImageSize -> {600, 500},
-    PlotLabel -> Style["Bubble wall (3D \[Rho])", Bold, 13]];
-
-rotFrames = Table[frame3D[t], {t, 0, 2 Pi - 2 Pi/24, 2 Pi/24}];
-Export[FileNameJoin[{resDir, "anim_density_rotate.gif"}],
-       rotFrames,
-       "DisplayDurations" -> 0.10,
-       "AnimationRepetitions" -> Infinity];
+(* (Removed: 3D wall rotation animation.  Figure 1 in the notebook
+   is now a live Plot3D output cell which the reader can rotate
+   directly with the mouse in Mathematica or Wolfram Player.) *)
 
 Print["[assets] all done.  Files:"];
 Do[Print["  ", FileNameTake[f], "  (",
