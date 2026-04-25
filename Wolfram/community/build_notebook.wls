@@ -428,7 +428,7 @@ fields, scalar fields with canonical kinetic terms) cannot supply \
 this; it is forbidden by every classical energy condition.  \
 Quantum field theory does permit small, transient negative energy \
 densities (the Casimir effect, squeezed vacuum states), but the \
-Ford\[Dash]Roman quantum inequalities (1995\[Dash]1997) and \
+Ford\[Dash]Roman quantum inequalities (1996) and \
 Pfenning\[Dash]Ford's bubble-specific bound (1997) show that the \
 negative-energy budget for an Alcubierre bubble of macroscopic \
 size scales catastrophically: a bubble of radius ~100\[ThinSpace]m \
