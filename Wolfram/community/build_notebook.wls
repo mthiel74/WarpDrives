@@ -127,8 +127,9 @@ rhoAnalytic = RowBox[{"\[Rho]", "=",
     FractionBox[RowBox[{SuperscriptBox["y", "2"], "+", SuperscriptBox["z", "2"]}],
                 SuperscriptBox[rsBoxed, "2"]]}]}];
 
-thetaEq = RowBox[{"\[Theta]", "=", "\[Del]", "\[CenterDot]",
-  RowBox[{"\[Beta]", "=",
+thetaEq = RowBox[{"\[Theta]", "=",
+  RowBox[{"-", "\[Del]", "\[CenterDot]", "\[Beta]"}], "=",
+  RowBox[{
     FractionBox[RowBox[{vsBoxed, "(", RowBox[{"x", "-", xsBoxed}], ")"}],
                 rsBoxed],
     " ", FractionBox["df", RowBox[{"d", rsBoxed}]]}]}];
