@@ -193,7 +193,10 @@ PlotEnergyDensity2D::usage =
 PlotExpansionScalar2D::usage =
   "PlotExpansionScalar2D[{v0,R,\[Sigma]}] shows the expansion scalar slice.";
 PlotShiftField::usage =
-  "PlotShiftField[shiftFunc, xrange, yrange] shows the 2D shift vector field.";
+  "PlotShiftField[shiftFunc, xrange, yrange] shows the 2D shift vector field.  \
+shiftFunc must be a function of {t,x,y,z} that returns a length-3 vector \
+{\[Beta]^x, \[Beta]^y, \[Beta]^z}; pass MetricToADM[g][[2]] (with g a metric \
+function) if you only have the metric.";
 PlotMetricComparison::usage =
   "PlotMetricComparison[opts] shows a 2x3 grid comparing all six metric families.";
 PlotGridDistortion::usage =
@@ -763,13 +766,18 @@ PlotExpansionScalar2D[{v0_, R_, sigma_},
       PlotLabel -> "Expansion scalar \[Theta](x,y)",
       FrameLabel -> {"x", "y"}, ImageSize -> 500]];
 
+PlotShiftField::not3vec =
+  "PlotShiftField expected shiftFunc to return a length-3 vector but got `1`.";
 PlotShiftField[shiftFunc_, {xMin_, xMax_}, {yMin_, yMax_}] :=
-  VectorPlot[{shiftFunc[0, x, y, 0][[1]], shiftFunc[0, x, y, 0][[2]]},
-             {x, xMin, xMax}, {y, yMin, yMax},
-             VectorPoints -> 15,
-             VectorScale -> {Small, Automatic, None},
-             PlotLabel -> "Shift vector field \[Beta](x,y)",
-             FrameLabel -> {"x", "y"}, ImageSize -> 500];
+  Module[{probe = shiftFunc[0., 0., 0., 0.]},
+    If[!(VectorQ[probe] && Length[probe] === 3),
+      Message[PlotShiftField::not3vec, probe]; Return[$Failed]];
+    VectorPlot[{shiftFunc[0, x, y, 0][[1]], shiftFunc[0, x, y, 0][[2]]},
+               {x, xMin, xMax}, {y, yMin, yMax},
+               VectorPoints -> 15,
+               VectorScale -> {Small, Automatic, None},
+               PlotLabel -> "Shift vector field \[Beta](x,y)",
+               FrameLabel -> {"x", "y"}, ImageSize -> 500]];
 
 PlotMetricComparison[OptionsPattern[{Range -> 3, Grid -> 80}]] :=
   Module[{rng = OptionValue[Range], np = OptionValue[Grid], specs, plots, r},

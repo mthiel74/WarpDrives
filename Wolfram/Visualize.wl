@@ -20,7 +20,10 @@ PlotExpansionScalar2D::usage =
   "PlotExpansionScalar2D[{v0,R,\[Sigma]}, opts] shows the Alcubierre expansion scalar \[Theta](x,y) slice.";
 
 PlotShiftField::usage =
-  "PlotShiftField[shiftFunc, region] shows a 2D vector plot of the shift vector.";
+  "PlotShiftField[shiftFunc, xrange, yrange] shows a 2D vector plot of the \
+shift vector.  shiftFunc must be a function of {t,x,y,z} that returns a \
+length-3 vector {\[Beta]^x, \[Beta]^y, \[Beta]^z}; pass MetricToADM[g][[2]] \
+if you only have the metric.";
 
 PlotMetricComparison::usage =
   "PlotMetricComparison[params, opts] shows a grid of Eulerian energy densities for \
@@ -65,12 +68,17 @@ PlotExpansionScalar2D[{v0_, R_, sigma_},
       PlotLegends -> Automatic, PlotLabel -> "Expansion scalar \[Theta](x,y)",
       FrameLabel -> {"x", "y"}, ImageSize -> 500]];
 
+PlotShiftField::not3vec =
+  "PlotShiftField expected shiftFunc to return a length-3 vector but got `1`.";
 PlotShiftField[shiftFunc_, {xMin_, xMax_}, {yMin_, yMax_}] :=
-  VectorPlot[{shiftFunc[0, x, y, 0][[1]], shiftFunc[0, x, y, 0][[2]]},
-             {x, xMin, xMax}, {y, yMin, yMax},
-             VectorPoints -> 15, VectorScale -> {Small, Automatic, None},
-             PlotLabel -> "Shift vector field \[Beta](x,y)",
-             FrameLabel -> {"x", "y"}, ImageSize -> 500];
+  Module[{probe = shiftFunc[0., 0., 0., 0.]},
+    If[!(VectorQ[probe] && Length[probe] === 3),
+      Message[PlotShiftField::not3vec, probe]; Return[$Failed]];
+    VectorPlot[{shiftFunc[0, x, y, 0][[1]], shiftFunc[0, x, y, 0][[2]]},
+               {x, xMin, xMax}, {y, yMin, yMax},
+               VectorPoints -> 15, VectorScale -> {Small, Automatic, None},
+               PlotLabel -> "Shift vector field \[Beta](x,y)",
+               FrameLabel -> {"x", "y"}, ImageSize -> 500]];
 
 (* Grid lines under the Alcubierre shift *)
 PlotGridDistortion[{v0_, R_, sigma_}, t_: 0,
