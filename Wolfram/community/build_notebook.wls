@@ -740,7 +740,10 @@ N @ Chop @ GAt // MatrixForm
 
  Cell[TextData[{"For Alcubierre the energy density seen by an \
 Eulerian (slice-normal) observer admits a famous closed form, \
-derived by Alcubierre in the original paper:"}], "Text"],
+derived by Alcubierre in the original paper (",
+   mathI[RowBox[{SuperscriptBox["y", "2"], "+", SuperscriptBox["z", "2"]}]],
+   " is the squared transverse distance from the bubble's direction-of-motion \
+axis):"}], "Text"],
 
  mathD[rhoAnalytic],
 

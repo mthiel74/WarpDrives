@@ -10,22 +10,22 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[  19313248,     318320]
-NotebookOptionsPosition[  19294893,     318100]
-NotebookOutlinePosition[  19297376,     318153]
-CellTagsIndexPosition[  19297299,     318148]
+NotebookDataLength[  19313570,     318330]
+NotebookOptionsPosition[  19295214,     318110]
+NotebookOutlinePosition[  19297697,     318163]
+CellTagsIndexPosition[  19297620,     318158]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
-Cell["Warp Drives in the Wolfram Language", "Title",ExpressionUUID->"08859cf0-ae19-4706-9bd9-10ebfbf76145"],
+Cell["Warp Drives in the Wolfram Language", "Title",ExpressionUUID->"38dc3b69-621e-43d8-8d44-e4d1706e68f0"],
 
 Cell["\<\
 A symbolic-tensor playground for general-relativistic warp bubbles \
 \[LongDash] from the Alcubierre metric to subluminal Bobrick\[Dash]Martire \
 shells, with native Einstein tensors, geodesics, and animated spacetime \
 distortions.\
-\>", "Subtitle",ExpressionUUID->"1250d365-85f8-4280-993c-9ec09ce37b8c"],
+\>", "Subtitle",ExpressionUUID->"bd6c6039-86c4-45ae-9ad1-8647a7093c15"],
 
 Cell[TextData[{
  "Marco Thiel, April 2026 \[LongDash] ",
@@ -35,7 +35,7 @@ Cell[TextData[{
     URL["https://github.com/mthiel74/WarpDrives"], None}]
 }], "Text",
  TextAlignment->Center,
- FontSlant->Italic,ExpressionUUID->"d080a878-7001-4108-a750-786ccf871caf"],
+ FontSlant->Italic,ExpressionUUID->"f6e0fc50-97ad-45e1-8212-443312982b17"],
 
 Cell[BoxData[
  TagBox[GridBox[{
@@ -39292,9 +39292,9 @@ Section 5b below.\"\>",
   "Column"]], "Output",
  CellMargins->{{20, 20}, {10, 14}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"15a79d31-a982-421d-859c-156dd47a41b9"],
+ TextAlignment->Center,ExpressionUUID->"453784f7-4cd9-4def-93f3-accd0efaf9a3"],
 
-Cell["Abstract", "Section",ExpressionUUID->"8af464db-8493-4739-be8e-eb9c0b7eff27"],
+Cell["Abstract", "Section",ExpressionUUID->"9d9edb7f-599a-4c9c-aee2-9105c5310811"],
 
 Cell[TextData[{
  "Warp drives are the most science-fiction-sounding object in classical \
@@ -39322,7 +39322,7 @@ animated bubble fly-bys, geodesics that get swept up by the warp field, and \
 side-by-side visualisations of the six metric families in the literature \
 (Alcubierre 1994, Nat\[AAcute]rio 2002, Van Den Broeck 1999, White toroidal, \
 Bobrick\[Dash]Martire 2021, Lentz 2021)."
-}], "Text",ExpressionUUID->"04019ba0-8567-429c-93f5-48675d763ab5"],
+}], "Text",ExpressionUUID->"54a10f93-9b97-497e-9bb4-40a1e2943b35"],
 
 Cell[TextData[{
  StyleBox["Status \[LongDash] hypothetical physics, not engineering.",
@@ -39339,21 +39339,21 @@ Cell[TextData[{
    SubscriptBox["g", 
     RowBox[{"\[Mu]", "\[Nu]"}]], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "7c963afd-fa91-42c5-8533-5316b3e588f9"],
+  "83cf0b38-40ed-4005-958e-2e8d641dd616"],
  " and reads off the stress-energy tensor ",
  Cell[BoxData[
   FormBox[
    SubscriptBox["T", 
     RowBox[{"\[Mu]", "\[Nu]"}]], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "42a16334-8911-431f-8af8-3f07533cc4c6"],
+  "7d6e4ed0-ba4f-4ddf-aa1f-d5e6571ee207"],
  " = ",
  Cell[BoxData[
   FormBox[
    SubscriptBox["G", 
     RowBox[{"\[Mu]", "\[Nu]"}]], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "44d14763-b18f-4618-9fa6-a98e4e39b5d9"],
+  "0816c09b-5fd2-4824-ac2d-055cd5c8c062"],
  "/(8\[Pi]G) that would be required to source it.  No known substance \
 produces the resulting ",
  Cell[BoxData[
@@ -39361,7 +39361,7 @@ produces the resulting ",
    SubscriptBox["T", 
     RowBox[{"\[Mu]", "\[Nu]"}]], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "014cfd9a-507f-41f5-83cf-d086b0494f6b"],
+  "b6f8140f-f089-4137-b5c0-4776c975d7bd"],
  ".  In particular, all superluminal warp metrics treated here (Alcubierre, \
 Nat\[AAcute]rio, Van Den Broeck, White, and the superluminal Lentz branch) \
 violate the null energy condition (NEC), so they require ",
@@ -39379,26 +39379,26 @@ a bubble of radius ~100\[ThinSpace]m moving at ",
  Cell[BoxData[
   FormBox["v", TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "35f635e0-31dc-4319-8b16-5200f6ef9297"],
+  "3cac2359-32d8-4a7a-bbbb-29a98d391674"],
  " = ",
  Cell[BoxData[
   FormBox["c", TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "4b77a874-49f5-478b-8fce-0b5ae4c644f8"],
+  "93ee309c-7916-495f-a5f1-9bd7df48a1cf"],
  " requires a wall thinner than the Planck length and a total negative \
 mass-energy of order ",
  Cell[BoxData[
   FormBox[
    SuperscriptBox["10", "65"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "d6c401d4-5490-40cc-b9b3-9cb14c28154f"],
+  "5017a0b1-936a-4bb0-bc31-f0f80a26f8cb"],
  " grams \[LongDash] of order a billion times the baryonic mass of the \
 observable universe (~",
  Cell[BoxData[
   FormBox[
    SuperscriptBox["10", "56"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "2038bc73-16c6-49ba-9b6b-af1f6b68dc29"],
+  "1088da45-fa19-400a-b5e1-4c7582c6c26c"],
  " g), with the opposite sign.  Even granting the matter, superluminal \
 bubbles develop horizons (Finazzi, Liberati & Barcel\[OAcute] 2009) that \
 disconnect the ship from the front wall and exhibit semiclassical \
@@ -39412,9 +39412,9 @@ energy conditions.  Treat what follows as ",
  StyleBox["differential geometry of conceivable spacetimes",
   FontSlant->Italic],
  ", not a propulsion roadmap."
-}], "Text",ExpressionUUID->"67c6b9f9-e077-4ab7-b0fd-1dc606985e98"],
+}], "Text",ExpressionUUID->"b9080ef9-55b2-46c2-865d-16d7bd7bf2c9"],
 
-Cell["Getting started", "Section",ExpressionUUID->"a966b313-b677-45d8-8a4b-a87562d7b258"],
+Cell["Getting started", "Section",ExpressionUUID->"c494634e-4f41-41c9-b746-27a94d6d9a5d"],
 
 Cell[TextData[{
  "Every figure and animation below is already rendered, so the post reads \
@@ -39434,7 +39434,7 @@ the cell below once, and every public symbol used later (",
  ", ",
  StyleBox["IntegrateGeodesic", "Input"],
  ", \[Ellipsis]) becomes available:"
-}], "Text",ExpressionUUID->"266f4104-e530-4709-bee9-9506135be9f0"],
+}], "Text",ExpressionUUID->"fd83127d-840b-41a6-a785-8615f027f592"],
 
 Cell["\<\
 SetDirectory[NotebookDirectory[]];
@@ -39445,7 +39445,7 @@ covering
                                  ADM tools, energy conditions,
                                  geodesics, plotting helpers. *)\
 \>", "Input",
- CellTags->"runnable",ExpressionUUID->"678a3645-3f52-44e1-bba5-8c40a4838d84"],
+ CellTags->"runnable",ExpressionUUID->"a0fa71a8-6cb9-4809-a2b4-4396cc8259a2"],
 
 Cell[TextData[{
  "Source repository (Wolfram + Python ports side by side): ",
@@ -39454,9 +39454,9 @@ Cell[TextData[{
   ButtonData->{
     URL["https://github.com/mthiel74/WarpDrives"], None}],
  "."
-}], "Text",ExpressionUUID->"05bf9bee-4e04-4c25-bde8-bb53e1e7904b"],
+}], "Text",ExpressionUUID->"bdf7ff83-2649-4484-9b51-0efa6063ec37"],
 
-Cell["1. What is a warp drive?", "Section",ExpressionUUID->"f3d111c1-790f-40fd-a69e-39ec32d7069a"],
+Cell["1. What is a warp drive?", "Section",ExpressionUUID->"9030b4c1-563c-4f2e-8ba9-a2eb406237da"],
 
 Cell[TextData[{
  "In special relativity nothing locally outpaces light, and that sets a hard \
@@ -39471,7 +39471,7 @@ bounded by ",
 answers the second question routinely: distant galaxies recede from us \
 superluminally because the universe is expanding, even though no individual \
 galaxy moves faster than light through its own neighbourhood."
-}], "Text",ExpressionUUID->"12fc08a5-5f65-458e-be55-930b76a2e24d"],
+}], "Text",ExpressionUUID->"d68ea168-dd45-49e7-a8d7-385eee22d409"],
 
 Cell[TextData[{
  "Miguel Alcubierre asked in 1994 whether the same trick can be played \
@@ -39481,11 +39481,11 @@ can carry a flat-space \"bubble\" across the universe at any chosen ",
   FormBox[
    SubscriptBox["v", "s"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "a5205295-7182-4eca-94ad-65d6ee3277ba"],
+  "c17d5d57-2136-4ecc-b433-0d0f17e18809"],
  " by contracting space in front of the bubble and expanding space behind it. \
  The price tag, as we'll see in Section 9, is steep.  But the geometry itself \
 is surprisingly clean and admits a famously short closed form:"
-}], "Text",ExpressionUUID->"3da8dde0-4d52-4f37-96be-67ccfdab65e5"],
+}], "Text",ExpressionUUID->"1199a98f-36c2-4617-8289-a69f24267704"],
 
 Cell[BoxData[
  FormBox[
@@ -39503,7 +39503,7 @@ Cell[BoxData[
    SuperscriptBox["dy", "2"], "+", 
    SuperscriptBox["dz", "2"]}], TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"36bfd5dd-7438-4e47-9ecc-75360912ab12"],
+ FontFamily->"Times",ExpressionUUID->"fc7cfe32-c0d6-476c-a977-b523e24856b8"],
 
 Cell[TextData[{
  "where ",
@@ -39511,15 +39511,15 @@ Cell[TextData[{
   FormBox[
    SubscriptBox["v", "s"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "03e10872-aa84-44cf-bc9f-99c8b8677c4a"],
+  "b7408905-31de-413c-98ed-8b4f7a1f4d80"],
  " is the bubble's coordinate velocity, ",
  Cell[BoxData[
   FormBox[
    SubscriptBox["x", "s"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "303eb72b-7710-4a0b-b4c4-ff7bcf345bf0"],
+  "cc086960-af7c-4697-ba15-ee6a51420293"],
  " its centre, with trajectory"
-}], "Text",ExpressionUUID->"6d505b6a-c65b-4afd-94e7-4cbb5f224027"],
+}], "Text",ExpressionUUID->"c4d67695-542f-43ed-9fe6-784f24591506"],
 
 Cell[BoxData[
  FormBox[
@@ -39536,7 +39536,7 @@ Cell[BoxData[
      RowBox[{"d", 
       RowBox[{"t", "'"}]}]}]}]}], TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"7d74f56b-5199-49a1-b8d8-922c3874f53e"],
+ FontFamily->"Times",ExpressionUUID->"b67a4993-4da9-41c4-ae94-7ea4c8cb6b23"],
 
 Cell[TextData[{
  "and ",
@@ -39544,9 +39544,9 @@ Cell[TextData[{
   FormBox[
    SubscriptBox["r", "s"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "16c5748b-7dde-4705-87cc-152968c253f4"],
+  "047e9c67-e142-4908-a3b8-8205310ba2a1"],
  " is the Euclidean distance from the bubble centre on the spatial slice"
-}], "Text",ExpressionUUID->"32340fcc-62c8-4ba6-97a3-0616f7354dc1"],
+}], "Text",ExpressionUUID->"86bef3f6-1d16-4915-a28a-6b346611e646"],
 
 Cell[BoxData[
  FormBox[
@@ -39561,7 +39561,7 @@ Cell[BoxData[
      SuperscriptBox["y", "2"], "+", 
      SuperscriptBox["z", "2"]}]]}], TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"2f865c91-1220-4ad8-87b4-87f23e367db1"],
+ FontFamily->"Times",ExpressionUUID->"5cdd2bdb-3234-4f32-b38a-3dbe6b9b5092"],
 
 Cell[TextData[{
  "so a static observer at fixed ",
@@ -39570,13 +39570,13 @@ Cell[TextData[{
    RowBox[{"(", "x", ",", "y", ",", "z", ")"}], TraditionalForm]], 
   "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "c9f3abd0-6547-45e4-afef-f6fe40328b68"],
+  "05281a9d-b01f-4375-8cef-056f419e223f"],
  " sees ",
  Cell[BoxData[
   FormBox[
    SubscriptBox["r", "s"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "ab3b9b88-48c2-4c6a-8fab-a2fb3a6127ad"],
+  "f858f9eb-dcd7-47cf-8fab-e5e7cc83cc47"],
  " shrink linearly to zero as the bubble flies past, then grow back.  The \
 shape function ",
  Cell[BoxData[
@@ -39584,10 +39584,10 @@ shape function ",
    RowBox[{"f", "(", 
     SubscriptBox["r", "s"], ")"}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "175eb64e-bc01-4dde-b986-5a6798c0f8c4"],
+  "573ce430-8245-4c34-a3c8-1b9beff47ee0"],
  " is what gives the bubble a finite extent; mathematically it can be any \
 smooth scalar with the asymptotic behaviour"
-}], "Text",ExpressionUUID->"1884d4d2-0423-40b0-95ab-821078b264c2"],
+}], "Text",ExpressionUUID->"f13a89f3-e8e4-4aa7-a37c-1daae2b9470f"],
 
 Cell[BoxData[
  FormBox[
@@ -39601,7 +39601,7 @@ Cell[BoxData[
     RowBox[{"f", "(", "r", ")"}]}], "=", "0"}], 
   TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"dd5d8435-2e95-4da8-8ea0-f749c67fb778"],
+ FontFamily->"Times",ExpressionUUID->"01c05b9b-a786-437b-8d5d-7f1ceaa6ca12"],
 
 Cell[TextData[{
  "Inside the bubble (",
@@ -39611,13 +39611,13 @@ Cell[TextData[{
     SubscriptBox["r", "s"], "\[LessEqual]", "R"}], TraditionalForm]], 
   "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "eec94a76-c0ed-4c9a-be4e-caced73c9a6a"],
+  "efbaa85d-308f-463c-9e90-25d81baab3e1"],
  ", ",
  Cell[BoxData[
   FormBox[
    RowBox[{"f", "\[TildeTilde]", "1"}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "fbfc3c86-30b3-46fe-b40c-d8539acfeec4"],
+  "8d2b591e-9048-4d29-b062-5301d65b71cb"],
  ") the line element collapses to ",
  Cell[BoxData[
   FormBox[
@@ -39633,14 +39633,14 @@ Cell[TextData[{
      SuperscriptBox["dy", "2"], "+", 
      SuperscriptBox["dz", "2"]}]}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "42b8e58b-6d97-4918-8d3b-92e3078511bd"],
+  "129e94cc-8ed3-4b35-b2f9-1943d860838e"],
  ", which is just Minkowski space written in coordinates that are boosted at \
 velocity ",
  Cell[BoxData[
   FormBox[
    SubscriptBox["v", "s"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "bbc3627a-821c-44cf-9a54-1b3b673edd4e"],
+  "36a18853-7f4b-4a35-b058-43f73c915b51"],
  " \[LongDash] no curvature, no acceleration, the spacecraft sails along a \
 straight worldline.  Outside the bubble (",
  Cell[BoxData[
@@ -39648,14 +39648,14 @@ straight worldline.  Outside the bubble (",
    RowBox[{
     SubscriptBox["r", "s"], ">>", "R"}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "687e5764-3eb8-41e4-81dd-0928b2ab5797"],
+  "c5b43ac9-604d-4f33-9c33-f7d4eb7bdefc"],
  ") ",
  Cell[BoxData[
   FormBox[
    RowBox[{"f", "(", 
     SubscriptBox["r", "s"], ")"}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "33e4004a-6ce3-4f9f-8236-ce0719068492"],
+  "ebf0942e-042c-4e7d-910e-298d439862a4"],
  " is essentially zero and the metric is again Minkowski.  All the curvature \
 and exotic-matter cost is concentrated in the ",
  StyleBox["wall region",
@@ -39666,11 +39666,11 @@ and exotic-matter cost is concentrated in the ",
    RowBox[{"f", "(", 
     SubscriptBox["r", "s"], ")"}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "e9ccf6a6-7d21-451a-a2ae-ac57ebafad57"],
+  "b22c1427-4ae1-40cb-bd00-0eb18560735e"],
  " transitions from 1 to 0."
-}], "Text",ExpressionUUID->"47efc50d-eca9-4291-854a-03c535aec081"],
+}], "Text",ExpressionUUID->"be0709c2-d47d-4801-a139-608988ef6973"],
 
-Cell["Alcubierre's original shape function is the Tanh sandwich", "Text",ExpressionUUID->"368ccc2f-143a-487b-90f5-f81ae1e75996"],
+Cell["Alcubierre's original shape function is the Tanh sandwich", "Text",ExpressionUUID->"b4a41a23-73f6-4cd6-a7de-b8f1386c2d98"],
 
 Cell[BoxData[
  FormBox[
@@ -39687,37 +39687,37 @@ Cell[BoxData[
      RowBox[{"\[Sigma]", " ", "R"}], ")"}]]}], 
   TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"273759ef-aa52-485e-96d0-520fa312c450"],
+ FontFamily->"Times",ExpressionUUID->"12f5f755-6120-4b6d-8248-21e82a4f77f7"],
 
 Cell[TextData[{
  "with two free parameters: ",
  Cell[BoxData[
   FormBox["R", TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "c8b4372a-320d-4029-b52e-3880033928a4"],
+  "5c76cfe9-5032-489b-919f-473b08a4a279"],
  " sets the bubble radius, ",
  Cell[BoxData[
   FormBox["\[Sigma]", TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "beb8da01-7ea5-4242-a476-7438411e9984"],
+  "e1fd7a3a-3327-470e-8c87-e8f902ae4e59"],
  " controls the wall thickness (",
  Cell[BoxData[
   FormBox[
    RowBox[{"\[Sigma]", "\[Rule]", "\[Infinity]"}], TraditionalForm]], 
   "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "ebde2c21-fd8f-49c6-80f1-218f536dc6fc"],
+  "550c8eb7-88b7-4f87-8baa-353f3c65246a"],
  " gives a hard step, ",
  Cell[BoxData[
   FormBox[
    RowBox[{"\[Sigma]", "\[Rule]", "0"}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "4e7963dd-1669-4575-9fc3-2a226c8526e8"],
+  "96e0191d-f677-4b4d-86f0-292d8ab2355d"],
  " smears the wall over all of space).  This is the canonical choice but \
 other smooth profiles work too \[LongDash] a Gaussian, a compact-support \
 polynomial, a smoothstep \[LongDash] each with a different trade-off between \
 wall sharpness and energy density:"
-}], "Text",ExpressionUUID->"4281f024-4948-4dd9-bf7e-82ad2a58569f"],
+}], "Text",ExpressionUUID->"1c779076-f6b2-4e92-9498-6621bdd8cd31"],
 
 Cell["\<\
 Plot[{TanhShape[r, 1, 8],
@@ -39727,7 +39727,7 @@ Plot[{TanhShape[r, 1, 8],
   PlotLegends -> {\"Tanh\", \"Gaussian\", \"Polynomial\", \"Smoothstep\"},
   Frame -> True, FrameLabel -> {\"r / R\", \"f(r)\"}]\
 \>", "Input",
- CellTags->"runnable",ExpressionUUID->"041533e7-d509-4c9a-ae84-71c8295f763c"],
+ CellTags->"runnable",ExpressionUUID->"f34b5b41-b1d3-4a68-b4a1-8bb37e3810c5"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -41540,7 +41540,7 @@ AAAAAAAAAAC+8v/xlmb8
   PlotRange->{{0, 720.}, {0, 467.5}}]], "Output",
  CellMargins->{{20, 20}, {10, 14}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"ec5bc623-4991-4675-aeae-78bae7fa3fe3"],
+ TextAlignment->Center,ExpressionUUID->"1c94c9c3-235c-40ae-ade5-233512d27026"],
 
 Cell[TextData[{
  "Each profile satisfies the same boundary conditions \[LongDash] ",
@@ -41549,14 +41549,14 @@ Cell[TextData[{
    RowBox[{"f", "(", "0", ")", "=", "1"}], TraditionalForm]], "InlineFormula",
   
   FontFamily->"Times",ExpressionUUID->
-  "15e80dbf-8eae-4786-8896-c950a2e901bd"],
+  "7105f53d-2e25-41a7-b1cf-6ad73e069bed"],
  ", ",
  Cell[BoxData[
   FormBox[
    RowBox[{"f", "(", "\[Infinity]", ")", "=", "0"}], TraditionalForm]], 
   "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "c5cd5e53-f04e-4fd8-8869-b06694c24e16"],
+  "f66d2423-2209-405b-a56e-6355bd8e310a"],
  " \[LongDash] but they differ in how sharp the wall is and whether the \
 support is compact.  Sharper walls localise the exotic matter into a thinner \
 shell at the cost of larger derivatives, which means more curvature, which \
@@ -41565,9 +41565,9 @@ drive is essentially set by the ",
  StyleBox["geometry of the wall",
   FontSlant->Italic],
  ", not by the bubble's velocity."
-}], "Text",ExpressionUUID->"6f6dc061-c759-4304-8109-68aef0177948"],
+}], "Text",ExpressionUUID->"19a006d3-b2b0-4eab-9340-87e1143fe3ed"],
 
-Cell["2. The metric in ADM form", "Section",ExpressionUUID->"1a99de2a-7dca-4db9-b4e4-284a8b85728e"],
+Cell["2. The metric in ADM form", "Section",ExpressionUUID->"1070f54b-c188-4164-a2d6-efc507bae03d"],
 
 Cell[TextData[{
  "Every warp drive in the literature is most natural in the 3+1 ADM \
@@ -41575,28 +41575,28 @@ formulation.  Foliate spacetime into spatial slices labelled by ",
  Cell[BoxData[
   FormBox["t", TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "6c6896bf-6d05-4572-b418-28c59da48783"],
+  "7e2c1c76-5c8d-4d72-835c-4f1bf27fa31d"],
  "; on each slice keep the spatial metric ",
  Cell[BoxData[
   FormBox[
    SubscriptBox["\[Gamma]", 
     RowBox[{"i", "j"}]], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "e6a091b9-2b60-4e67-9766-62eadd78d937"],
+  "74ae8f61-fce7-4f39-9832-7d541860682c"],
  "; relate proper time on neighbouring slices by the lapse ",
  Cell[BoxData[
   FormBox["\[Alpha]", TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "3d1bbf52-a4c4-4df2-9ae7-f11ebc92b935"],
+  "e8f36d44-e718-4def-8816-9104df764531"],
  "; relate spatial coordinates between slices by the shift vector ",
  Cell[BoxData[
   FormBox[
    SuperscriptBox["\[Beta]", "i"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "de21e575-0171-4b4c-aae8-d1b033678f00"],
+  "ee3d9d60-5126-4df7-b74e-01ea13cb0197"],
  ".  The line element splits into a temporal-distance piece and a \
 spatial-displacement piece:"
-}], "Text",ExpressionUUID->"371d10bf-db4d-41b2-b7aa-30889692789a"],
+}], "Text",ExpressionUUID->"75633aa5-f547-4611-835c-39cb93fcae8c"],
 
 Cell[BoxData[
  FormBox[
@@ -41619,12 +41619,12 @@ Cell[BoxData[
       SuperscriptBox["\[Beta]", "j"], "dt"}]}], ")"}]}], 
   TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"1b17d4aa-0e64-4d10-908e-6bd61be5d04b"],
+ FontFamily->"Times",ExpressionUUID->"b4dc6bf4-4d39-44b1-8e31-81b67631255c"],
 
 Cell["\<\
 Reading off matrix entries gives the standard 3+1 decomposition of the \
 4-metric:\
-\>", "Text",ExpressionUUID->"fb9301eb-8316-4068-9d50-423aed139f44"],
+\>", "Text",ExpressionUUID->"8709a71c-ab9f-45fe-aace-bb48427138c6"],
 
 Cell[BoxData[
  FormBox[
@@ -41637,7 +41637,7 @@ Cell[BoxData[
      SuperscriptBox["\[Beta]", "i"]}]}]}], TraditionalForm]], "DisplayFormula",\
 
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"565105a9-a536-4ef6-890d-5f204572513b"],
+ FontFamily->"Times",ExpressionUUID->"24fa4951-cc3c-4824-a18a-a5a58de1a982"],
 
 Cell[BoxData[
  FormBox[
@@ -41650,7 +41650,7 @@ Cell[BoxData[
      RowBox[{"i", "j"}]], " ", 
     SuperscriptBox["\[Beta]", "j"]}]}], TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"45a26f9c-0fd3-41b0-b320-b43cb2696a81"],
+ FontFamily->"Times",ExpressionUUID->"c1bf6e6d-970a-496e-bde4-549cbaeb5ee5"],
 
 Cell[BoxData[
  FormBox[
@@ -41659,7 +41659,7 @@ Cell[BoxData[
    SubscriptBox["\[Gamma]", 
     RowBox[{"i", "j"}]]}], TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"3051e927-10d0-4267-bda1-3d34e7f87d57"],
+ FontFamily->"Times",ExpressionUUID->"567350b7-ed1a-44c1-a7c2-b76af7f9b773"],
 
 Cell[TextData[{
  "with summation convention on the spatial indices ",
@@ -41669,7 +41669,7 @@ Cell[TextData[{
     RowBox[{"{", "1", ",", "2", ",", "3", "}"}]}], TraditionalForm]], 
   "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "8fb26122-b864-4653-9043-3a2291406b8d"],
+  "3190b963-c930-42a6-9425-ff1b47ed19d7"],
  " and the spatial-metric raise/lower ",
  Cell[BoxData[
   FormBox[
@@ -41680,7 +41680,7 @@ Cell[TextData[{
       RowBox[{"i", "j"}]], " ", 
      SuperscriptBox["\[Beta]", "j"]}]}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "32e3e8b1-0aa3-446c-bb2f-614f22fb10df"],
+  "0ff12e5f-6b5b-49cd-8bc8-3e2b53292996"],
  ".  The inverse 4-metric has a similarly clean form: ",
  Cell[BoxData[
   FormBox[
@@ -41690,7 +41690,7 @@ Cell[TextData[{
      SuperscriptBox["\[Alpha]", 
       RowBox[{"-", "2"}]]}]}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "ac0606a8-843d-4f6f-80ed-d6fb53be40ee"],
+  "44f31bcb-e997-42f0-ade0-f0b23d908d74"],
  ", ",
  Cell[BoxData[
   FormBox[
@@ -41702,7 +41702,7 @@ Cell[TextData[{
      SuperscriptBox["\[Alpha]", 
       RowBox[{"-", "2"}]]}]}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "6489bc5f-bb97-40c3-b314-695226b61b71"],
+  "fd6c1df6-5f45-446a-abfa-04fdac0d199b"],
  ", ",
  Cell[BoxData[
   FormBox[
@@ -41716,15 +41716,15 @@ Cell[TextData[{
      SuperscriptBox["\[Alpha]", 
       RowBox[{"-", "2"}]]}]}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "6f7557ab-c9ec-46cb-b344-66d96611b004"],
+  "dd8ad8ac-c150-452f-8114-7d35343bce6b"],
  ", which is exactly what ",
  StyleBox["ADMInverse[\[Alpha], \[Beta], \[Gamma]]", "Input"],
  " in the package returns."
-}], "Text",ExpressionUUID->"8a6f50c6-d8a7-45f6-99c7-b2855ebda87b"],
+}], "Text",ExpressionUUID->"b81a42e6-2f69-49c3-8619-8e35811abb0b"],
 
 Cell["\<\
 For Alcubierre's drive the ADM ingredients are spectacularly simple:\
-\>", "Text",ExpressionUUID->"74125487-d9a2-4883-acfd-a8f0c2fc3ab8"],
+\>", "Text",ExpressionUUID->"053c7d83-9c22-461a-84fd-88081cd435a5"],
 
 Cell[BoxData[
  FormBox[
@@ -41744,7 +41744,7 @@ Cell[BoxData[
     SubscriptBox["\[Delta]", 
      RowBox[{"i", "j"}]]}]}], TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"b41fd6b9-3ece-4b00-8dde-d4f8ddea62f0"],
+ FontFamily->"Times",ExpressionUUID->"94b263c3-54ee-469c-b541-16678dd3009c"],
 
 Cell[TextData[{
  "All the warp \"weirdness\" lives in that single ",
@@ -41752,19 +41752,19 @@ Cell[TextData[{
   FormBox[
    SuperscriptBox["\[Beta]", "i"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "2c264fc2-3b3b-48b7-aeea-a770d35ea251"],
+  "d2b9f487-58cd-4ce0-9105-c8bc2558c117"],
  " term \[LongDash] a unit-magnitude vector field along the direction of \
 motion, modulated by the shape function so it switches on inside the bubble \
 and off outside.  In Wolfram, the helper ",
  StyleBox["AlcubierreMetric", "Input"],
  " builds the full 4-metric symbolically:"
-}], "Text",ExpressionUUID->"87fc3794-5f73-4830-92e9-8f710aa3566a"],
+}], "Text",ExpressionUUID->"583af8c1-581f-44b7-b2ec-f86d8c98ea95"],
 
 Cell["\<\
 g = AlcubierreMetric[{1, 1, 8}, {t, x, y, z}];   (* {v0, R, \[Sigma]} *)
 MatrixForm @ g\
 \>", "Input",
- CellTags->"runnable",ExpressionUUID->"26016a76-0121-4d7e-8ed3-a82f90e4ffa3"],
+ CellTags->"runnable",ExpressionUUID->"8e04f604-f00d-44a6-abdb-ee9499543315"],
 
 Cell[TextData[{
  "With ",
@@ -41772,7 +41772,7 @@ Cell[TextData[{
   FormBox[
    RowBox[{"\[Alpha]", "=", "1"}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "5d45e121-0a70-41e9-be0f-77d06aa6fc36"],
+  "57a05439-4faf-4cb2-a9f2-8fe15a52ca28"],
  " and ",
  Cell[BoxData[
   FormBox[
@@ -41781,7 +41781,7 @@ Cell[TextData[{
      RowBox[{"i", "j"}]], ")", "=", "1"}], TraditionalForm]], "InlineFormula",
   
   FontFamily->"Times",ExpressionUUID->
-  "db3b260d-b019-4d26-9493-2ee3300602db"],
+  "a5799507-8cef-4795-91d6-01135c613a37"],
  " the formula above gives ",
  Cell[BoxData[
   FormBox[
@@ -41790,19 +41790,19 @@ Cell[TextData[{
      RowBox[{"\[Mu]", "\[Nu]"}]], ")", "=", 
     RowBox[{"-", "1"}]}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "ec0af56a-be37-4b10-ace3-8d3d18e3f9a0"],
+  "b42ed6cc-1563-4fe5-9222-dd6f1d3851aa"],
  " everywhere, and Wolfram simplifies ",
  StyleBox["Det[g]", "Input"],
  " back to that exact value:"
-}], "Text",ExpressionUUID->"80290f9e-9ad9-4b02-b608-6abefbc6bee9"],
+}], "Text",ExpressionUUID->"e7f2ffb0-4ff5-42af-91e4-ae3729ad51ab"],
 
 Cell["\<\
 Simplify @ Det @ AlcubierreMetric[{v, R, s}, {t, x, y, z}]
 (* -> -1 *)\
 \>", "Input",
- CellTags->"runnable",ExpressionUUID->"f63e2d61-a7e3-4cf3-9483-2d7210b4d629"],
+ CellTags->"runnable",ExpressionUUID->"6ddf3a35-4a28-448d-bdf7-73da72a50f78"],
 
-Cell["3. Einstein tensor in three lines", "Section",ExpressionUUID->"732bbe09-1c8f-4dab-b7a2-f90293f93cbe"],
+Cell["3. Einstein tensor in three lines", "Section",ExpressionUUID->"6aff0a90-4751-41e1-9f4a-58eb653076bb"],
 
 Cell[TextData[{
  "This is where Wolfram earns its keep.  In the Python port we built \
@@ -41812,7 +41812,7 @@ equivalent is a literal transliteration of the textbook formula because ",
  StyleBox["D", "Input"],
  " differentiates symbolically.  Recall the Christoffel symbols of the second \
 kind:"
-}], "Text",ExpressionUUID->"e2d3dcdc-f19c-4c04-8d1b-b2a65cc33aeb"],
+}], "Text",ExpressionUUID->"8e9254b3-9d61-4c99-8ac4-5d20c675f600"],
 
 Cell[BoxData[
  FormBox[
@@ -41839,9 +41839,9 @@ Cell[BoxData[
         RowBox[{"\[Alpha]", "\[Beta]"}]]}]}], ")"}]}]}], 
   TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"cf49ae13-df28-4e3a-bd7d-52bf0ac3ede9"],
+ FontFamily->"Times",ExpressionUUID->"b8398cba-11cd-4aee-9165-520328d76966"],
 
-Cell["In Wolfram this is one Table loop:", "Text",ExpressionUUID->"7cf72203-5485-401b-a306-6994a7c2650a"],
+Cell["In Wolfram this is one Table loop:", "Text",ExpressionUUID->"0380a907-a66e-431c-8a65-5f9adb9c4947"],
 
 Cell["\<\
 ChristoffelSymbols[g_, {t_, x_, y_, z_}] := Module[
@@ -41852,12 +41852,12 @@ ChristoffelSymbols[g_, {t_, x_, y_, z_}] := Module[
               {n, 4}],
     {m, 4}, {a, 4}, {b, 4}]];\
 \>", "Input",
- CellTags->"runnable",ExpressionUUID->"58dad4f8-cd3a-4ba3-9861-48f670a9c6f3"],
+ CellTags->"runnable",ExpressionUUID->"5ce4348d-a768-4831-8d5c-d5e0e8a19064"],
 
 Cell["\<\
 The Riemann tensor follows from the standard non-commutativity of covariant \
 derivatives,\
-\>", "Text",ExpressionUUID->"afe17016-3106-462d-b875-400917e1cd66"],
+\>", "Text",ExpressionUUID->"35a1f8c9-c6ac-43e6-9a07-4925cb9cd836"],
 
 Cell[BoxData[
  FormBox[
@@ -41885,11 +41885,11 @@ Cell[BoxData[
       RowBox[{"\[Mu]", "\[Sigma]"}], "\[Lambda]"]}]}]}], 
   TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"ee2aa056-6437-4132-9584-b11e42da5bca"],
+ FontFamily->"Times",ExpressionUUID->"633e8435-650f-4d20-952c-26763115837c"],
 
 Cell["\<\
 and Ricci is a single contraction, the Ricci scalar a second one:\
-\>", "Text",ExpressionUUID->"428fafdb-b7a6-4f86-910f-5aada28ad432"],
+\>", "Text",ExpressionUUID->"5567299a-d838-4ac5-a131-cef421fb8f45"],
 
 Cell[BoxData[
  FormBox[
@@ -41906,7 +41906,7 @@ Cell[BoxData[
      SubscriptBox["R", 
       RowBox[{"\[Mu]", "\[Nu]"}]]}]}]}], TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"2b31e5c4-a996-43ed-8e3a-43db3e819ef5"],
+ FontFamily->"Times",ExpressionUUID->"5cfbb1fc-fee0-4e6b-bdd2-3aaf03db720e"],
 
 Cell[TextData[{
  "with ",
@@ -41914,16 +41914,16 @@ Cell[TextData[{
   FormBox[
    SubscriptBox["\[PartialD]", "\[Mu]"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "870f4574-70b6-4ea2-84aa-9d8868a7b499"],
+  "32998d30-026e-4287-a7cf-a49e09f8b4ba"],
  " denoting partial differentiation with respect to ",
  Cell[BoxData[
   FormBox[
    SuperscriptBox["x", "\[Mu]"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "1ab6c70a-cf92-4489-8f5f-87cdc78ea0eb"],
+  "3e9bc81d-d447-4e0e-8008-9d44079fcd94"],
  " and the usual Einstein summation convention.  The Einstein tensor is then \
 a one-line definition:"
-}], "Text",ExpressionUUID->"eaf1deec-ff93-48b3-a1b7-130b4eb53120"],
+}], "Text",ExpressionUUID->"689b483b-ae17-4456-908c-a9fce698d529"],
 
 Cell[BoxData[
  FormBox[
@@ -41939,9 +41939,9 @@ Cell[BoxData[
       RowBox[{"\[Mu]", "\[Nu]"}]], " ", "R"}]}]}], 
   TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"8e3cc31d-1b4d-49d1-8863-8e2bb5c0e7f3"],
+ FontFamily->"Times",ExpressionUUID->"184b05e4-c062-40e7-b36b-dc064b68e10f"],
 
-Cell["Through the field equation", "Text",ExpressionUUID->"9bc824cb-19af-4618-9b79-9fc067ad604f"],
+Cell["Through the field equation", "Text",ExpressionUUID->"9934d88e-b570-4a1c-9222-02b2b91715f8"],
 
 Cell[BoxData[
  FormBox[
@@ -41952,7 +41952,7 @@ Cell[BoxData[
     SubscriptBox["T", 
      RowBox[{"\[Mu]", "\[Nu]"}]]}]}], TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"efc9e59a-e14b-446c-bb5d-6c519960aa4b"],
+ FontFamily->"Times",ExpressionUUID->"326394de-8176-41da-9026-d4453bd822e1"],
 
 Cell[TextData[{
  "with ",
@@ -41960,9 +41960,9 @@ Cell[TextData[{
   FormBox[
    RowBox[{"G", "=", "c", "=", "1"}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "82e082c9-f30f-43cf-bcac-fc4b7ba6796b"],
+  "e8cbcbee-b215-4e6f-b51b-cb696407d202"],
  ", we read off the matter content the metric implies:"
-}], "Text",ExpressionUUID->"b736f08b-b6a2-401a-be00-35732b078fa7"],
+}], "Text",ExpressionUUID->"df15ebda-54b6-4879-9f80-b1b4748fe459"],
 
 Cell[BoxData[
  FormBox[
@@ -41974,11 +41974,11 @@ Cell[BoxData[
      RowBox[{"\[Mu]", "\[Nu]"}]], 
     RowBox[{"8", "\[Pi]"}]]}], TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"989becc3-36fb-4f61-96ae-1c61a51a805e"],
+ FontFamily->"Times",ExpressionUUID->"d3e69ad3-9abe-49a4-8c23-ff0bbe6ebf25"],
 
 Cell["\<\
 In Wolfram that's a one-liner.  At a point on the bubble wall:\
-\>", "Text",ExpressionUUID->"58461a1f-7d38-4210-b6d9-ccf400ef873a"],
+\>", "Text",ExpressionUUID->"0e7eeefe-92f8-4702-9954-4f0a582fcb13"],
 
 Cell["\<\
 GAt = EinsteinTensor[g, {t, x, y, z}] /.
@@ -41992,12 +41992,22 @@ N @ Chop @ GAt // MatrixForm
     The (0,i) entries are momentum density components and the
     ij-block is anisotropic stress.  *)\
 \>", "Input",
- CellTags->"runnable",ExpressionUUID->"a4e88f22-b266-4c13-aee8-37cf6747aa72"],
+ CellTags->"runnable",ExpressionUUID->"7f242ba3-766b-4f94-b386-29a4f4bd3fc7"],
 
-Cell["\<\
-For Alcubierre the energy density seen by an Eulerian (slice-normal) observer \
-admits a famous closed form, derived by Alcubierre in the original paper:\
-\>", "Text",ExpressionUUID->"1ee7691e-b265-49a2-a575-9f7b5c03c1a5"],
+Cell[TextData[{
+ "For Alcubierre the energy density seen by an Eulerian (slice-normal) \
+observer admits a famous closed form, derived by Alcubierre in the original \
+paper (",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SuperscriptBox["y", "2"], "+", 
+    SuperscriptBox["z", "2"]}], TraditionalForm]], "InlineFormula",
+  FontFamily->"Times",ExpressionUUID->
+  "e809e51c-24bd-454c-8d26-5cf4ee6d4d41"],
+ " is the squared transverse distance from the bubble's direction-of-motion \
+axis):"
+}], "Text",ExpressionUUID->"9d17d225-1a33-43f9-b968-0d827a45ebe0"],
 
 Cell[BoxData[
  FormBox[
@@ -42019,7 +42029,7 @@ Cell[BoxData[
      SuperscriptBox[
       SubscriptBox["r", "s"], "2"]]}]}], TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"5337e20c-30a4-4749-aa9a-7853fa5a2d8e"],
+ FontFamily->"Times",ExpressionUUID->"34135366-a07e-442d-b1de-8fecdc1e7e39"],
 
 Cell[TextData[{
  "Plotted in the ",
@@ -42027,14 +42037,14 @@ Cell[TextData[{
   FormBox[
    RowBox[{"z", "=", "0"}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "2c61094a-eb13-42d7-9465-f216aea8aee1"],
+  "0e2f5f83-aa0e-4153-b420-90cae5bc8071"],
  " plane it's strikingly anisotropic \[LongDash] zero on the \
 direction-of-motion axis, peaking in two crescent-shaped regions in the \
 bubble wall.  Note the colour scale: the values are ",
  StyleBox["negative everywhere",
   FontSlant->Italic],
  " they are non-zero.  This is the punchline of the original 1994 paper:"
-}], "Text",ExpressionUUID->"eb390340-eb71-44e3-bc8a-65aedfc77151"],
+}], "Text",ExpressionUUID->"fe4a037d-949f-40d8-9f48-fd6e26eddc55"],
 
 Cell["\<\
 DensityPlot[
@@ -42044,7 +42054,7 @@ DensityPlot[
   PlotLegends -> Automatic,
   Epilog -> {Black, Thick, Circle[{0, 0}, 1]}]\
 \>", "Input",
- CellTags->"runnable",ExpressionUUID->"d6d10a60-c174-47c4-a82b-dfc407644048"],
+ CellTags->"runnable",ExpressionUUID->"fbce6a8d-51ba-475c-b6ec-9ad497d356e4"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -48808,12 +48818,12 @@ JEmSJEmSJEmSJElSU/v/TjPeCA==
   PlotRange->{{0, 809.5}, {0, 735.}}]], "Output",
  CellMargins->{{20, 20}, {10, 14}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"95763144-f7e8-400d-8262-7f58017628d7"],
+ TextAlignment->Center,ExpressionUUID->"68c4dfd9-435d-4030-b80d-0d62e4257a86"],
 
 Cell["\<\
 And the same energy density rendered as a 3D surface brings out the wall \
 structure:\
-\>", "Text",ExpressionUUID->"1e4188e9-958f-482f-9114-253b711eabe0"],
+\>", "Text",ExpressionUUID->"7b2e5288-a262-4197-96f1-915ba089ecc6"],
 
 Cell[BoxData[
  TagBox[GridBox[{
@@ -58270,9 +58280,9 @@ in front of the ship, one behind \[LongDash] is where the exotic matter (\
   "Column"]], "Output",
  CellMargins->{{20, 20}, {10, 14}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"acf75b8c-3f49-40bf-bfec-b4feb4265201"],
+ TextAlignment->Center,ExpressionUUID->"39a1823c-3a32-4e0a-8776-c5731946b7e0"],
 
-Cell["4. Where space contracts, where space expands", "Section",ExpressionUUID->"d5da620a-da77-41b9-833b-f2ac2c1bac0e"],
+Cell["4. Where space contracts, where space expands", "Section",ExpressionUUID->"b4a6c5a6-f521-458a-af3a-a817c79b902d"],
 
 Cell[TextData[{
  "What does \"contraction in front, expansion behind\" mean operationally?  \
@@ -58292,10 +58302,10 @@ Eulerian observer is one that moves with the spatial slices \[LongDash] their \
         SuperscriptBox["\[Beta]", "i"]}]}], ")"}]}]}], TraditionalForm]], 
   "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "8ba33039-99b5-4e91-87ee-ab4bb298766a"],
+  "b4161b89-15dc-414e-82f1-e76b1af2b967"],
  ".  The extrinsic curvature of the slice measures how it bends inside \
 spacetime as time flows:"
-}], "Text",ExpressionUUID->"facf3ceb-b057-4d6c-a747-7703a9d98782"],
+}], "Text",ExpressionUUID->"845b0591-47ea-44be-a9ae-778f779318b1"],
 
 Cell[BoxData[
  FormBox[
@@ -58319,7 +58329,7 @@ Cell[BoxData[
         RowBox[{"i", "j"}]]}]}], ")"}]}]}], 
   TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"3e6a13d4-4c70-43ae-bb26-9d793241b375"],
+ FontFamily->"Times",ExpressionUUID->"acc264d6-c997-4542-828a-6bf2f70dc5ff"],
 
 Cell[TextData[{
  "with ",
@@ -58327,16 +58337,16 @@ Cell[TextData[{
   FormBox[
    SubscriptBox["D", "i"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "8f1bb01b-b90a-4145-8f50-9b1c76fcc773"],
+  "746cffed-2b49-439a-a5fc-856086abc0b1"],
  " the spatial covariant derivative on the slice (compatible with ",
  Cell[BoxData[
   FormBox[
    SubscriptBox["\[Gamma]", 
     RowBox[{"i", "j"}]], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "52443dbd-accc-4068-a675-f334fe377c26"],
+  "14ae7eda-69a1-49b9-8b33-d25db09c11ea"],
  ").  Its trace is the volume expansion rate seen by Eulerian observers:"
-}], "Text",ExpressionUUID->"f55327c7-9f85-4d48-9c28-475275df6299"],
+}], "Text",ExpressionUUID->"3cccde19-2a7c-42fc-bfb1-58d916573b80"],
 
 Cell[BoxData[
  FormBox[
@@ -58350,7 +58360,7 @@ Cell[BoxData[
     SubscriptBox["D", "i"], " ", 
     SuperscriptBox["\[Beta]", "i"]}]}], TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"d1361ed7-9e0f-4a94-93a0-ccad521c6f3d"],
+ FontFamily->"Times",ExpressionUUID->"296f6843-1b01-4b6b-ad88-8d175e3c2b44"],
 
 Cell[TextData[{
  "For Alcubierre's metric ",
@@ -58358,7 +58368,7 @@ Cell[TextData[{
   FormBox[
    RowBox[{"\[Alpha]", "=", "1"}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "0e914181-effc-4f35-b731-afd82fe394ac"],
+  "635bfebd-7f66-4cba-8be5-1877759acf34"],
  " and ",
  Cell[BoxData[
   FormBox[
@@ -58368,7 +58378,7 @@ Cell[TextData[{
     SubscriptBox["\[Delta]", 
      RowBox[{"i", "j"}]]}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "37c0853e-9056-4fa2-9040-8402029920a5"],
+  "b8f598b0-afd3-4ff1-954e-92f84b28ea89"],
  ", so ",
  Cell[BoxData[
   FormBox[
@@ -58379,7 +58389,7 @@ Cell[TextData[{
      SubscriptBox["\[PartialD]", "i"], " ", 
      SuperscriptBox["\[Beta]", "i"]}]}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "cf303878-d747-4435-b59d-e0a80e5d77f5"],
+  "74ca3cd5-5bd9-4da7-8fbd-e5614b9fbb6d"],
  " is just the ordinary divergence.  Plugging in ",
  Cell[BoxData[
   FormBox[
@@ -58390,9 +58400,9 @@ Cell[TextData[{
      RowBox[{"f", "(", 
       SubscriptBox["r", "s"], ")"}]}]}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "bbe280b2-1d2b-4e4b-a42f-f6d88a011653"],
+  "9f60a907-d21c-4ae7-9897-b181a7c46d53"],
  " and using the chain rule one gets a strikingly clean closed form:"
-}], "Text",ExpressionUUID->"ae407c2a-41a7-4ecf-b84f-f8751dbcdf13"],
+}], "Text",ExpressionUUID->"ceb5fd46-e086-4fbd-8c6c-5000287519a6"],
 
 Cell[BoxData[
  FormBox[
@@ -58409,7 +58419,7 @@ Cell[BoxData[
      RowBox[{"d", 
       SubscriptBox["r", "s"]}]]}]}], TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"01fe7199-3f43-458f-9dc9-399270affeed"],
+ FontFamily->"Times",ExpressionUUID->"6620692c-c634-4566-9a5d-b7277bc01192"],
 
 Cell[TextData[{
  "For Alcubierre's bubble it's antisymmetric in ",
@@ -58418,7 +58428,7 @@ Cell[TextData[{
    RowBox[{"x", "-", 
     SubscriptBox["x", "s"]}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "fe5586df-50e6-4179-8784-19dcbbf68b83"],
+  "b72662e3-dd4a-4eb2-a1f2-d524a9944d21"],
  ": positive (volume expansion) behind the bubble, negative (volume \
 contraction) in front, zero on the y-z plane through the centre.  Plotted on \
 a slice at ",
@@ -58426,9 +58436,9 @@ a slice at ",
   FormBox[
    RowBox[{"z", "=", "0"}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "adeb8f9f-3120-460b-918f-5df1d60dffbf"],
+  "a2e190c4-f6e0-490b-be61-c91de75c6d48"],
  " using a divergent colourmap:"
-}], "Text",ExpressionUUID->"66857364-8ccd-41cb-a6a8-824ef86d9d4e"],
+}], "Text",ExpressionUUID->"93537d7c-e762-4676-bd41-694b1846c52e"],
 
 Cell["\<\
 DensityPlot[
@@ -58438,7 +58448,7 @@ DensityPlot[
   PlotLegends -> Automatic,
   Epilog -> {Black, Thick, Circle[{0, 0}, 1]}]\
 \>", "Input",
- CellTags->"runnable",ExpressionUUID->"57cf0d69-42b0-40a1-b2b1-dfb43262abf4"],
+ CellTags->"runnable",ExpressionUUID->"b85c9f52-90ed-498b-a77d-fa3c08cf92b5"],
 
 Cell[BoxData[
  TagBox[GridBox[{
@@ -64685,7 +64695,7 @@ The y-z plane through the centre is exactly neutral.\"\>",
   "Column"]], "Output",
  CellMargins->{{20, 20}, {10, 14}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"4daa052c-57c5-45aa-a24a-55943d234015"],
+ TextAlignment->Center,ExpressionUUID->"89897800-b8ae-4102-9f30-541e327aca55"],
 
 Cell["\<\
 So if you stand inside the bubble and look out the front porthole, distant \
@@ -64694,9 +64704,9 @@ away.  The bubble itself \"surfs\" forward on its own private patch of \
 contracting space.  This is the qualitative picture you'll have heard \
 described in popular accounts \[LongDash] and the picture above is its actual \
 mathematical content.\
-\>", "Text",ExpressionUUID->"c235e01f-5823-4a31-810e-8329cd224687"],
+\>", "Text",ExpressionUUID->"b9b3dfda-fe86-4fb0-8203-95bfd98b4b2f"],
 
-Cell["5. The bubble in motion", "Section",ExpressionUUID->"e1ccbf89-1de7-4ece-a969-cca993862e32"],
+Cell["5. The bubble in motion", "Section",ExpressionUUID->"8df29173-d6ec-4b7f-a800-2eed8c212e9d"],
 
 Cell[TextData[{
  "All of the above is for a bubble centred at the origin.  Plug in time and \
@@ -64705,10 +64715,10 @@ the centre advects at uniform velocity ",
   FormBox[
    SubscriptBox["v", "s"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "0707d180-1426-49c0-aa80-bfef1cf0654c"],
+  "8f59121d-6ba7-442a-b455-f1a1825104e0"],
  ".  Animated, this gives the canonical \"warp drive\" image: a moving \
 capsule of warped geometry, exotic-matter wall and all:"
-}], "Text",ExpressionUUID->"0facb00b-af3d-4e34-9afd-22bde85cf006"],
+}], "Text",ExpressionUUID->"2b7067d9-9454-445c-8491-62bf0d58e409"],
 
 Cell["\<\
 frames = Table[
@@ -64721,7 +64731,7 @@ frames = Table[
   {t, 0, 4, 4/29.}];
 ListAnimate[frames]\
 \>", "Input",
- CellTags->"runnable",ExpressionUUID->"f3295186-1040-46f1-b543-7350c25d1afe"],
+ CellTags->"runnable",ExpressionUUID->"8bf5ec1f-3c10-4ed6-9820-6a888c7da3cb"],
 
 Cell[BoxData[
  TagBox[GridBox[{
@@ -88998,9 +89008,9 @@ outside.\"\>",
   "Column"]], "Output",
  CellMargins->{{20, 20}, {10, 14}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"07f9620c-8e3b-4864-bf01-ac5e44216e30"],
+ TextAlignment->Center,ExpressionUUID->"cfb4b921-1b50-4e10-9187-745345b8bace"],
 
-Cell["5b. Putting a spacecraft inside the bubble", "Section",ExpressionUUID->"9087dbba-0ade-4219-8881-ecb604ca492b"],
+Cell["5b. Putting a spacecraft inside the bubble", "Section",ExpressionUUID->"0ff4897e-566e-4bfa-9778-111b5ca95d01"],
 
 Cell["\<\
 None of the geometry above changes if we put a \"ship\" inside the bubble \
@@ -89013,7 +89023,7 @@ from the shape function and the shift component), the translucent bubble, the \
 magenta exotic-matter ring at the equator, the spacecraft mesh, an engine \
 wake, and a star field.  The camera orbits the bubble while travelling with \
 it, so the spacecraft stays centred while the stars stream past:\
-\>", "Text",ExpressionUUID->"442754bf-327b-4e85-bbdc-8948986ee119"],
+\>", "Text",ExpressionUUID->"b76662b5-0367-472d-b43b-c1cd7f19eb8b"],
 
 Cell[TextData[{
  "The spacecraft itself is a small ",
@@ -89024,7 +89034,7 @@ drawn in glowing blue.  The mesh is a literal port of the Python ",
  " in ",
  StyleBox["generate_hero_animation.py", "Input"],
  ":"
-}], "Text",ExpressionUUID->"825bec78-c3fc-4995-8b34-c75a0779ae4a"],
+}], "Text",ExpressionUUID->"f0d2b4c7-4af5-47ac-9759-668021b7961e"],
 
 Cell["\<\
 hullLength = 0.6; hullWidth = 0.15; hullHeight = 0.08;
@@ -89052,7 +89062,7 @@ spacecraft3D[{xc_, yc_, zc_}, scale_] :=
    Glow[Cyan], Cyan,
    Sphere[{xc - 0.3 scale, yc, zc}, 0.05 scale]};\
 \>", "Input",
- CellTags->"runnable",ExpressionUUID->"3946dee5-4b63-46e2-8242-7ced5042be55"],
+ CellTags->"runnable",ExpressionUUID->"d5398d3a-bab8-4bb7-b9d7-f821cb89e9b3"],
 
 Cell[TextData[{
  "The full mesh definition lives in ",
@@ -89060,7 +89070,7 @@ Cell[TextData[{
  ", which also produces the GIF.  Built into a 60-frame scene with an \
 orbiting camera and a starfield, the result is the cover animation reproduced \
 below at full size:"
-}], "Text",ExpressionUUID->"037efc22-c339-4ddf-8e90-e175c3b37784"],
+}], "Text",ExpressionUUID->"2bd1e2ec-69b6-4e99-a852-f521064d974e"],
 
 Cell[BoxData[
  TagBox[GridBox[{
@@ -177719,7 +177729,7 @@ leaves no wake, since the geometry behind it is flat.\"\>",
   "Column"]], "Output",
  CellMargins->{{20, 20}, {10, 14}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"1e15199f-7dd1-4405-84ff-20452a4ced49"],
+ TextAlignment->Center,ExpressionUUID->"f38bbd34-1ef0-4207-a0d1-bc55a774f850"],
 
 Cell["\<\
 The 3D scene is striking but it makes the geometry hard to read.  The \
@@ -177728,7 +177738,7 @@ the energy density as the backdrop (red where exotic matter must live), the \
 cyan grid still distorted by the shift field, and a triangular silhouette of \
 the ship with two glowing nacelle dots.  Annotations point at where space \
 contracts and where it expands:\
-\>", "Text",ExpressionUUID->"82744bd6-eb69-4dcb-a047-37e0b9035d70"],
+\>", "Text",ExpressionUUID->"02441bb6-24e0-401e-8dfe-c04f7f9905fa"],
 
 Cell[BoxData[
  TagBox[GridBox[{
@@ -236425,7 +236435,7 @@ radius.\"\>",
   "Column"]], "Output",
  CellMargins->{{20, 20}, {10, 14}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"7319ca5a-351d-463d-af0d-ac8ab26a75b4"],
+ TextAlignment->Center,ExpressionUUID->"0564d2d1-3324-4e60-a790-8e2f9ab950d5"],
 
 Cell[TextData[{
  "Both animations are rendered entirely from the analytic Alcubierre formulas \
@@ -236436,7 +236446,7 @@ function ",
    RowBox[{"f", "(", 
     SubscriptBox["r", "s"], ")"}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "9d68948f-0261-4b10-bae5-886027b5f612"],
+  "f44fc5c9-4cce-42c6-ad9d-9431436fca1c"],
  ", the shift ",
  Cell[BoxData[
   FormBox[
@@ -236446,13 +236456,13 @@ function ",
     RowBox[{"f", "(", 
      SubscriptBox["r", "s"], ")"}]}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "0778afe7-2791-4d0f-9428-288aca2f132f"],
+  "9d69d29c-3d8c-4866-88f9-e28a0c3d59af"],
  ", and the Eulerian energy density.  Both run in seconds.  The spacecraft \
 mesh and animation logic add fewer than 200 lines of Wolfram on top of the \
 existing package."
-}], "Text",ExpressionUUID->"aa3c5dcd-bae9-4ca2-bc9c-5f87e5b36a46"],
+}], "Text",ExpressionUUID->"0f832480-847a-42e8-ac1f-93ee95e1ca56"],
 
-Cell["6. The grid being warped", "Section",ExpressionUUID->"9379f29d-fbf9-4746-8f20-c90ec5a6be93"],
+Cell["6. The grid being warped", "Section",ExpressionUUID->"19ea7dc5-d1b1-422a-b8a7-bc733f07d8d1"],
 
 Cell["\<\
 Another way to see what the bubble is doing to the geometry is to drop a \
@@ -236461,7 +236471,7 @@ every grid intersection.  As the bubble sweeps from left to right across the \
 frame the grid lines locally bunch up in front of it and stretch out behind \
 it.  The animation below uses a 14\[Times]14 grid, the analytic Alcubierre \
 shift field with v=c and R=1, and a simple Euler advection step:\
-\>", "Text",ExpressionUUID->"83da5a07-23cb-495d-8b4f-39d00c3b99e9"],
+\>", "Text",ExpressionUUID->"40d68566-3a77-4e2c-afa5-0adf4b7dafb7"],
 
 Cell["\<\
 alcShift[t_, x_, y_] := -1.0 TanhShape[Sqrt[(x - 1.0 t)^2 + y^2], 1, 8];
@@ -236480,7 +236490,7 @@ frame[t_] := Show[
           {xi, -3, 3, 6/14}]}]];
 ListAnimate[Table[frame[t], {t, 0, 2, 2/29.}]]\
 \>", "Input",
- CellTags->"runnable",ExpressionUUID->"c06e71aa-6e68-4fcb-ac6d-449ef3b34143"],
+ CellTags->"runnable",ExpressionUUID->"9de9fe87-1c7c-4cf0-b3dc-a799ab780c90"],
 
 Cell[BoxData[
  TagBox[GridBox[{
@@ -284295,9 +284305,9 @@ All the deformation is concentrated in the wall.\"\>",
   "Column"]], "Output",
  CellMargins->{{20, 20}, {10, 14}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"50a3a4fb-d391-4bb9-b90c-b6b48ac8027f"],
+ TextAlignment->Center,ExpressionUUID->"a5ade8bd-0b4b-4ee2-9849-95c3b08cf8c8"],
 
-Cell["7. Geodesics: getting swept up by a warp bubble", "Section",ExpressionUUID->"721623fe-b22a-460d-8208-90816259079c"],
+Cell["7. Geodesics: getting swept up by a warp bubble", "Section",ExpressionUUID->"733488c9-aa58-4704-9547-4c0aac42d88c"],
 
 Cell[TextData[{
  "Drop a population of test particles into the spacetime and let them follow \
@@ -284308,9 +284318,9 @@ geodesics.  Free-fall trajectories ",
     SuperscriptBox["x", "\[Mu]"], "(", "\[Lambda]", ")"}], TraditionalForm]], 
   "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "9355e689-dbb3-4acb-b954-0c1793892445"],
+  "3f7e1be2-93ab-4e38-86f2-649ad2768bd2"],
  " obey the geodesic equation"
-}], "Text",ExpressionUUID->"2f8474c3-dddc-4bfb-8440-4eb0b1d3c3d5"],
+}], "Text",ExpressionUUID->"431605b0-2d95-4671-b147-b2fbb605b52c"],
 
 Cell[BoxData[
  FormBox[
@@ -284332,7 +284342,7 @@ Cell[BoxData[
       SuperscriptBox["x", "\[Beta]"]}], "d\[Lambda]"]}], "=", "0"}], 
   TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"faa514d4-99e8-479f-b9e6-27d21da6cb31"],
+ FontFamily->"Times",ExpressionUUID->"9a98f126-0093-4c75-bf03-efb352ea36f3"],
 
 Cell[TextData[{
  "which we rewrite as a first-order ODE system for position and 4-velocity ",
@@ -284344,9 +284354,9 @@ Cell[TextData[{
      SuperscriptBox["x", "\[Mu]"], "/", "d\[Lambda]"}]}], TraditionalForm]], 
   "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "b37ea394-1ef6-49fc-be90-1c262cd6bea2"],
+  "7e1426c1-f637-4631-b752-03ef6d53706c"],
  ":"
-}], "Text",ExpressionUUID->"cf6691e0-fc93-4af1-a811-1c8865745ab7"],
+}], "Text",ExpressionUUID->"d33427d4-1b0e-4aae-bb1b-a5829c7a9afe"],
 
 Cell[BoxData[
  FormBox[
@@ -284368,16 +284378,16 @@ Cell[BoxData[
      SuperscriptBox["u", "\[Beta]"]}]}]}], TraditionalForm]], "DisplayFormula",\
 
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"513d74b9-0c23-44e9-8cd9-e173d808031f"],
+ FontFamily->"Times",ExpressionUUID->"402851a8-22fa-4459-bce7-82072d859b36"],
 
 Cell[TextData[{
  "For massive (timelike) particles the affine parameter ",
  Cell[BoxData[
   FormBox["\[Lambda]", TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "c28488ba-5d51-4a76-8825-b8a1f95210bf"],
+  "a2ffc3e4-6b04-422a-8394-96b5736d1e3f"],
  " can be chosen to be the proper time, and the velocity is normalised so that"
-}], "Text",ExpressionUUID->"41ce3293-43ec-4f46-9d4f-fc03eb249e16"],
+}], "Text",ExpressionUUID->"1d0d6649-c9a0-495b-bf83-0a2f3b1606d5"],
 
 Cell[BoxData[
  FormBox[
@@ -284388,7 +284398,7 @@ Cell[BoxData[
    SuperscriptBox["u", "\[Nu]"], "=", 
    RowBox[{"-", "1"}]}], TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"f0c055bd-1512-471a-af5f-6e7c65f41877"],
+ FontFamily->"Times",ExpressionUUID->"cbf9b69c-bdcb-4f52-a56c-d74758db7165"],
 
 Cell[TextData[{
  "For light rays (null geodesics) the normalisation becomes ",
@@ -284401,12 +284411,12 @@ Cell[TextData[{
     SuperscriptBox["k", "\[Nu]"], "=", "0"}], TraditionalForm]], 
   "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "cbf7cc9c-f825-44ab-a9c3-83b45152c8cf"],
+  "2ad982e1-7564-4430-9473-3787d694007c"],
  " instead, and ",
  Cell[BoxData[
   FormBox["\[Lambda]", TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "ca94e3fd-2b21-4a0f-8c06-1f44ba176f9f"],
+  "05673592-448b-4f2f-8667-8159da1d1513"],
  " is no longer proper time (which is zero for a photon) but any affine \
 parameter along the ray.  The Christoffel coefficients ",
  Cell[BoxData[
@@ -284415,18 +284425,18 @@ parameter along the ray.  The Christoffel coefficients ",
     RowBox[{"\[Alpha]", "\[Beta]"}], "\[Mu]"], TraditionalForm]], 
   "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "81b8a418-6a22-4f49-b952-56a8af16cb36"],
+  "16d061c5-877e-4f34-b24a-12da254a2237"],
  " in the right-hand side are the same expressions Wolfram generated \
 symbolically in Section 3 \[LongDash] we just substitute the current ",
  Cell[BoxData[
   FormBox[
    SuperscriptBox["x", "\[Mu]"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "503d4cee-e7df-432a-8c87-0e3506c4fdc4"],
+  "95bf4c5b-5121-47a4-9461-b78029acbb55"],
  " values into them and hand the result to ",
  StyleBox["NDSolve", "Input"],
  "."
-}], "Text",ExpressionUUID->"c9e75126-3749-40d5-9fae-df06b9ba5a87"],
+}], "Text",ExpressionUUID->"d0670fc9-60a9-4a81-a745-6e0021944327"],
 
 Cell[TextData[{
  "In ADM language an Eulerian observer (the analogue of a stationary one in \
@@ -284436,7 +284446,7 @@ flat space) has spatial 3-velocity ",
    RowBox[{"-", 
     SuperscriptBox["\[Beta]", "i"]}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "eefc20ce-6588-464e-86e3-e6636bab7173"],
+  "354e9f05-7e44-48a0-b65f-cb94acd46280"],
  " = ",
  Cell[BoxData[
   FormBox[
@@ -284445,13 +284455,13 @@ flat space) has spatial 3-velocity ",
     RowBox[{"f", "(", 
      SubscriptBox["r", "s"], ")"}]}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "d382ab40-0b06-479d-b661-1f3ae1b874be"],
+  "19f8f29d-ee33-4211-b9a1-13f62b0abdec"],
  " (positive, forward).  We place eight initially stationary particles ahead \
 of the bubble; as the bubble overtakes them from behind, each one is grabbed \
 by the shift field and dragged forward.  Particles on the bubble axis get the \
 deepest grip; particles further off-axis are partly missed by the wall and \
 feel proportionally less drag:"
-}], "Text",ExpressionUUID->"dcee6af6-9a2c-48bd-80dd-8cdf4d00accb"],
+}], "Text",ExpressionUUID->"ad0e86c5-3129-429e-a6ab-63e7da7b0931"],
 
 Cell["\<\
 alcShift[t_, x_, y_] := +1.0 TanhShape[Sqrt[(x - 1.0 t)^2 + y^2], 1, 8];
@@ -284474,7 +284484,7 @@ ListAnimate @ Table[
          Red, PointSize[0.022], Point /@ (#[[k]] & /@ trajs)}]],
   {k, 1, Length[ts], 2}]\
 \>", "Input",
- CellTags->"runnable",ExpressionUUID->"5492bfd7-0b86-4525-af6c-3916e64d5d96"],
+ CellTags->"runnable",ExpressionUUID->"6267b235-8ad6-4efa-a148-cc8300d4d1d3"],
 
 Cell[BoxData[
  $CellContext`imgCell[
@@ -303805,8 +303815,8 @@ Alcubierre bubble travelling left-to-right.  Each particle has spatial \
 axis (small |y|) get the deepest grip and are dragged fastest; off-axis \
 particles are partly missed by the wall and barely move.  Black tails are \
 trajectories so far; red dots are current positions; the colourmap shows the \
-shift magnitude."]], "Input",ExpressionUUID->"012888e7-ca5c-43f9-a739-\
-9c1baa078bfe"],
+shift magnitude."]], "Input",ExpressionUUID->"72b944f7-930c-46bf-9ccd-\
+840809bc15e7"],
 
 Cell[TextData[{
  "For a real geodesic integration (full 4-velocity, \
@@ -303822,14 +303832,14 @@ is advected by its instantaneous coordinate velocity ",
     SuperscriptBox["x", "i"], "/", "dt"}], TraditionalForm]], "InlineFormula",
   
   FontFamily->"Times",ExpressionUUID->
-  "4fadf60e-31fc-4b9a-a9ca-5c3d41f3eaf0"],
+  "ab0d33af-c747-46fe-8e5c-f8d0b4ee2e6a"],
  " = ",
  Cell[BoxData[
   FormBox[
    RowBox[{"-", 
     SuperscriptBox["\[Beta]", "i"]}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "164281e2-daf4-4e62-9af2-74ebe9a4c2a8"],
+  "db507b8e-2643-4e0d-b3de-0b50784ea7a4"],
  ", which is the spatial 3-velocity of an observer whose 4-velocity is the \
 unit normal to the slice.  This is a 3-velocity shortcut, not a full timelike \
 geodesic, but it captures exactly the bubble's drag on test particles for ",
@@ -303837,11 +303847,11 @@ geodesic, but it captures exactly the bubble's drag on test particles for ",
   FormBox[
    RowBox[{"\[Alpha]", "=", "1"}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "2d754dd3-208a-48cb-8c6e-dab306ed6441"],
+  "453b00d5-dc2b-44d4-afe3-fdb942c2060b"],
  "."
-}], "Text",ExpressionUUID->"6a539344-afd1-48e9-be13-3f617668300d"],
+}], "Text",ExpressionUUID->"bd882fc2-812b-409d-9bd8-902e4a195a01"],
 
-Cell["8. Six warp drives in one figure", "Section",ExpressionUUID->"323b30bd-2e6b-4e72-a0e2-4d66b3bee151"],
+Cell["8. Six warp drives in one figure", "Section",ExpressionUUID->"49df006f-eec6-4071-8ddd-ddb9b4beccec"],
 
 Cell[TextData[{
  "Alcubierre's drive is the simplest member of a larger family of geometries. \
@@ -303882,7 +303892,7 @@ on a torus rather than a sphere.\n",
    RowBox[{
     SubscriptBox["v", "s"], "<", "c"}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "fd5a894c-e9af-4496-9748-2b2afdd45aac"],
+  "0d207325-925e-479d-b8bc-117b49d13827"],
  ".\n",
  "\[Bullet] ",
  StyleBox["Lentz 2021",
@@ -303891,13 +303901,13 @@ on a torus rather than a sphere.\n",
 fields, claimed positive-energy.  Subsequent analysis suggests the original \
 construction needed exotic matter after all, but the soliton family is still \
 actively studied."
-}], "Text",ExpressionUUID->"78b4e5cc-78a5-4bd7-88d1-bcc5eae7751d"],
+}], "Text",ExpressionUUID->"0077af8f-f9dc-4219-8973-52532ee6f6ec"],
 
 Cell["\<\
 The six metric families are mathematically distinct even though they share \
 the same broad qualitative picture.  In ADM form, each one differs only in \
 the choice of lapse, shift, and spatial metric:\
-\>", "Text",ExpressionUUID->"30fd358f-3432-432b-90f9-501b6259e45e"],
+\>", "Text",ExpressionUUID->"ab181552-fbc2-40eb-a11f-c9759eb44c9c"],
 
 Cell[TextData[{
  "\[Bullet] ",
@@ -303908,7 +303918,7 @@ Cell[TextData[{
   FormBox[
    RowBox[{"\[Alpha]", "=", "1"}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "01c7250d-fd05-4f3b-8cc8-3fc3786df61a"],
+  "69c6564e-8fd2-4b33-a5a2-e663b869e0e0"],
  ", ",
  Cell[BoxData[
   FormBox[
@@ -303918,7 +303928,7 @@ Cell[TextData[{
     SubscriptBox["\[Delta]", 
      RowBox[{"i", "j"}]]}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "81b3c85d-ce81-4cf3-9d08-8227beebdc7a"],
+  "db2ac928-f6d5-46e9-bf4b-3b9896cfb017"],
  ", and ",
  Cell[BoxData[
   FormBox[
@@ -303931,16 +303941,16 @@ Cell[TextData[{
        SubscriptBox["r", "s"], ")"}]}], ",", " ", "0", ",", " ", "0", ")"}]}],
     TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "4346fea9-f6ff-48d6-a53e-1b73a7b3247c"],
+  "9e8eefd5-8591-4d1d-ac3f-518dd01e1a63"],
  ", as we've seen.  The shift has non-zero divergence (",
  Cell[BoxData[
   FormBox[
    RowBox[{"\[Del]", "\[CenterDot]", "\[Beta]", "\[NotEqual]", "0"}], 
    TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "a7ede7ed-5a2f-4d2f-9683-715b87f682c5"],
+  "2ee18c8a-d057-43e4-b4f5-670792f0a085"],
  ") so spacetime expands and contracts."
-}], "Text",ExpressionUUID->"4085e27e-90b3-411a-aa76-39ed0baa97af"],
+}], "Text",ExpressionUUID->"3b2a38a6-9034-48d1-9292-2e38ef91ab10"],
 
 Cell[TextData[{
  "\[Bullet] ",
@@ -303952,16 +303962,16 @@ Cell[TextData[{
    SubscriptBox["\[Gamma]", 
     RowBox[{"i", "j"}]], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "966de304-a46e-4c8d-a719-b1544a6d4ee1"],
+  "ce41f099-826a-4a6f-94b6-29312228e6bd"],
  " and unit lapse but demands"
-}], "Text",ExpressionUUID->"3da1ba40-2467-408b-8a25-a6af900cdfb6"],
+}], "Text",ExpressionUUID->"641e3a2c-ff6f-49f3-9366-31caff7cf426"],
 
 Cell[BoxData[
  FormBox[
   RowBox[{"\[Del]", "\[CenterDot]", "\[Beta]", "=", "0"}], 
   TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"284f861a-4adf-40a8-ab8e-dd04b8485152"],
+ FontFamily->"Times",ExpressionUUID->"97745ed7-a956-41d1-83bf-861ff29a92d2"],
 
 Cell[TextData[{
  "so the Eulerian observers see ",
@@ -303969,10 +303979,10 @@ Cell[TextData[{
   FormBox[
    RowBox[{"\[Theta]", "=", "0"}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "5c0bd9c8-e30b-43c6-b642-e294f2de0db9"],
+  "6c0b8de2-33df-48fa-af8b-a72b9d941f16"],
  " everywhere \[LongDash] no expansion, no contraction, just shear.  This is \
 enforced by writing the shift as the curl of a vector potential,"
-}], "Text",ExpressionUUID->"2851a671-1138-4637-a0e1-6829d1bbfbd4"],
+}], "Text",ExpressionUUID->"396eff9a-b9de-4e0b-ab08-f4bf7965365a"],
 
 Cell[BoxData[
  FormBox[
@@ -303980,17 +303990,17 @@ Cell[BoxData[
    RowBox[{"\[Del]", "\[Times]", "A"}]}], TraditionalForm]], "DisplayFormula",\
 
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"1efbbb8f-c70d-44aa-b932-ee997ef81177"],
+ FontFamily->"Times",ExpressionUUID->"054e72bd-4508-4d12-b956-8a58c898927f"],
 
 Cell[TextData[{
  "with ",
  Cell[BoxData[
   FormBox["A", TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "2131f869-3886-429a-9b5e-9ef97e5cf96e"],
+  "8bce1a8d-d32d-4722-86e3-018507eeef5e"],
  " chosen so that the bubble moves at the desired velocity.  The bubble in \
 this picture \"slides through\" space rather than \"pushing\" space."
-}], "Text",ExpressionUUID->"dc9be864-b374-45e2-acbe-f1e3e1543749"],
+}], "Text",ExpressionUUID->"2df0e952-144e-4666-9ec5-06b487c909b6"],
 
 Cell[TextData[{
  "\[Bullet] ",
@@ -303998,7 +304008,7 @@ Cell[TextData[{
   FontWeight->Bold],
  " keeps Alcubierre's shift but multiplies the spatial metric by a \
 position-dependent conformal factor:"
-}], "Text",ExpressionUUID->"d76f6fab-8f2a-4865-93d6-b5553ee2840e"],
+}], "Text",ExpressionUUID->"bc721e56-b4d9-445e-8cdc-5138b23163de"],
 
 Cell[BoxData[
  FormBox[
@@ -304022,7 +304032,7 @@ Cell[BoxData[
      SuperscriptBox["dz", "2"]}], "]"}]}], TraditionalForm]], "DisplayFormula",\
 
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"7452d365-3317-4db2-8ee8-a231ce108206"],
+ FontFamily->"Times",ExpressionUUID->"c3184228-6d5f-4236-84f0-a3cbc7863d7b"],
 
 Cell[TextData[{
  "with ",
@@ -304031,32 +304041,32 @@ Cell[TextData[{
    RowBox[{"B", "(", 
     SubscriptBox["r", "s"], ")"}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "17f743ac-b16f-4a91-83ec-4d30502e044c"],
+  "847f8077-639e-49e9-8812-23a8912a4541"],
  " chosen to be ",
  Cell[BoxData[
   FormBox[
    RowBox[{"B", "\[GreaterTilde]", " ", 
     SubscriptBox["B", "int"]}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "6f72798b-a5b1-4e6d-a8c9-c649ccf954f0"],
+  "d5781ca7-deec-48e6-bc54-8768eaca3d4d"],
  " inside an inner radius ",
  Cell[BoxData[
   FormBox[
    SubscriptBox["R", "int"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "f3c09f14-fba1-45f9-ac65-32b9d028c34b"],
+  "7e90a9cc-761a-47ab-b27e-cb0c410da6b7"],
  " and ",
  Cell[BoxData[
   FormBox[
    RowBox[{"B", "\[TildeTilde]", "1"}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "10ac5626-0f0a-4eb0-a8b4-39c1521f4f31"],
+  "cd05ec31-924b-4d14-aadd-0d1b7690de2f"],
  " outside an outer radius ",
  Cell[BoxData[
   FormBox[
    SubscriptBox["R", "ext"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "036c237a-ef4d-46bb-9317-b1d9a0a829e5"],
+  "3a95b62a-f0b9-4dec-a7ba-a38843ae7b29"],
  ".  This gives the bubble a microscopic external footprint while preserving \
 a macroscopic interior \[LongDash] and crucially the energy scales with the \
 small ",
@@ -304064,15 +304074,15 @@ small ",
   FormBox[
    SubscriptBox["R", "ext"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "5a06cd65-6cdb-44d8-aa0d-552b44535f63"],
+  "7948af74-d5fb-49e3-8763-54fc4d40869f"],
  " not the large ",
  Cell[BoxData[
   FormBox[
    SubscriptBox["R", "int"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "fc6edd53-ff6b-4ac0-825c-35e9b66fcf67"],
+  "052e25d5-7d18-4f37-b43c-809d0a771cc8"],
  ":"
-}], "Text",ExpressionUUID->"54339b8e-e84f-41f4-87ff-2136ad512686"],
+}], "Text",ExpressionUUID->"aa79bd52-c651-4e56-a73e-c48a9a8c747d"],
 
 Cell[BoxData[
  FormBox[
@@ -304085,7 +304095,7 @@ Cell[BoxData[
     SuperscriptBox[
      SubscriptBox["R", "int"], "3"]}]}], TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"7e0df735-9519-4dd2-9fbc-1937cbf5fb79"],
+ FontFamily->"Times",ExpressionUUID->"9683988f-7b8b-47c6-8ee0-bfdae59b86c4"],
 
 Cell[TextData[{
  "\[Bullet] ",
@@ -304096,9 +304106,9 @@ Cell[TextData[{
   FormBox[
    SubscriptBox["r", "s"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "9b863b35-4d53-4bbc-ace4-0a71392af2eb"],
+  "b44e018b-1a35-4d33-97fe-f66666766db1"],
  " with the Euclidean distance to the surface of a torus,"
-}], "Text",ExpressionUUID->"585f0a4a-7c6f-4ebf-8b41-6c87c621a7a5"],
+}], "Text",ExpressionUUID->"c1e6c8f8-81dc-423f-892c-dc75b9f428dd"],
 
 Cell[BoxData[
  FormBox[
@@ -304121,7 +304131,7 @@ Cell[BoxData[
          SubscriptBox["x", "s"]}], ")"}], "2"]}]], "-", 
     SubscriptBox["R", "minor"]}]}], TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"bb2d746a-adc1-4498-89cd-b00231cfd5a5"],
+ FontFamily->"Times",ExpressionUUID->"4f5ff943-1fad-40de-8f07-0aa8107fba58"],
 
 Cell[TextData[{
  "so the exotic-matter wall lies on a tube of major radius ",
@@ -304129,15 +304139,15 @@ Cell[TextData[{
   FormBox[
    SubscriptBox["R", "major"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "95d606ce-afb0-4795-b97d-a391fda93abf"],
+  "684d7821-d6d8-4ee6-98c0-ab3aa94d46cb"],
  " and minor radius ",
  Cell[BoxData[
   FormBox[
    SubscriptBox["R", "minor"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "6414de67-7e08-48d5-9f1e-f48ff4391517"],
+  "6031f20b-6c14-4301-865c-d115f42240c5"],
  ", concentrating the negative energy into a doughnut rather than a sphere."
-}], "Text",ExpressionUUID->"688a5a94-5a0a-4e6f-88fe-6b0c5570509b"],
+}], "Text",ExpressionUUID->"54e7fe49-942b-4a94-9baf-d5cc4b974be0"],
 
 Cell[TextData[{
  "\[Bullet] ",
@@ -304151,9 +304161,9 @@ thin spherical shell ",
     SubscriptBox["R", "in"], "<", "r", "<", 
     SubscriptBox["R", "out"]}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "8e5c4efe-dbed-4413-a74d-f247ba1eb7be"],
+  "f1489cef-e9d2-463c-ab16-1c34d4a7b8c6"],
  " using"
-}], "Text",ExpressionUUID->"85c8410f-d52a-4be3-a039-3e2b75825fd5"],
+}], "Text",ExpressionUUID->"e79402de-49e9-4c70-ba60-97a5eff53cdb"],
 
 Cell[BoxData[
  FormBox[
@@ -304176,12 +304186,12 @@ Cell[BoxData[
          SubscriptBox["R", "out"]}], ")"}], ")"}]}], ")"}]}]}], 
   TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"6c9d3aad-10a4-4ca9-8c0e-ca5b60521580"],
+ FontFamily->"Times",ExpressionUUID->"a8ad3bcf-f3e0-41f5-9b66-f2b2ab934205"],
 
 Cell["\<\
 and pick the shell-region lapse, shift, and spatial-metric perturbations to \
 satisfy the energy conditions.  The key result is:\
-\>", "Text",ExpressionUUID->"7f494681-7c31-48cb-9821-09022013cf7c"],
+\>", "Text",ExpressionUUID->"0d7103a5-b980-4f93-a3cb-940cb39a91e0"],
 
 Cell[BoxData[
  FormBox[
@@ -304192,12 +304202,12 @@ Cell[BoxData[
    RowBox[{"WEC", " ", "satisfiable"}]}], TraditionalForm]], "DisplayFormula",\
 
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"ba4f3886-8e2c-4435-b4ad-4298f729fd41"],
+ FontFamily->"Times",ExpressionUUID->"ba3abf48-dd8d-42b1-b8e1-6769db937e10"],
 
 Cell["\<\
 i.e. once the bubble is forced to move slower than light, ordinary \
 positive-energy matter is enough to source it.\
-\>", "Text",ExpressionUUID->"84dac6f2-5cf2-41c7-b1fc-524bb4669c99"],
+\>", "Text",ExpressionUUID->"15a3c891-6888-4187-97c5-170122463445"],
 
 Cell[TextData[{
  "\[Bullet] ",
@@ -304205,7 +304215,7 @@ Cell[TextData[{
   FontWeight->Bold],
  " uses a soliton ansatz with hyperbolic relations between lapse and shift, \
 built from"
-}], "Text",ExpressionUUID->"3f35a518-7ba7-4869-90b5-19cab73db437"],
+}], "Text",ExpressionUUID->"c3d5bacc-7845-48d5-9d5a-b209d3cf845b"],
 
 Cell[BoxData[
  FormBox[
@@ -304214,13 +304224,13 @@ Cell[BoxData[
    RowBox[{"sech", "(", 
     FractionBox["r", "R"], ")"}]}], TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"cd73106a-9498-433b-9b3b-0827ef7e2cda"],
+ FontFamily->"Times",ExpressionUUID->"ed71193a-80da-46de-adaf-5690ecc476b7"],
 
 Cell["\<\
 and tied to an electromagnetic / plasma source via Einstein\[Dash]Maxwell\
 \[Dash]plasma equations.  Whether the original construction is genuinely \
 positive-energy is debated in the literature.\
-\>", "Text",ExpressionUUID->"9b91c78a-d58e-444d-bad5-1a01033522b1"],
+\>", "Text",ExpressionUUID->"f9bb6b27-b593-4a3a-ab97-6a50e1d5d289"],
 
 Cell[TextData[{
  "Each lives in ",
@@ -304243,14 +304253,14 @@ Cell[TextData[{
    SubscriptBox["g", 
     RowBox[{"\[Mu]", "\[Nu]"}]], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "e60bbff5-8d69-499b-aacf-bb36246f8f4e"],
+  "f99548b6-c578-45d7-ba1c-217eaba2cc39"],
  ".  The figure below visualises the geometric \"footprint\" of each \
 \[LongDash] for Alcubierre, the analytic \[Rho]; for the others, an analogous \
 shape-function-driven proxy."
-}], "Text",ExpressionUUID->"ef17bdb2-bd0c-4fa3-9dd4-467d69ee4282"],
+}], "Text",ExpressionUUID->"3a892e28-0852-40d9-84ee-cce3a65c7279"],
 
 Cell["PlotMetricComparison[Range -> 2.5, Grid -> 90]", "Input",
- CellTags->"runnable",ExpressionUUID->"ead7bc52-2411-449e-b7e2-17181c3b8362"],
+ CellTags->"runnable",ExpressionUUID->"b163c4c8-8775-4002-abe1-90e0fbf8d1f1"],
 
 Cell[BoxData[
  TagBox[GridBox[{
@@ -317652,9 +317662,9 @@ soliton intensity profile.\"\>",
   "Column"]], "Output",
  CellMargins->{{20, 20}, {10, 14}},
  ShowCellLabel->False,
- TextAlignment->Center,ExpressionUUID->"323731c4-7094-44fd-91b4-b60d6811d01e"],
+ TextAlignment->Center,ExpressionUUID->"c3a81bdb-509b-4372-b529-d8e5ac266561"],
 
-Cell["9. Why this is hard: energy conditions", "Section",ExpressionUUID->"7ba4030a-b1b7-46d9-b4bb-640ccb861023"],
+Cell["9. Why this is hard: energy conditions", "Section",ExpressionUUID->"935194b1-ae0d-4c86-b6c9-ecb3277f47d0"],
 
 Cell[TextData[{
  "The classical energy conditions are coordinate-invariant statements about \
@@ -317663,7 +317673,7 @@ The ",
  StyleBox["weak energy condition (WEC)",
   FontWeight->Bold],
  " says any timelike observer measures non-negative energy density,"
-}], "Text",ExpressionUUID->"789b9d7b-31d9-402b-a210-3a8ddf48c1bf"],
+}], "Text",ExpressionUUID->"464ca495-5fdd-4641-a39d-053837159370"],
 
 Cell[BoxData[
  FormBox[
@@ -317675,7 +317685,7 @@ Cell[BoxData[
    RowBox[{"\[ForAll]", " ", "timelike", " ", "u"}]}], 
   TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"6e30ee1a-c48a-4a05-82fc-2379eea3bd6a"],
+ FontFamily->"Times",ExpressionUUID->"89986a36-fd58-416f-907b-296da6be50fc"],
 
 Cell[TextData[{
  "The ",
@@ -317687,9 +317697,9 @@ Cell[TextData[{
   FormBox[
    RowBox[{"v", "\[Rule]", "c"}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "1ac690fe-fa99-4151-b189-c78f28c16230"],
+  "8fc7880a-91c2-4a7d-9afb-92512900aa66"],
  "):"
-}], "Text",ExpressionUUID->"48ea3530-b4fd-46db-a689-0c9d4b357fc9"],
+}], "Text",ExpressionUUID->"36d1b787-4ec5-4dc4-a5a0-5b89dbcb1ed0"],
 
 Cell[BoxData[
  FormBox[
@@ -317701,14 +317711,14 @@ Cell[BoxData[
    RowBox[{"\[ForAll]", " ", "null", " ", "k"}]}], 
   TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"1151c311-7ce8-4940-ab2c-0f978247c3e2"],
+ FontFamily->"Times",ExpressionUUID->"9faca0b4-d690-4e8f-b106-736d5ebd0cc1"],
 
 Cell[TextData[{
  "The ",
  StyleBox["strong energy condition (SEC)",
   FontWeight->Bold],
  " controls the trace-reversed combination,"
-}], "Text",ExpressionUUID->"4ac10de5-c103-4e70-8350-59f32c4b90a0"],
+}], "Text",ExpressionUUID->"d47581a8-8158-400b-ad1b-90f5e405b1eb"],
 
 Cell[BoxData[
  FormBox[
@@ -317725,7 +317735,7 @@ Cell[BoxData[
    SuperscriptBox["u", "\[Nu]"], "\[GreaterEqual]", "0"}], 
   TraditionalForm]], "DisplayFormula",
  TextAlignment->Center,
- FontFamily->"Times",ExpressionUUID->"d2b497c3-d569-4567-9368-8c2a761d3ace"],
+ FontFamily->"Times",ExpressionUUID->"9ff76a68-4654-43e4-8d90-e5a47856e036"],
 
 Cell[TextData[{
  "with ",
@@ -317738,7 +317748,7 @@ Cell[TextData[{
      SubscriptBox["T", 
       RowBox[{"\[Mu]", "\[Nu]"}]]}]}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "09c6d3c7-17bb-4468-b587-d8b4a5f6e4ae"],
+  "067878dc-1845-4772-a23c-3f90bf78f7ca"],
  " the trace of the stress-energy.  The SEC is what enforces gravitational \
 attraction (the focusing theorem); cosmologists routinely violate it with \
 positive cosmological constant or inflation.  Finally the ",
@@ -317752,14 +317762,14 @@ the requirement that ",
     SubsuperscriptBox["T", "\[Nu]", "\[Mu]"], " ", 
     SuperscriptBox["u", "\[Nu]"]}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "27a9d398-a88b-4964-b3b4-7df022d8e622"],
+  "6133bf48-ef5e-496c-96af-f193e63adb7f"],
  " be a non-spacelike (timelike or null) 4-vector for every timelike ",
  Cell[BoxData[
   FormBox["u", TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "29c31f02-23c4-4077-b4fd-50cee2f04d9c"],
+  "85dc710e-d875-4444-8625-5b91b5a1ea75"],
  "."
-}], "Text",ExpressionUUID->"79229710-276e-4ae3-a08a-9192bb8c99a4"],
+}], "Text",ExpressionUUID->"e2ccbf64-b696-48e9-8a5d-0d6c4c92630f"],
 
 Cell[TextData[{
  "For ordinary matter \[LongDash] dust, photons, fluids, electromagnetic \
@@ -317773,7 +317783,7 @@ wall point of the v=c Alcubierre bubble (the option ",
  StyleBox["EvalAt", "Input"],
  " substitutes coordinates after symbolic differentiation so the random \
 observer sampler operates on a numerical metric):"
-}], "Text",ExpressionUUID->"288f3b0b-2d69-427e-a483-ae06828d11ac"],
+}], "Text",ExpressionUUID->"369fb57e-ef91-4ba2-b328-ab6731ef775d"],
 
 Cell["\<\
 SeedRandom[42];
@@ -317792,7 +317802,7 @@ CheckAllConditions[g, {t, x, y, z},
   equation form.
 *)\
 \>", "Input",
- CellTags->"runnable",ExpressionUUID->"5fa549e3-6ad9-488d-ba06-b6adda761787"],
+ CellTags->"runnable",ExpressionUUID->"70a32538-bb48-4883-9080-63f492617e1d"],
 
 Cell[TextData[{
  "Bobrick & Martire's 2021 paper showed something striking about this \
@@ -317803,7 +317813,7 @@ can be respected.  Subluminal positive-energy warp drives ",
  ".  They still cost an enormous amount of energy (orders of magnitude above \
 any human energy budget), but the matter content is in principle sourceable \
 by ordinary fields:"
-}], "Text",ExpressionUUID->"584a9b88-e604-4ad0-9c0f-6b4df10d1a93"],
+}], "Text",ExpressionUUID->"d21e8a12-5c64-4148-969b-e6dec23d4681"],
 
 Cell["\<\
 SeedRandom[42];
@@ -317824,7 +317834,7 @@ CheckAllConditions[gBM, {t, x, y, z},
   case where every observer-independent condition fails.
 *)\
 \>", "Input",
- CellTags->"runnable",ExpressionUUID->"ae29cbe4-f1b4-44c7-a15b-bf56625e83d8"],
+ CellTags->"runnable",ExpressionUUID->"69745441-a829-461c-b23a-57ea009103f3"],
 
 Cell[TextData[{
  "For non-unit-lapse metrics like Bobrick\[Dash]Martire or Lentz, the \
@@ -317837,7 +317847,7 @@ Eulerian energy density (",
     SuperscriptBox["n", "\[Mu]"], 
     SuperscriptBox["n", "\[Nu]"]}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "d035c1f4-b790-4133-8ddb-52d00128499f"],
+  "e3dee008-ac8b-4184-9082-ebecbca790d9"],
  " with ",
  Cell[BoxData[
   FormBox[
@@ -317851,17 +317861,17 @@ Eulerian energy density (",
        SuperscriptBox["\[Beta]", "i"]}], ")"}]}]}], TraditionalForm]], 
   "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "43c8ba07-bc55-4375-bf34-37f1457dc479"],
+  "b01505da-3d8a-4793-8894-5c89dc6df49d"],
  ") differs from the static-coordinate-observer ",
  Cell[BoxData[
   FormBox[
    SubscriptBox["T", "00"], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "8333d995-9875-4047-81c5-d740f14d0ca5"],
+  "70067d05-f7a7-4448-904b-bf457cff4a49"],
  " by the lapse factor.  The package's ",
  StyleBox["EulerianEnergyDensity", "Input"],
  " extracts the lapse from the metric automatically:"
-}], "Text",ExpressionUUID->"7311967c-0e3a-49b9-ac83-ba8b93e11a7b"],
+}], "Text",ExpressionUUID->"ae5e2f4a-0002-4cd7-aaa9-83935b9436fc"],
 
 Cell["\<\
 EulerianEnergyDensity[gBM, {t, x, y, z}] /.
@@ -317873,7 +317883,7 @@ EulerianEnergyDensity[gBM, {t, x, y, z}] /.
                    alpha = 1.012 at the shell and they disagree
                    by 1/alpha^2 ~= 0.976.  *)\
 \>", "Input",
- CellTags->"runnable",ExpressionUUID->"29c31182-f5a2-4303-83fb-9a84f5a3ad49"],
+ CellTags->"runnable",ExpressionUUID->"0043d15e-7eaf-4504-8da9-3caef6c8751d"],
 
 Cell["\<\
 This is the clearest path forward in the literature: instead of trying to \
@@ -317887,9 +317897,9 @@ down is not that they are buildable, but that they sharpen what general \
 relativity does and does not forbid: causality and the field equations alone \
 do not rule out faster-than-light effective travel; what rules it out, in \
 practice, is the matter sector.\
-\>", "Text",ExpressionUUID->"c62e77dc-aec3-456b-bb1c-11eee319209b"],
+\>", "Text",ExpressionUUID->"4bc9a555-9301-44a7-ace0-577de5bb21c3"],
 
-Cell["10. Implementation notes", "Section",ExpressionUUID->"a6a30e64-ccd0-4aeb-a2ad-e2410817d289"],
+Cell["10. Implementation notes", "Section",ExpressionUUID->"57f729e5-937d-4fb9-8093-463934d4e4dc"],
 
 Cell[TextData[{
  "\[Bullet] The Wolfram port is a side-by-side translation of a \
@@ -317906,7 +317916,7 @@ removes a step-size hyperparameter.\n",
    SubscriptBox["g", 
     RowBox[{"\[Mu]", "\[Nu]"}]], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "b8c4054a-63b6-4a55-9db7-1ed5f5f98da3"],
+  "b226b167-3386-4d06-a97f-eff3c2439cc6"],
  ".  Mix and match: pass any of them through ",
  StyleBox["EinsteinTensor", "Input"],
  ", ",
@@ -317935,9 +317945,9 @@ advection of the shift field for the geodesic sweep.\n",
  StyleBox["Wolfram/Tests.wls", "Input"],
  " verify the Minkowski limit, the unit determinant of the Alcubierre metric, \
 the ADM round-trip, and that flat-space Christoffel symbols vanish."
-}], "Text",ExpressionUUID->"88f5c0d1-a238-4675-b1d2-e490a01757c9"],
+}], "Text",ExpressionUUID->"452e0088-f8cd-4f26-88d6-b10f82460081"],
 
-Cell["11. What I take away", "Section",ExpressionUUID->"86219056-c39f-4478-941d-9323baf67f1b"],
+Cell["11. What I take away", "Section",ExpressionUUID->"6317e113-b080-4260-b703-697a34fb3f26"],
 
 Cell[TextData[{
  "\[Bullet] ",
@@ -317967,7 +317977,7 @@ development: the ban on warp drives only applies above ",
    RowBox[{
     SubscriptBox["v", "s"], "=", "c"}], TraditionalForm]], "InlineFormula",
   FontFamily->"Times",ExpressionUUID->
-  "e18395a9-830d-45cf-b2b8-aa8bc71cdb63"],
+  "86cc0af1-3475-48cc-bd9e-51af8c985bcb"],
  ".  Below it, perfectly normal matter can in principle do the job.  The \
 price is enormous \[LongDash] still much more than any existing energy source \
 \[LongDash] but it is finite, positive, and not magic.\n",
@@ -317979,9 +317989,9 @@ density, integrate geodesic, animate) fits on a single laptop screen.  The \
 same student who would struggle to set up Christoffel symbols on paper can \
 produce Figure 1 in two minutes in a notebook.  This is the workflow GR \
 education ought to be using by default."
-}], "Text",ExpressionUUID->"57c89486-2923-4ff8-be22-fa0fcf5d8a30"],
+}], "Text",ExpressionUUID->"de717989-6a63-4cf3-98d0-d55677a7b822"],
 
-Cell["12. References", "Section",ExpressionUUID->"a293d4e1-f48e-4f16-8b52-6f0f9afaa3d4"],
+Cell["12. References", "Section",ExpressionUUID->"ef30232c-3f37-4126-9e3c-263bb18c762c"],
 
 Cell[TextData[{
  "\[Bullet] M. Alcubierre (1994), \"The warp drive: hyper-fast travel within \
@@ -318096,14 +318106,14 @@ warp drive\", ",
   ButtonData->{
     URL["https://github.com/mthiel74/WarpDrives"], None}],
  "."
-}], "Text",ExpressionUUID->"3d08fe01-33e6-4da3-aeb4-bf59e59b48f1"]
+}], "Text",ExpressionUUID->"3c323b4e-dae6-4c42-b391-ac4a79a3072e"]
 },
 Saveable->True,
 WindowSize->{1100, 800},
 WindowMargins->{{Automatic, 0}, {Automatic, 0}},
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (October 27, 2025)",
 StyleDefinitions->"Default.nb",
-ExpressionUUID->"9c4a02c3-264f-4660-bf83-472e19f65393"
+ExpressionUUID->"efce35fc-c39f-46e7-ba4f-63cbec80eac9"
 ]
 (* End of Notebook Content *)
 
@@ -318111,217 +318121,217 @@ ExpressionUUID->"9c4a02c3-264f-4660-bf83-472e19f65393"
 (*CellTagsOutline
 CellTagsIndex->{
  "runnable"->{
-  Cell[2395329, 39438, 489, 9, 70, "Input",ExpressionUUID->"678a3645-3f52-44e1-bba5-8c40a4838d84",
+  Cell[2395329, 39438, 489, 9, 70, "Input",ExpressionUUID->"a0fa71a8-6cb9-4809-a2b4-4396cc8259a2",
    CellTags->"runnable"],
-  Cell[2405440, 39721, 378, 8, 70, "Input",ExpressionUUID->"041533e7-d509-4c9a-ae84-71c8295f763c",
+  Cell[2405440, 39721, 378, 8, 70, "Input",ExpressionUUID->"f34b5b41-b1d3-4a68-b4a1-8bb37e3810c5",
    CellTags->"runnable"],
-  Cell[2523166, 41762, 190, 4, 70, "Input",ExpressionUUID->"26016a76-0121-4d7e-8ed3-a82f90e4ffa3",
+  Cell[2523166, 41762, 190, 4, 70, "Input",ExpressionUUID->"8e04f604-f00d-44a6-abdb-ee9499543315",
    CellTags->"runnable"],
-  Cell[2524280, 41798, 173, 4, 70, "Input",ExpressionUUID->"f63e2d61-a7e3-4cf3-9483-2d7210b4d629",
+  Cell[2524280, 41798, 173, 4, 70, "Input",ExpressionUUID->"6ddf3a35-4a28-448d-bdf7-73da72a50f78",
    CellTags->"runnable"],
-  Cell[2526009, 41845, 358, 9, 70, "Input",ExpressionUUID->"58dad4f8-cd3a-4ba3-9861-48f670a9c6f3",
+  Cell[2526009, 41845, 358, 9, 70, "Input",ExpressionUUID->"5ce4348d-a768-4831-8d5c-d5e0e8a19064",
    CellTags->"runnable"],
-  Cell[2530546, 41982, 645, 12, 70, "Input",ExpressionUUID->"a4e88f22-b266-4c13-aee8-37cf6747aa72",
+  Cell[2530546, 41982, 645, 12, 70, "Input",ExpressionUUID->"7f242ba3-766b-4f94-b386-29a4f4bd3fc7",
    CellTags->"runnable"],
-  Cell[2532646, 42038, 342, 8, 70, "Input",ExpressionUUID->"d6d10a60-c174-47c4-a82b-dfc407644048",
+  Cell[2532967, 42048, 342, 8, 70, "Input",ExpressionUUID->"fbce6a8d-51ba-475c-b6ec-9ad497d356e4",
    CellTags->"runnable"],
-  Cell[3526031, 58432, 334, 8, 70, "Input",ExpressionUUID->"57cf0d69-42b0-40a1-b2b1-dfb43262abf4",
+  Cell[3526352, 58442, 334, 8, 70, "Input",ExpressionUUID->"b85c9f52-90ed-498b-a77d-fa3c08cf92b5",
    CellTags->"runnable"],
-  Cell[3907402, 64712, 416, 11, 70, "Input",ExpressionUUID->"f3295186-1040-46f1-b543-7350c25d1afe",
+  Cell[3907723, 64722, 416, 11, 70, "Input",ExpressionUUID->"8bf5ec1f-3c10-4ed6-9820-6a888c7da3cb",
    CellTags->"runnable"],
-  Cell[5380346, 89028, 1252, 26, 70, "Input",ExpressionUUID->"3946dee5-4b63-46e2-8242-7ced5042be55",
+  Cell[5380667, 89038, 1252, 26, 70, "Input",ExpressionUUID->"d5398d3a-bab8-4bb7-b9d7-f821cb89e9b3",
    CellTags->"runnable"],
-  Cell[14354477, 236465, 747, 17, 70, "Input",ExpressionUUID->"c06e71aa-6e68-4fcb-ac6d-449ef3b34143",
+  Cell[14354798, 236475, 747, 17, 70, "Input",ExpressionUUID->"9de9fe87-1c7c-4cf0-b3dc-a799ab780c90",
    CellTags->"runnable"],
-  Cell[17267736, 284455, 956, 21, 70, "Input",ExpressionUUID->"5492bfd7-0b86-4525-af6c-3916e64d5d96",
+  Cell[17268057, 284465, 956, 21, 70, "Input",ExpressionUUID->"6267b235-8ad6-4efa-a148-cc8300d4d1d3",
    CellTags->"runnable"],
-  Cell[18461495, 304251, 141, 1, 70, "Input",ExpressionUUID->"ead7bc52-2411-449e-b7e2-17181c3b8362",
+  Cell[18461816, 304261, 141, 1, 70, "Input",ExpressionUUID->"b163c4c8-8775-4002-abe1-90e0fbf8d1f1",
    CellTags->"runnable"],
-  Cell[19282496, 317777, 659, 17, 70, "Input",ExpressionUUID->"5fa549e3-6ad9-488d-ba06-b6adda761787",
+  Cell[19282817, 317787, 659, 17, 70, "Input",ExpressionUUID->"70a32538-bb48-4883-9080-63f492617e1d",
    CellTags->"runnable"],
-  Cell[19283675, 317807, 867, 19, 70, "Input",ExpressionUUID->"ae29cbe4-f1b4-44c7-a15b-bf56625e83d8",
+  Cell[19283996, 317817, 867, 19, 70, "Input",ExpressionUUID->"69745441-a829-461c-b23a-57ea009103f3",
    CellTags->"runnable"],
-  Cell[19285779, 317865, 533, 10, 70, "Input",ExpressionUUID->"29c31182-f5a2-4303-83fb-9a84f5a3ad49",
+  Cell[19286100, 317875, 533, 10, 70, "Input",ExpressionUUID->"0043d15e-7eaf-4504-8da9-3caef6c8751d",
    CellTags->"runnable"]}
  }
 *)
 (*CellTagsIndex
 CellTagsIndex->{
- {"runnable", 19295254, 318112}
+ {"runnable", 19295575, 318122}
  }
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[554, 20, 107, 0, 70, "Title",ExpressionUUID->"08859cf0-ae19-4706-9bd9-10ebfbf76145"],
-Cell[664, 22, 315, 5, 70, "Subtitle",ExpressionUUID->"1250d365-85f8-4280-993c-9ec09ce37b8c"],
-Cell[982, 29, 312, 8, 70, "Text",ExpressionUUID->"d080a878-7001-4108-a750-786ccf871caf"],
-Cell[1297, 39, 2387663, 39255, 70, "Output",ExpressionUUID->"15a79d31-a982-421d-859c-156dd47a41b9"],
-Cell[2388963, 39296, 82, 0, 70, "Section",ExpressionUUID->"8af464db-8493-4739-be8e-eb9c0b7eff27"],
-Cell[2389048, 39298, 1361, 26, 70, "Text",ExpressionUUID->"04019ba0-8567-429c-93f5-48675d763ab5"],
-Cell[2390412, 39326, 3946, 88, 70, "Text",ExpressionUUID->"67c6b9f9-e077-4ab7-b0fd-1dc606985e98"],
-Cell[2394361, 39416, 89, 0, 70, "Section",ExpressionUUID->"a966b313-b677-45d8-8a4b-a87562d7b258"],
-Cell[2394453, 39418, 873, 18, 70, "Text",ExpressionUUID->"266f4104-e530-4709-bee9-9506135be9f0"],
-Cell[2395329, 39438, 489, 9, 70, "Input",ExpressionUUID->"678a3645-3f52-44e1-bba5-8c40a4838d84",
+Cell[554, 20, 107, 0, 70, "Title",ExpressionUUID->"38dc3b69-621e-43d8-8d44-e4d1706e68f0"],
+Cell[664, 22, 315, 5, 70, "Subtitle",ExpressionUUID->"bd6c6039-86c4-45ae-9ad1-8647a7093c15"],
+Cell[982, 29, 312, 8, 70, "Text",ExpressionUUID->"f6e0fc50-97ad-45e1-8212-443312982b17"],
+Cell[1297, 39, 2387663, 39255, 70, "Output",ExpressionUUID->"453784f7-4cd9-4def-93f3-accd0efaf9a3"],
+Cell[2388963, 39296, 82, 0, 70, "Section",ExpressionUUID->"9d9edb7f-599a-4c9c-aee2-9105c5310811"],
+Cell[2389048, 39298, 1361, 26, 70, "Text",ExpressionUUID->"54a10f93-9b97-497e-9bb4-40a1e2943b35"],
+Cell[2390412, 39326, 3946, 88, 70, "Text",ExpressionUUID->"b9080ef9-55b2-46c2-865d-16d7bd7bf2c9"],
+Cell[2394361, 39416, 89, 0, 70, "Section",ExpressionUUID->"c494634e-4f41-41c9-b746-27a94d6d9a5d"],
+Cell[2394453, 39418, 873, 18, 70, "Text",ExpressionUUID->"fd83127d-840b-41a6-a785-8615f027f592"],
+Cell[2395329, 39438, 489, 9, 70, "Input",ExpressionUUID->"a0fa71a8-6cb9-4809-a2b4-4396cc8259a2",
  CellTags->"runnable"],
-Cell[2395821, 39449, 295, 7, 70, "Text",ExpressionUUID->"05bf9bee-4e04-4c25-bde8-bb53e1e7904b"],
-Cell[2396119, 39458, 98, 0, 70, "Section",ExpressionUUID->"f3d111c1-790f-40fd-a69e-39ec32d7069a"],
-Cell[2396220, 39460, 809, 13, 70, "Text",ExpressionUUID->"12fc08a5-5f65-458e-be55-930b76a2e24d"],
-Cell[2397032, 39475, 698, 12, 70, "Text",ExpressionUUID->"3da8dde0-4d52-4f37-96be-67ccfdab65e5"],
-Cell[2397733, 39489, 545, 16, 70, "DisplayFormula",ExpressionUUID->"36bfd5dd-7438-4e47-9ecc-75360912ab12"],
-Cell[2398281, 39507, 510, 14, 70, "Text",ExpressionUUID->"6d505b6a-c65b-4afd-94e7-4cbb5f224027"],
-Cell[2398794, 39523, 494, 15, 70, "DisplayFormula",ExpressionUUID->"7d74f56b-5199-49a1-b8d8-922c3874f53e"],
-Cell[2399291, 39540, 336, 8, 70, "Text",ExpressionUUID->"32340fcc-62c8-4ba6-97a3-0616f7354dc1"],
-Cell[2399630, 39550, 423, 13, 70, "DisplayFormula",ExpressionUUID->"2f865c91-1220-4ad8-87b4-87f23e367db1"],
-Cell[2400056, 39565, 910, 24, 70, "Text",ExpressionUUID->"1884d4d2-0423-40b0-95ab-821078b264c2"],
-Cell[2400969, 39591, 424, 12, 70, "DisplayFormula",ExpressionUUID->"dd5d8435-2e95-4da8-8ea0-f749c67fb778"],
-Cell[2401396, 39605, 2224, 65, 70, "Text",ExpressionUUID->"47efc50d-eca9-4291-854a-03c535aec081"],
-Cell[2403623, 39672, 128, 0, 70, "Text",ExpressionUUID->"368ccc2f-143a-487b-90f5-f81ae1e75996"],
-Cell[2403754, 39674, 526, 15, 70, "DisplayFormula",ExpressionUUID->"273759ef-aa52-485e-96d0-520fa312c450"],
-Cell[2404283, 39691, 1154, 28, 70, "Text",ExpressionUUID->"4281f024-4948-4dd9-bf7e-82ad2a58569f"],
-Cell[2405440, 39721, 378, 8, 70, "Input",ExpressionUUID->"041533e7-d509-4c9a-ae84-71c8295f763c",
+Cell[2395821, 39449, 295, 7, 70, "Text",ExpressionUUID->"bdf7ff83-2649-4484-9b51-0efa6063ec37"],
+Cell[2396119, 39458, 98, 0, 70, "Section",ExpressionUUID->"9030b4c1-563c-4f2e-8ba9-a2eb406237da"],
+Cell[2396220, 39460, 809, 13, 70, "Text",ExpressionUUID->"d68ea168-dd45-49e7-a8d7-385eee22d409"],
+Cell[2397032, 39475, 698, 12, 70, "Text",ExpressionUUID->"1199a98f-36c2-4617-8289-a69f24267704"],
+Cell[2397733, 39489, 545, 16, 70, "DisplayFormula",ExpressionUUID->"fc7cfe32-c0d6-476c-a977-b523e24856b8"],
+Cell[2398281, 39507, 510, 14, 70, "Text",ExpressionUUID->"c4d67695-542f-43ed-9fe6-784f24591506"],
+Cell[2398794, 39523, 494, 15, 70, "DisplayFormula",ExpressionUUID->"b67a4993-4da9-41c4-ae94-7ea4c8cb6b23"],
+Cell[2399291, 39540, 336, 8, 70, "Text",ExpressionUUID->"86bef3f6-1d16-4915-a28a-6b346611e646"],
+Cell[2399630, 39550, 423, 13, 70, "DisplayFormula",ExpressionUUID->"5cdd2bdb-3234-4f32-b38a-3dbe6b9b5092"],
+Cell[2400056, 39565, 910, 24, 70, "Text",ExpressionUUID->"f13a89f3-e8e4-4aa7-a37c-1daae2b9470f"],
+Cell[2400969, 39591, 424, 12, 70, "DisplayFormula",ExpressionUUID->"01c05b9b-a786-437b-8d5d-7f1ceaa6ca12"],
+Cell[2401396, 39605, 2224, 65, 70, "Text",ExpressionUUID->"be0709c2-d47d-4801-a139-608988ef6973"],
+Cell[2403623, 39672, 128, 0, 70, "Text",ExpressionUUID->"b4a41a23-73f6-4cd6-a7de-b8f1386c2d98"],
+Cell[2403754, 39674, 526, 15, 70, "DisplayFormula",ExpressionUUID->"12f5f755-6120-4b6d-8248-21e82a4f77f7"],
+Cell[2404283, 39691, 1154, 28, 70, "Text",ExpressionUUID->"1c779076-f6b2-4e92-9498-6621bdd8cd31"],
+Cell[2405440, 39721, 378, 8, 70, "Input",ExpressionUUID->"f34b5b41-b1d3-4a68-b4a1-8bb37e3810c5",
  CellTags->"runnable"],
-Cell[2405821, 39731, 109900, 1811, 70, "Output",ExpressionUUID->"ec5bc623-4991-4675-aeae-78bae7fa3fe3"],
-Cell[2515724, 41544, 980, 23, 70, "Text",ExpressionUUID->"6f6dc061-c759-4304-8109-68aef0177948"],
-Cell[2516707, 41569, 99, 0, 70, "Section",ExpressionUUID->"1a99de2a-7dca-4db9-b4e4-284a8b85728e"],
-Cell[2516809, 41571, 1172, 27, 70, "Text",ExpressionUUID->"371d10bf-db4d-41b2-b7aa-30889692789a"],
-Cell[2517984, 41600, 642, 21, 70, "DisplayFormula",ExpressionUUID->"1b17d4aa-0e64-4d10-908e-6bd61be5d04b"],
-Cell[2518629, 41623, 161, 3, 70, "Text",ExpressionUUID->"fb9301eb-8316-4068-9d50-423aed139f44"],
-Cell[2518793, 41628, 365, 11, 70, "DisplayFormula",ExpressionUUID->"565105a9-a536-4ef6-890d-5f204572513b"],
-Cell[2519161, 41641, 378, 11, 70, "DisplayFormula",ExpressionUUID->"45a26f9c-0fd3-41b0-b320-b43cb2696a81"],
-Cell[2519542, 41654, 262, 7, 70, "DisplayFormula",ExpressionUUID->"3051e927-10d0-4267-bda1-3d34e7f87d57"],
-Cell[2519807, 41663, 1946, 59, 70, "Text",ExpressionUUID->"8a6f50c6-d8a7-45f6-99c7-b2855ebda87b"],
-Cell[2521756, 41724, 147, 2, 70, "Text",ExpressionUUID->"74125487-d9a2-4883-acfd-a8f0c2fc3ab8"],
-Cell[2521906, 41728, 660, 18, 70, "DisplayFormula",ExpressionUUID->"b41fd6b9-3ece-4b00-8dde-d4f8ddea62f0"],
-Cell[2522569, 41748, 594, 12, 70, "Text",ExpressionUUID->"87fc3794-5f73-4830-92e9-8f710aa3566a"],
-Cell[2523166, 41762, 190, 4, 70, "Input",ExpressionUUID->"26016a76-0121-4d7e-8ed3-a82f90e4ffa3",
+Cell[2405821, 39731, 109900, 1811, 70, "Output",ExpressionUUID->"1c94c9c3-235c-40ae-ade5-233512d27026"],
+Cell[2515724, 41544, 980, 23, 70, "Text",ExpressionUUID->"19a006d3-b2b0-4eab-9340-87e1143fe3ed"],
+Cell[2516707, 41569, 99, 0, 70, "Section",ExpressionUUID->"1070f54b-c188-4164-a2d6-efc507bae03d"],
+Cell[2516809, 41571, 1172, 27, 70, "Text",ExpressionUUID->"75633aa5-f547-4611-835c-39cb93fcae8c"],
+Cell[2517984, 41600, 642, 21, 70, "DisplayFormula",ExpressionUUID->"b4dc6bf4-4d39-44b1-8e31-81b67631255c"],
+Cell[2518629, 41623, 161, 3, 70, "Text",ExpressionUUID->"8709a71c-ab9f-45fe-aace-bb48427138c6"],
+Cell[2518793, 41628, 365, 11, 70, "DisplayFormula",ExpressionUUID->"24fa4951-cc3c-4824-a18a-a5a58de1a982"],
+Cell[2519161, 41641, 378, 11, 70, "DisplayFormula",ExpressionUUID->"c1bf6e6d-970a-496e-bde4-549cbaeb5ee5"],
+Cell[2519542, 41654, 262, 7, 70, "DisplayFormula",ExpressionUUID->"567350b7-ed1a-44c1-a7c2-b76af7f9b773"],
+Cell[2519807, 41663, 1946, 59, 70, "Text",ExpressionUUID->"b81a42e6-2f69-49c3-8619-8e35811abb0b"],
+Cell[2521756, 41724, 147, 2, 70, "Text",ExpressionUUID->"053c7d83-9c22-461a-84fd-88081cd435a5"],
+Cell[2521906, 41728, 660, 18, 70, "DisplayFormula",ExpressionUUID->"94b263c3-54ee-469c-b541-16678dd3009c"],
+Cell[2522569, 41748, 594, 12, 70, "Text",ExpressionUUID->"583af8c1-581f-44b7-b2ec-f86d8c98ea95"],
+Cell[2523166, 41762, 190, 4, 70, "Input",ExpressionUUID->"8e04f604-f00d-44a6-abdb-ee9499543315",
  CellTags->"runnable"],
-Cell[2523359, 41768, 918, 28, 70, "Text",ExpressionUUID->"80290f9e-9ad9-4b02-b608-6abefbc6bee9"],
-Cell[2524280, 41798, 173, 4, 70, "Input",ExpressionUUID->"f63e2d61-a7e3-4cf3-9483-2d7210b4d629",
+Cell[2523359, 41768, 918, 28, 70, "Text",ExpressionUUID->"e7f2ffb0-4ff5-42af-91e4-ae3729ad51ab"],
+Cell[2524280, 41798, 173, 4, 70, "Input",ExpressionUUID->"6ddf3a35-4a28-448d-bdf7-73da72a50f78",
  CellTags->"runnable"],
-Cell[2524456, 41804, 107, 0, 70, "Section",ExpressionUUID->"732bbe09-1c8f-4dab-b7a2-f90293f93cbe"],
-Cell[2524566, 41806, 485, 8, 70, "Text",ExpressionUUID->"e2d3dcdc-f19c-4c04-8d1b-b2a65cc33aeb"],
-Cell[2525054, 41816, 844, 25, 70, "DisplayFormula",ExpressionUUID->"cf49ae13-df28-4e3a-bd7d-52bf0ac3ede9"],
-Cell[2525901, 41843, 105, 0, 70, "Text",ExpressionUUID->"7cf72203-5485-401b-a306-6994a7c2650a"],
-Cell[2526009, 41845, 358, 9, 70, "Input",ExpressionUUID->"58dad4f8-cd3a-4ba3-9861-48f670a9c6f3",
+Cell[2524456, 41804, 107, 0, 70, "Section",ExpressionUUID->"6aff0a90-4751-41e1-9f4a-58eb653076bb"],
+Cell[2524566, 41806, 485, 8, 70, "Text",ExpressionUUID->"8e9254b3-9d61-4c99-8ac4-5d20c675f600"],
+Cell[2525054, 41816, 844, 25, 70, "DisplayFormula",ExpressionUUID->"b8398cba-11cd-4aee-9165-520328d76966"],
+Cell[2525901, 41843, 105, 0, 70, "Text",ExpressionUUID->"0380a907-a66e-431c-8a65-5f9adb9c4947"],
+Cell[2526009, 41845, 358, 9, 70, "Input",ExpressionUUID->"5ce4348d-a768-4831-8d5c-d5e0e8a19064",
  CellTags->"runnable"],
-Cell[2526370, 41856, 169, 3, 70, "Text",ExpressionUUID->"afe17016-3106-462d-b875-400917e1cd66"],
-Cell[2526542, 41861, 1021, 26, 70, "DisplayFormula",ExpressionUUID->"ee2aa056-6437-4132-9584-b11e42da5bca"],
-Cell[2527566, 41889, 144, 2, 70, "Text",ExpressionUUID->"428fafdb-b7a6-4f86-910f-5aada28ad432"],
-Cell[2527713, 41893, 533, 15, 70, "DisplayFormula",ExpressionUUID->"2b31e5c4-a996-43ed-8e3a-43db3e819ef5"],
-Cell[2528249, 41910, 612, 15, 70, "Text",ExpressionUUID->"eaf1deec-ff93-48b3-a1b7-130b4eb53120"],
-Cell[2528864, 41927, 433, 14, 70, "DisplayFormula",ExpressionUUID->"8e3cc31d-1b4d-49d1-8863-8e2bb5c0e7f3"],
-Cell[2529300, 41943, 97, 0, 70, "Text",ExpressionUUID->"9bc824cb-19af-4618-9b79-9fc067ad604f"],
-Cell[2529400, 41945, 325, 9, 70, "DisplayFormula",ExpressionUUID->"efc9e59a-e14b-446c-bb5d-6c519960aa4b"],
-Cell[2529728, 41956, 330, 8, 70, "Text",ExpressionUUID->"b736f08b-b6a2-401a-be00-35732b078fa7"],
-Cell[2530061, 41966, 338, 10, 70, "DisplayFormula",ExpressionUUID->"989becc3-36fb-4f61-96ae-1c61a51a805e"],
-Cell[2530402, 41978, 141, 2, 70, "Text",ExpressionUUID->"58461a1f-7d38-4210-b6d9-ccf400ef873a"],
-Cell[2530546, 41982, 645, 12, 70, "Input",ExpressionUUID->"a4e88f22-b266-4c13-aee8-37cf6747aa72",
+Cell[2526370, 41856, 169, 3, 70, "Text",ExpressionUUID->"35a1f8c9-c6ac-43e6-9a07-4925cb9cd836"],
+Cell[2526542, 41861, 1021, 26, 70, "DisplayFormula",ExpressionUUID->"633e8435-650f-4d20-952c-26763115837c"],
+Cell[2527566, 41889, 144, 2, 70, "Text",ExpressionUUID->"5567299a-d838-4ac5-a131-cef421fb8f45"],
+Cell[2527713, 41893, 533, 15, 70, "DisplayFormula",ExpressionUUID->"5cfbb1fc-fee0-4e6b-bdd2-3aaf03db720e"],
+Cell[2528249, 41910, 612, 15, 70, "Text",ExpressionUUID->"689b483b-ae17-4456-908c-a9fce698d529"],
+Cell[2528864, 41927, 433, 14, 70, "DisplayFormula",ExpressionUUID->"184b05e4-c062-40e7-b36b-dc064b68e10f"],
+Cell[2529300, 41943, 97, 0, 70, "Text",ExpressionUUID->"9934d88e-b570-4a1c-9222-02b2b91715f8"],
+Cell[2529400, 41945, 325, 9, 70, "DisplayFormula",ExpressionUUID->"326394de-8176-41da-9026-d4453bd822e1"],
+Cell[2529728, 41956, 330, 8, 70, "Text",ExpressionUUID->"df15ebda-54b6-4879-9f80-b1b4748fe459"],
+Cell[2530061, 41966, 338, 10, 70, "DisplayFormula",ExpressionUUID->"d3e69ad3-9abe-49a4-8c23-ff0bbe6ebf25"],
+Cell[2530402, 41978, 141, 2, 70, "Text",ExpressionUUID->"0e7eeefe-92f8-4702-9954-4f0a582fcb13"],
+Cell[2530546, 41982, 645, 12, 70, "Input",ExpressionUUID->"7f242ba3-766b-4f94-b386-29a4f4bd3fc7",
  CellTags->"runnable"],
-Cell[2531194, 41996, 232, 3, 70, "Text",ExpressionUUID->"1ee7691e-b265-49a2-a575-9f7b5c03c1a5"],
-Cell[2531429, 42001, 616, 20, 70, "DisplayFormula",ExpressionUUID->"5337e20c-30a4-4749-aa9a-7853fa5a2d8e"],
-Cell[2532048, 42023, 595, 13, 70, "Text",ExpressionUUID->"eb390340-eb71-44e3-bc8a-65aedfc77151"],
-Cell[2532646, 42038, 342, 8, 70, "Input",ExpressionUUID->"d6d10a60-c174-47c4-a82b-dfc407644048",
+Cell[2531194, 41996, 553, 13, 70, "Text",ExpressionUUID->"9d17d225-1a33-43f9-b968-0d827a45ebe0"],
+Cell[2531750, 42011, 616, 20, 70, "DisplayFormula",ExpressionUUID->"34135366-a07e-442d-b1de-8fecdc1e7e39"],
+Cell[2532369, 42033, 595, 13, 70, "Text",ExpressionUUID->"fe4a037d-949f-40d8-9f48-fd6e26eddc55"],
+Cell[2532967, 42048, 342, 8, 70, "Input",ExpressionUUID->"fbce6a8d-51ba-475c-b6ec-9ad497d356e4",
  CellTags->"runnable"],
-Cell[2532991, 42048, 411920, 6762, 70, "Output",ExpressionUUID->"95763144-f7e8-400d-8262-7f58017628d7"],
-Cell[2944914, 48812, 164, 3, 70, "Text",ExpressionUUID->"1e4188e9-958f-482f-9114-253b711eabe0"],
-Cell[2945081, 48817, 575710, 9455, 70, "Output",ExpressionUUID->"acf75b8c-3f49-40bf-bfec-b4feb4265201"],
-Cell[3520794, 58274, 119, 0, 70, "Section",ExpressionUUID->"d5da620a-da77-41b9-833b-f2ac2c1bac0e"],
-Cell[3520916, 58276, 849, 21, 70, "Text",ExpressionUUID->"facf3ceb-b057-4d6c-a747-7703a9d98782"],
-Cell[3521768, 58299, 666, 22, 70, "DisplayFormula",ExpressionUUID->"3e6a13d4-4c70-43ae-bb26-9d793241b375"],
-Cell[3522437, 58323, 604, 15, 70, "Text",ExpressionUUID->"f55327c7-9f85-4d48-9c28-475275df6299"],
-Cell[3523044, 58340, 413, 12, 70, "DisplayFormula",ExpressionUUID->"d1361ed7-9e0f-4a94-93a0-ccad521c6f3d"],
-Cell[3523460, 58354, 1355, 40, 70, "Text",ExpressionUUID->"ae407c2a-41a7-4ecf-b84f-f8751dbcdf13"],
-Cell[3524818, 58396, 510, 15, 70, "DisplayFormula",ExpressionUUID->"01fe7199-3f43-458f-9dc9-399270affeed"],
-Cell[3525331, 58413, 697, 17, 70, "Text",ExpressionUUID->"66857364-8ccd-41cb-a6a8-824ef86d9d4e"],
-Cell[3526031, 58432, 334, 8, 70, "Input",ExpressionUUID->"57cf0d69-42b0-40a1-b2b1-dfb43262abf4",
+Cell[2533312, 42058, 411920, 6762, 70, "Output",ExpressionUUID->"68c4dfd9-435d-4030-b80d-0d62e4257a86"],
+Cell[2945235, 48822, 164, 3, 70, "Text",ExpressionUUID->"7b2e5288-a262-4197-96f1-915ba089ecc6"],
+Cell[2945402, 48827, 575710, 9455, 70, "Output",ExpressionUUID->"39a1823c-3a32-4e0a-8776-c5731946b7e0"],
+Cell[3521115, 58284, 119, 0, 70, "Section",ExpressionUUID->"b4a6c5a6-f521-458a-af3a-a817c79b902d"],
+Cell[3521237, 58286, 849, 21, 70, "Text",ExpressionUUID->"845b0591-47ea-44be-a9ae-778f779318b1"],
+Cell[3522089, 58309, 666, 22, 70, "DisplayFormula",ExpressionUUID->"acc264d6-c997-4542-828a-6bf2f70dc5ff"],
+Cell[3522758, 58333, 604, 15, 70, "Text",ExpressionUUID->"3cccde19-2a7c-42fc-bfb1-58d916573b80"],
+Cell[3523365, 58350, 413, 12, 70, "DisplayFormula",ExpressionUUID->"296f6843-1b01-4b6b-ad88-8d175e3c2b44"],
+Cell[3523781, 58364, 1355, 40, 70, "Text",ExpressionUUID->"ceb5fd46-e086-4fbd-8c6c-5000287519a6"],
+Cell[3525139, 58406, 510, 15, 70, "DisplayFormula",ExpressionUUID->"6620692c-c634-4566-9a5d-b7277bc01192"],
+Cell[3525652, 58423, 697, 17, 70, "Text",ExpressionUUID->"93537d7c-e762-4676-bd41-694b1846c52e"],
+Cell[3526352, 58442, 334, 8, 70, "Input",ExpressionUUID->"b85c9f52-90ed-498b-a77d-fa3c08cf92b5",
  CellTags->"runnable"],
-Cell[3526368, 58442, 379941, 6245, 70, "Output",ExpressionUUID->"4daa052c-57c5-45aa-a24a-55943d234015"],
-Cell[3906312, 64689, 481, 7, 70, "Text",ExpressionUUID->"c235e01f-5823-4a31-810e-8329cd224687"],
-Cell[3906796, 64698, 97, 0, 70, "Section",ExpressionUUID->"e1ccbf89-1de7-4ece-a969-cca993862e32"],
-Cell[3906896, 64700, 503, 10, 70, "Text",ExpressionUUID->"0facb00b-af3d-4e34-9afd-22bde85cf006"],
-Cell[3907402, 64712, 416, 11, 70, "Input",ExpressionUUID->"f3295186-1040-46f1-b543-7350c25d1afe",
+Cell[3526689, 58452, 379941, 6245, 70, "Output",ExpressionUUID->"89897800-b8ae-4102-9f30-541e327aca55"],
+Cell[3906633, 64699, 481, 7, 70, "Text",ExpressionUUID->"b9b3dfda-fe86-4fb0-8203-95bfd98b4b2f"],
+Cell[3907117, 64708, 97, 0, 70, "Section",ExpressionUUID->"8df29173-d6ec-4b7f-a800-2eed8c212e9d"],
+Cell[3907217, 64710, 503, 10, 70, "Text",ExpressionUUID->"2b7067d9-9454-445c-8491-62bf0d58e409"],
+Cell[3907723, 64722, 416, 11, 70, "Input",ExpressionUUID->"8bf5ec1f-3c10-4ed6-9820-6a888c7da3cb",
  CellTags->"runnable"],
-Cell[3907821, 64725, 1471150, 24275, 70, "Output",ExpressionUUID->"07f9620c-8e3b-4864-bf01-ac5e44216e30"],
-Cell[5378974, 89002, 116, 0, 70, "Section",ExpressionUUID->"9087dbba-0ade-4219-8881-ecb604ca492b"],
-Cell[5379093, 89004, 838, 11, 70, "Text",ExpressionUUID->"442754bf-327b-4e85-bbdc-8948986ee119"],
-Cell[5379934, 89017, 409, 9, 70, "Text",ExpressionUUID->"825bec78-c3fc-4995-8b34-c75a0779ae4a"],
-Cell[5380346, 89028, 1252, 26, 70, "Input",ExpressionUUID->"3946dee5-4b63-46e2-8242-7ced5042be55",
+Cell[3908142, 64735, 1471150, 24275, 70, "Output",ExpressionUUID->"cfb4b921-1b50-4e10-9187-745345b8bace"],
+Cell[5379295, 89012, 116, 0, 70, "Section",ExpressionUUID->"0ff4897e-566e-4bfa-9778-111b5ca95d01"],
+Cell[5379414, 89014, 838, 11, 70, "Text",ExpressionUUID->"b76662b5-0367-472d-b43b-c1cd7f19eb8b"],
+Cell[5380255, 89027, 409, 9, 70, "Text",ExpressionUUID->"f0d2b4c7-4af5-47ac-9759-668021b7961e"],
+Cell[5380667, 89038, 1252, 26, 70, "Input",ExpressionUUID->"d5398d3a-bab8-4bb7-b9d7-f821cb89e9b3",
  CellTags->"runnable"],
-Cell[5381601, 89056, 339, 6, 70, "Text",ExpressionUUID->"037efc22-c339-4ddf-8e90-e175c3b37784"],
-Cell[5381943, 89064, 5398262, 88657, 70, "Output",ExpressionUUID->"1e15199f-7dd1-4405-84ff-20452a4ced49"],
-Cell[10780208, 177723, 494, 7, 70, "Text",ExpressionUUID->"82744bd6-eb69-4dcb-a047-37e0b9035d70"],
-Cell[10780705, 177732, 3572196, 58695, 70, "Output",ExpressionUUID->"7319ca5a-351d-463d-af0d-ac8ab26a75b4"],
-Cell[14352904, 236429, 939, 23, 70, "Text",ExpressionUUID->"aa3c5dcd-bae9-4ca2-bc9c-5f87e5b36a46"],
-Cell[14353846, 236454, 98, 0, 70, "Section",ExpressionUUID->"9379f29d-fbf9-4746-8f20-c90ec5a6be93"],
-Cell[14353947, 236456, 527, 7, 70, "Text",ExpressionUUID->"83da5a07-23cb-495d-8b4f-39d00c3b99e9"],
-Cell[14354477, 236465, 747, 17, 70, "Input",ExpressionUUID->"c06e71aa-6e68-4fcb-ac6d-449ef3b34143",
+Cell[5381922, 89066, 339, 6, 70, "Text",ExpressionUUID->"2bd1e2ec-69b6-4e99-a852-f521064d974e"],
+Cell[5382264, 89074, 5398262, 88657, 70, "Output",ExpressionUUID->"f38bbd34-1ef0-4207-a0d1-bc55a774f850"],
+Cell[10780529, 177733, 494, 7, 70, "Text",ExpressionUUID->"02441bb6-24e0-401e-8dfe-c04f7f9905fa"],
+Cell[10781026, 177742, 3572196, 58695, 70, "Output",ExpressionUUID->"0564d2d1-3324-4e60-a790-8e2f9ab950d5"],
+Cell[14353225, 236439, 939, 23, 70, "Text",ExpressionUUID->"0f832480-847a-42e8-ac1f-93ee95e1ca56"],
+Cell[14354167, 236464, 98, 0, 70, "Section",ExpressionUUID->"19ea7dc5-d1b1-422a-b8a7-bc733f07d8d1"],
+Cell[14354268, 236466, 527, 7, 70, "Text",ExpressionUUID->"40d68566-3a77-4e2c-afa5-0adf4b7dafb7"],
+Cell[14354798, 236475, 747, 17, 70, "Input",ExpressionUUID->"9de9fe87-1c7c-4cf0-b3dc-a799ab780c90",
  CellTags->"runnable"],
-Cell[14355227, 236484, 2907021, 47813, 70, "Output",ExpressionUUID->"50a3a4fb-d391-4bb9-b90c-b6b48ac8027f"],
-Cell[17262251, 284299, 121, 0, 70, "Section",ExpressionUUID->"721623fe-b22a-460d-8208-90816259079c"],
-Cell[17262375, 284301, 448, 11, 70, "Text",ExpressionUUID->"2f8474c3-dddc-4bfb-8440-4eb0b1d3c3d5"],
-Cell[17262826, 284314, 651, 20, 70, "DisplayFormula",ExpressionUUID->"faa514d4-99e8-479f-b9e6-27d21da6cb31"],
-Cell[17263480, 284336, 445, 12, 70, "Text",ExpressionUUID->"cf6691e0-fc93-4af1-a811-1c8865745ab7"],
-Cell[17263928, 284350, 680, 20, 70, "DisplayFormula",ExpressionUUID->"513d74b9-0c23-44e9-8cd9-e173d808031f"],
-Cell[17264611, 284372, 377, 7, 70, "Text",ExpressionUUID->"41ce3293-43ec-4f46-9d4f-fc03eb249e16"],
-Cell[17264991, 284381, 336, 9, 70, "DisplayFormula",ExpressionUUID->"f0c055bd-1512-471a-af5f-6e7c65f41877"],
-Cell[17265330, 284392, 1397, 36, 70, "Text",ExpressionUUID->"c9e75126-3749-40d5-9fae-df06b9ba5a87"],
-Cell[17266730, 284430, 1003, 23, 70, "Text",ExpressionUUID->"dcee6af6-9a2c-48bd-80dd-8cdf4d00accb"],
-Cell[17267736, 284455, 956, 21, 70, "Input",ExpressionUUID->"5492bfd7-0b86-4525-af6c-3916e64d5d96",
+Cell[14355548, 236494, 2907021, 47813, 70, "Output",ExpressionUUID->"a5ade8bd-0b4b-4ee2-9849-95c3b08cf8c8"],
+Cell[17262572, 284309, 121, 0, 70, "Section",ExpressionUUID->"733488c9-aa58-4704-9547-4c0aac42d88c"],
+Cell[17262696, 284311, 448, 11, 70, "Text",ExpressionUUID->"431605b0-2d95-4671-b147-b2fbb605b52c"],
+Cell[17263147, 284324, 651, 20, 70, "DisplayFormula",ExpressionUUID->"9a98f126-0093-4c75-bf03-efb352ea36f3"],
+Cell[17263801, 284346, 445, 12, 70, "Text",ExpressionUUID->"d33427d4-1b0e-4aae-bb1b-a5829c7a9afe"],
+Cell[17264249, 284360, 680, 20, 70, "DisplayFormula",ExpressionUUID->"402851a8-22fa-4459-bce7-82072d859b36"],
+Cell[17264932, 284382, 377, 7, 70, "Text",ExpressionUUID->"1d0d6649-c9a0-495b-bf83-0a2f3b1606d5"],
+Cell[17265312, 284391, 336, 9, 70, "DisplayFormula",ExpressionUUID->"cbf9b69c-bdcb-4f52-a56c-d74758db7165"],
+Cell[17265651, 284402, 1397, 36, 70, "Text",ExpressionUUID->"d0670fc9-60a9-4a81-a745-6e0021944327"],
+Cell[17267051, 284440, 1003, 23, 70, "Text",ExpressionUUID->"ad0e86c5-3129-429e-a6ab-63e7da7b0931"],
+Cell[17268057, 284465, 956, 21, 70, "Input",ExpressionUUID->"6267b235-8ad6-4efa-a148-cc8300d4d1d3",
  CellTags->"runnable"],
-Cell[17268695, 284478, 1177768, 19330, 70, "Input",ExpressionUUID->"012888e7-ca5c-43f9-a739-9c1baa078bfe"],
-Cell[18446466, 303810, 1238, 31, 70, "Text",ExpressionUUID->"6a539344-afd1-48e9-be13-3f617668300d"],
-Cell[18447707, 303843, 106, 0, 70, "Section",ExpressionUUID->"323b30bd-2e6b-4e72-a0e2-4d66b3bee151"],
-Cell[18447816, 303845, 1980, 48, 70, "Text",ExpressionUUID->"78b4e5cc-78a5-4bd7-88d1-bcc5eae7751d"],
-Cell[18449799, 303895, 280, 4, 70, "Text",ExpressionUUID->"30fd358f-3432-432b-90f9-501b6259e45e"],
-Cell[18450082, 303901, 1323, 41, 70, "Text",ExpressionUUID->"4085e27e-90b3-411a-aa76-39ed0baa97af"],
-Cell[18451408, 303944, 402, 12, 70, "Text",ExpressionUUID->"3da1ba40-2467-408b-8a25-a6af900cdfb6"],
-Cell[18451813, 303958, 223, 5, 70, "DisplayFormula",ExpressionUUID->"284f861a-4adf-40a8-ab8e-dd04b8485152"],
-Cell[18452039, 303965, 441, 9, 70, "Text",ExpressionUUID->"2851a671-1138-4637-a0e1-6829d1bbfbd4"],
-Cell[18452483, 303976, 232, 6, 70, "DisplayFormula",ExpressionUUID->"1efbbb8f-c70d-44aa-b932-ee997ef81177"],
-Cell[18452718, 303984, 387, 8, 70, "Text",ExpressionUUID->"dc9be864-b374-45e2-acbe-f1e3e1543749"],
-Cell[18453108, 303994, 253, 6, 70, "Text",ExpressionUUID->"d76f6fab-8f2a-4865-93d6-b5553ee2840e"],
-Cell[18453364, 304002, 694, 22, 70, "DisplayFormula",ExpressionUUID->"7452d365-3317-4db2-8ee8-a231ce108206"],
-Cell[18454061, 304026, 1665, 48, 70, "Text",ExpressionUUID->"54339b8e-e84f-41f4-87ff-2136ad512686"],
-Cell[18455729, 304076, 462, 11, 70, "DisplayFormula",ExpressionUUID->"7e0df735-9519-4dd2-9fbc-1937cbf5fb79"],
-Cell[18456194, 304089, 414, 11, 70, "Text",ExpressionUUID->"585f0a4a-7c6f-4ebf-8b41-6c87c621a7a5"],
-Cell[18456611, 304102, 677, 21, 70, "DisplayFormula",ExpressionUUID->"bb2d746a-adc1-4498-89cd-b00231cfd5a5"],
-Cell[18457291, 304125, 594, 14, 70, "Text",ExpressionUUID->"688a5a94-5a0a-4e6f-88fe-6b0c5570509b"],
-Cell[18457888, 304141, 496, 14, 70, "Text",ExpressionUUID->"85c8410f-d52a-4be3-a039-3e2b75825fd5"],
-Cell[18458387, 304157, 676, 21, 70, "DisplayFormula",ExpressionUUID->"6c9d3aad-10a4-4ca9-8c0e-ca5b60521580"],
-Cell[18459066, 304180, 207, 3, 70, "Text",ExpressionUUID->"7f494681-7c31-48cb-9821-09022013cf7c"],
-Cell[18459276, 304185, 349, 9, 70, "DisplayFormula",ExpressionUUID->"ba4f3886-8e2c-4435-b4ad-4298f729fd41"],
-Cell[18459628, 304196, 194, 3, 70, "Text",ExpressionUUID->"84dac6f2-5cf2-41c7-b1fc-524bb4669c99"],
-Cell[18459825, 304201, 227, 6, 70, "Text",ExpressionUUID->"3f35a518-7ba7-4869-90b5-19cab73db437"],
-Cell[18460055, 304209, 277, 7, 70, "DisplayFormula",ExpressionUUID->"cd73106a-9498-433b-9b3b-0827ef7e2cda"],
-Cell[18460335, 304218, 274, 4, 70, "Text",ExpressionUUID->"9b91c78a-d58e-444d-bad5-1a01033522b1"],
-Cell[18460612, 304224, 880, 25, 70, "Text",ExpressionUUID->"ef17bdb2-bd0c-4fa3-9dd4-467d69ee4282"],
-Cell[18461495, 304251, 141, 1, 70, "Input",ExpressionUUID->"ead7bc52-2411-449e-b7e2-17181c3b8362",
+Cell[17269016, 284488, 1177768, 19330, 70, "Input",ExpressionUUID->"72b944f7-930c-46bf-9ccd-840809bc15e7"],
+Cell[18446787, 303820, 1238, 31, 70, "Text",ExpressionUUID->"bd882fc2-812b-409d-9bd8-902e4a195a01"],
+Cell[18448028, 303853, 106, 0, 70, "Section",ExpressionUUID->"49df006f-eec6-4071-8ddd-ddb9b4beccec"],
+Cell[18448137, 303855, 1980, 48, 70, "Text",ExpressionUUID->"0077af8f-f9dc-4219-8973-52532ee6f6ec"],
+Cell[18450120, 303905, 280, 4, 70, "Text",ExpressionUUID->"ab181552-fbc2-40eb-a11f-c9759eb44c9c"],
+Cell[18450403, 303911, 1323, 41, 70, "Text",ExpressionUUID->"3b2a38a6-9034-48d1-9292-2e38ef91ab10"],
+Cell[18451729, 303954, 402, 12, 70, "Text",ExpressionUUID->"641e3a2c-ff6f-49f3-9366-31caff7cf426"],
+Cell[18452134, 303968, 223, 5, 70, "DisplayFormula",ExpressionUUID->"97745ed7-a956-41d1-83bf-861ff29a92d2"],
+Cell[18452360, 303975, 441, 9, 70, "Text",ExpressionUUID->"396eff9a-b9de-4e0b-ab08-f4bf7965365a"],
+Cell[18452804, 303986, 232, 6, 70, "DisplayFormula",ExpressionUUID->"054e72bd-4508-4d12-b956-8a58c898927f"],
+Cell[18453039, 303994, 387, 8, 70, "Text",ExpressionUUID->"2df0e952-144e-4666-9ec5-06b487c909b6"],
+Cell[18453429, 304004, 253, 6, 70, "Text",ExpressionUUID->"bc721e56-b4d9-445e-8cdc-5138b23163de"],
+Cell[18453685, 304012, 694, 22, 70, "DisplayFormula",ExpressionUUID->"c3184228-6d5f-4236-84f0-a3cbc7863d7b"],
+Cell[18454382, 304036, 1665, 48, 70, "Text",ExpressionUUID->"aa79bd52-c651-4e56-a73e-c48a9a8c747d"],
+Cell[18456050, 304086, 462, 11, 70, "DisplayFormula",ExpressionUUID->"9683988f-7b8b-47c6-8ee0-bfdae59b86c4"],
+Cell[18456515, 304099, 414, 11, 70, "Text",ExpressionUUID->"c1e6c8f8-81dc-423f-892c-dc75b9f428dd"],
+Cell[18456932, 304112, 677, 21, 70, "DisplayFormula",ExpressionUUID->"4f5ff943-1fad-40de-8f07-0aa8107fba58"],
+Cell[18457612, 304135, 594, 14, 70, "Text",ExpressionUUID->"54e7fe49-942b-4a94-9baf-d5cc4b974be0"],
+Cell[18458209, 304151, 496, 14, 70, "Text",ExpressionUUID->"e79402de-49e9-4c70-ba60-97a5eff53cdb"],
+Cell[18458708, 304167, 676, 21, 70, "DisplayFormula",ExpressionUUID->"a8ad3bcf-f3e0-41f5-9b66-f2b2ab934205"],
+Cell[18459387, 304190, 207, 3, 70, "Text",ExpressionUUID->"0d7103a5-b980-4f93-a3cb-940cb39a91e0"],
+Cell[18459597, 304195, 349, 9, 70, "DisplayFormula",ExpressionUUID->"ba3abf48-dd8d-42b1-b8e1-6769db937e10"],
+Cell[18459949, 304206, 194, 3, 70, "Text",ExpressionUUID->"15a3c891-6888-4187-97c5-170122463445"],
+Cell[18460146, 304211, 227, 6, 70, "Text",ExpressionUUID->"c3d5bacc-7845-48d5-9d5a-b209d3cf845b"],
+Cell[18460376, 304219, 277, 7, 70, "DisplayFormula",ExpressionUUID->"ed71193a-80da-46de-adaf-5690ecc476b7"],
+Cell[18460656, 304228, 274, 4, 70, "Text",ExpressionUUID->"f9bb6b27-b593-4a3a-ab97-6a50e1d5d289"],
+Cell[18460933, 304234, 880, 25, 70, "Text",ExpressionUUID->"3a892e28-0852-40d9-84ee-cce3a65c7279"],
+Cell[18461816, 304261, 141, 1, 70, "Input",ExpressionUUID->"b163c4c8-8775-4002-abe1-90e0fbf8d1f1",
  CellTags->"runnable"],
-Cell[18461639, 304254, 816415, 13400, 70, "Output",ExpressionUUID->"323731c4-7094-44fd-91b4-b60d6811d01e"],
-Cell[19278057, 317656, 112, 0, 70, "Section",ExpressionUUID->"7ba4030a-b1b7-46d9-b4bb-640ccb861023"],
-Cell[19278172, 317658, 378, 7, 70, "Text",ExpressionUUID->"789b9d7b-31d9-402b-a210-3a8ddf48c1bf"],
-Cell[19278553, 317667, 431, 10, 70, "DisplayFormula",ExpressionUUID->"6e30ee1a-c48a-4a05-82fc-2379eea3bd6a"],
-Cell[19278987, 317679, 420, 12, 70, "Text",ExpressionUUID->"48ea3530-b4fd-46db-a689-0c9d4b357fc9"],
-Cell[19279410, 317693, 427, 10, 70, "DisplayFormula",ExpressionUUID->"1151c311-7ce8-4940-ab2c-0f978247c3e2"],
-Cell[19279840, 317705, 200, 5, 70, "Text",ExpressionUUID->"4ac10de5-c103-4e70-8350-59f32c4b90a0"],
-Cell[19280043, 317712, 505, 15, 70, "DisplayFormula",ExpressionUUID->"d2b497c3-d569-4567-9368-8c2a761d3ace"],
-Cell[19280551, 317729, 1258, 32, 70, "Text",ExpressionUUID->"79229710-276e-4ae3-a08a-9192bb8c99a4"],
-Cell[19281812, 317763, 681, 12, 70, "Text",ExpressionUUID->"288f3b0b-2d69-427e-a483-ae06828d11ac"],
-Cell[19282496, 317777, 659, 17, 70, "Input",ExpressionUUID->"5fa549e3-6ad9-488d-ba06-b6adda761787",
+Cell[18461960, 304264, 816415, 13400, 70, "Output",ExpressionUUID->"c3a81bdb-509b-4372-b529-d8e5ac266561"],
+Cell[19278378, 317666, 112, 0, 70, "Section",ExpressionUUID->"935194b1-ae0d-4c86-b6c9-ecb3277f47d0"],
+Cell[19278493, 317668, 378, 7, 70, "Text",ExpressionUUID->"464ca495-5fdd-4641-a39d-053837159370"],
+Cell[19278874, 317677, 431, 10, 70, "DisplayFormula",ExpressionUUID->"89986a36-fd58-416f-907b-296da6be50fc"],
+Cell[19279308, 317689, 420, 12, 70, "Text",ExpressionUUID->"36d1b787-4ec5-4dc4-a5a0-5b89dbcb1ed0"],
+Cell[19279731, 317703, 427, 10, 70, "DisplayFormula",ExpressionUUID->"9faca0b4-d690-4e8f-b106-736d5ebd0cc1"],
+Cell[19280161, 317715, 200, 5, 70, "Text",ExpressionUUID->"d47581a8-8158-400b-ad1b-90f5e405b1eb"],
+Cell[19280364, 317722, 505, 15, 70, "DisplayFormula",ExpressionUUID->"9ff76a68-4654-43e4-8d90-e5a47856e036"],
+Cell[19280872, 317739, 1258, 32, 70, "Text",ExpressionUUID->"e2ccbf64-b696-48e9-8a5d-0d6c4c92630f"],
+Cell[19282133, 317773, 681, 12, 70, "Text",ExpressionUUID->"369fb57e-ef91-4ba2-b328-ab6731ef775d"],
+Cell[19282817, 317787, 659, 17, 70, "Input",ExpressionUUID->"70a32538-bb48-4883-9080-63f492617e1d",
  CellTags->"runnable"],
-Cell[19283158, 317796, 514, 9, 70, "Text",ExpressionUUID->"584a9b88-e604-4ad0-9c0f-6b4df10d1a93"],
-Cell[19283675, 317807, 867, 19, 70, "Input",ExpressionUUID->"ae29cbe4-f1b4-44c7-a15b-bf56625e83d8",
+Cell[19283479, 317806, 514, 9, 70, "Text",ExpressionUUID->"d21e8a12-5c64-4148-969b-e6dec23d4681"],
+Cell[19283996, 317817, 867, 19, 70, "Input",ExpressionUUID->"69745441-a829-461c-b23a-57ea009103f3",
  CellTags->"runnable"],
-Cell[19284545, 317828, 1231, 35, 70, "Text",ExpressionUUID->"7311967c-0e3a-49b9-ac83-ba8b93e11a7b"],
-Cell[19285779, 317865, 533, 10, 70, "Input",ExpressionUUID->"29c31182-f5a2-4303-83fb-9a84f5a3ad49",
+Cell[19284866, 317838, 1231, 35, 70, "Text",ExpressionUUID->"ae5e2f4a-0002-4cd7-aaa9-83935b9436fc"],
+Cell[19286100, 317875, 533, 10, 70, "Input",ExpressionUUID->"0043d15e-7eaf-4504-8da9-3caef6c8751d",
  CellTags->"runnable"],
-Cell[19286315, 317877, 870, 12, 70, "Text",ExpressionUUID->"c62e77dc-aec3-456b-bb1c-11eee319209b"],
-Cell[19287188, 317891, 98, 0, 70, "Section",ExpressionUUID->"a6a30e64-ccd0-4aeb-a2ad-e2410817d289"],
-Cell[19287289, 317893, 1953, 44, 70, "Text",ExpressionUUID->"88f5c0d1-a238-4675-b1d2-e490a01757c9"],
-Cell[19289245, 317939, 94, 0, 70, "Section",ExpressionUUID->"86219056-c39f-4478-941d-9323baf67f1b"],
-Cell[19289342, 317941, 2111, 40, 70, "Text",ExpressionUUID->"57c89486-2923-4ff8-be22-fa0fcf5d8a30"],
-Cell[19291456, 317983, 88, 0, 70, "Section",ExpressionUUID->"a293d4e1-f48e-4f16-8b52-6f0f9afaa3d4"],
-Cell[19291547, 317985, 3342, 113, 70, "Text",ExpressionUUID->"3d08fe01-33e6-4da3-aeb4-bf59e59b48f1"]
+Cell[19286636, 317887, 870, 12, 70, "Text",ExpressionUUID->"4bc9a555-9301-44a7-ace0-577de5bb21c3"],
+Cell[19287509, 317901, 98, 0, 70, "Section",ExpressionUUID->"57f729e5-937d-4fb9-8093-463934d4e4dc"],
+Cell[19287610, 317903, 1953, 44, 70, "Text",ExpressionUUID->"452e0088-f8cd-4f26-88d6-b10f82460081"],
+Cell[19289566, 317949, 94, 0, 70, "Section",ExpressionUUID->"6317e113-b080-4260-b703-697a34fb3f26"],
+Cell[19289663, 317951, 2111, 40, 70, "Text",ExpressionUUID->"de717989-6a63-4cf3-98d0-d55677a7b822"],
+Cell[19291777, 317993, 88, 0, 70, "Section",ExpressionUUID->"ef30232c-3f37-4126-9e3c-263bb18c762c"],
+Cell[19291868, 317995, 3342, 113, 70, "Text",ExpressionUUID->"3c323b4e-dae6-4c42-b391-ac4a79a3072e"]
 }
 ]
 *)
