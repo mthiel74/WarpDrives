@@ -147,11 +147,17 @@ CheckDEC::usage =
 CheckAllConditions::usage =
   "CheckAllConditions[g, coords] -> Association of WEC/NEC/SEC/DEC.";
 
-Options[CheckWEC]           = {NSamples -> 10, Tolerance -> 10^-10};
-Options[CheckNEC]           = {NSamples -> 20, Tolerance -> 10^-10};
-Options[CheckSEC]           = {NSamples -> 10, Tolerance -> 10^-10};
-Options[CheckDEC]           = {NSamples -> 10, Tolerance -> 10^-10};
-Options[CheckAllConditions] = {NSamples -> 10, Tolerance -> 10^-10};
+EvalAt::usage =
+  "EvalAt is an option for the Check* functions.  Pass a list of coordinate \
+substitution rules (e.g. EvalAt -> {t -> 0., x -> 1.}) to evaluate metric and \
+stress-energy at a numerical point before random observer sampling.  Default \
+None leaves both symbolic; sampling then degenerates to the static observer.";
+
+Options[CheckWEC]           = {NSamples -> 10, Tolerance -> 10^-10, EvalAt -> None};
+Options[CheckNEC]           = {NSamples -> 20, Tolerance -> 10^-10, EvalAt -> None};
+Options[CheckSEC]           = {NSamples -> 10, Tolerance -> 10^-10, EvalAt -> None};
+Options[CheckDEC]           = {NSamples -> 10, Tolerance -> 10^-10, EvalAt -> None};
+Options[CheckAllConditions] = {NSamples -> 10, Tolerance -> 10^-10, EvalAt -> None};
 
 (* ---- Invariants -------------------------------------------- *)
 KretschmannScalar::usage =
@@ -555,26 +561,33 @@ NullVectors[n_Integer, g_?MatrixQ] :=
         AppendTo[out, Re @ Prepend[v dir, 1.]]]];
     If[out === {}, {{1., 0., 0., 1.}}, out]];
 
+applyEvalAt[expr_, None] := expr;
+applyEvalAt[expr_, rule_Rule] := expr /. rule;
+applyEvalAt[expr_, rules_List] := expr /. rules;
+
 CheckWEC[g_, coords_List, OptionsPattern[]] :=
   Module[{T, vals, gEval, n = OptionValue[NSamples],
-          tol = OptionValue[Tolerance]},
-    T = N @ StressEnergyTensor[g, coords];
-    gEval = N[g];
+          tol = OptionValue[Tolerance], ev = OptionValue[EvalAt]},
+    T = N @ applyEvalAt[StressEnergyTensor[g, coords], ev];
+    gEval = N @ applyEvalAt[g, ev];
     vals = Table[u . T . u,
                  {u, Append[TimelikeVelocities[n, gEval], {1., 0, 0, 0}]}];
     {Min[vals] >= -tol, Min[vals]}];
 
 CheckNEC[g_, coords_List, OptionsPattern[]] :=
-  Module[{T, vals, n = OptionValue[NSamples],
-          tol = OptionValue[Tolerance]},
-    T = N @ StressEnergyTensor[g, coords];
-    vals = Table[k . T . k, {k, NullVectors[n, g]}];
+  Module[{T, gEval, vals, n = OptionValue[NSamples],
+          tol = OptionValue[Tolerance], ev = OptionValue[EvalAt]},
+    T = N @ applyEvalAt[StressEnergyTensor[g, coords], ev];
+    gEval = N @ applyEvalAt[g, ev];
+    vals = Table[k . T . k, {k, NullVectors[n, gEval]}];
     {Min[vals] >= -tol, Min[vals]}];
 
 CheckSEC[g_, coords_List, OptionsPattern[]] :=
-  Module[{gEval = N[g], T, ginv, tr, Tsec, vals,
-          n = OptionValue[NSamples], tol = OptionValue[Tolerance], m, nn},
-    T    = N @ StressEnergyTensor[g, coords];
+  Module[{gEval, T, ginv, tr, Tsec, vals,
+          n = OptionValue[NSamples], tol = OptionValue[Tolerance],
+          ev = OptionValue[EvalAt], m, nn},
+    gEval = N @ applyEvalAt[g, ev];
+    T    = N @ applyEvalAt[StressEnergyTensor[g, coords], ev];
     ginv = Inverse[gEval];
     tr   = Sum[ginv[[m, nn]] T[[m, nn]], {m, 4}, {nn, 4}];
     Tsec = T - (1/2) tr gEval;
@@ -583,11 +596,14 @@ CheckSEC[g_, coords_List, OptionsPattern[]] :=
     {Min[vals] >= -tol, Min[vals]}];
 
 CheckDEC[g_, coords_List, OptionsPattern[]] :=
-  Module[{gEval = N[g], T, ginv, Tmixed, vals, wec,
-          n = OptionValue[NSamples], tol = OptionValue[Tolerance]},
-    wec = First @ CheckWEC[g, coords, NSamples -> n, Tolerance -> tol];
+  Module[{gEval, T, ginv, Tmixed, vals, wec,
+          n = OptionValue[NSamples], tol = OptionValue[Tolerance],
+          ev = OptionValue[EvalAt]},
+    wec = First @ CheckWEC[g, coords,
+                           NSamples -> n, Tolerance -> tol, EvalAt -> ev];
     If[!wec, Return[{False, -Infinity}]];
-    T      = N @ StressEnergyTensor[g, coords];
+    gEval = N @ applyEvalAt[g, ev];
+    T      = N @ applyEvalAt[StressEnergyTensor[g, coords], ev];
     ginv   = Inverse[gEval];
     Tmixed = ginv . T;
     vals   = Table[Module[{J = -Tmixed . u}, J . gEval . J],

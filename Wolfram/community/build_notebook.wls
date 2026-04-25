@@ -1292,25 +1292,33 @@ timelike ", mathI["u"], "."}], "Text"],
 
  Cell[TextData[{"For ordinary matter \[LongDash] dust, photons, \
 fluids, electromagnetic fields \[LongDash] all four are obviously \
-satisfied.  For an Alcubierre bubble at superluminal speed three of \
-the four are ",
+satisfied.  For an Alcubierre bubble at superluminal speed all \
+four are ",
    StyleBox["violated", FontWeight -> Bold],
    ", which is the rigorous statement of \"requires exotic \
 matter\".  The package ships sampling-based checkers for all four \
-conditions; applied to a wall point of the v=c Alcubierre bubble:"}],
+conditions; applied to a wall point of the v=c Alcubierre bubble \
+(the option ",
+   StyleBox["EvalAt", "Input"],
+   " substitutes coordinates after symbolic differentiation so the \
+random observer sampler operates on a numerical metric):"}],
       "Text"],
 
  inputCell[
-"g = AlcubierreMetric[{1.0, 1.0, 8.0}, {t, x, y, z}];
-CheckAllConditions[g, {t, x, y, z}] /.
-   {t -> 0., x -> 1.0, y -> 0.2, z -> 0.}
+"SeedRandom[42];
+g = AlcubierreMetric[{1.0, 1.0, 8.0}, {t, x, y, z}];
+CheckAllConditions[g, {t, x, y, z},
+   EvalAt -> {t -> 0., x -> 1.0, y -> 0.2, z -> 0.}]
 (*
-  <| WEC -> {True,  +0.11},
-     NEC -> {False, -0.43},
-     SEC -> {False, -0.20},
-     DEC -> {False, +0.02} |>
-  Three of the four classical conditions are violated, NEC most
-  badly.  This is what \"exotic matter\" means in cold equation form.
+  <| WEC -> {False, -0.288},
+     NEC -> {False, -0.403},
+     SEC -> {False, -0.735},
+     DEC -> {False, -Infinity} |>
+  All four classical conditions are violated.  DEC reports
+  -Infinity because CheckDEC short-circuits when WEC has already
+  failed (a non-spacelike energy current presupposes non-negative
+  energy density).  This is what \"exotic matter\" means in cold
+  equation form.
 *)"],
 
  Cell[TextData[{"Bobrick & Martire's 2021 paper showed something \
@@ -1323,10 +1331,23 @@ magnitude above any human energy budget), but the matter content \
 is in principle sourceable by ordinary fields:"}], "Text"],
 
  inputCell[
-"gBM = BobrickMartireMetric[{0.5, 1.0, 2.0, 0.1, 5.0},
+"SeedRandom[42];
+gBM = BobrickMartireMetric[{0.5, 1.0, 2.0, 0.1, 5.0},
                             {t, x, y, z}];   (* v=0.5c, shell *)
-CheckAllConditions[gBM, {t, x, y, z}] /.
-   {t -> 0., x -> 1.5, y -> 0., z -> 0.}     (* inside the shell *)"],
+CheckAllConditions[gBM, {t, x, y, z},
+   EvalAt -> {t -> 0., x -> 1.5, y -> 0., z -> 0.}]   (* in the shell *)
+(*
+  <| WEC -> {True,  +0.0032},
+     NEC -> {True,  +0.00046},
+     SEC -> {False, -0.00056},
+     DEC -> {True,  -1.16e-5} |>
+  WEC, NEC, and DEC are satisfied -- positive-energy matter could
+  in principle source this geometry.  SEC is violated, but SEC is
+  the condition that enforces gravitational attraction; positive
+  cosmological constant and inflation violate it routinely, so an
+  SEC-only violation is qualitatively different from the Alcubierre
+  case where every observer-independent condition fails.
+*)"],
 
  Cell[TextData[{"This is the clearest path forward in the \
 literature: instead of trying to engineer exotic matter, find \
