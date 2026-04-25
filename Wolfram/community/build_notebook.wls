@@ -1378,6 +1378,31 @@ CheckAllConditions[gBM, {t, x, y, z},
   case where every observer-independent condition fails.
 *)"],
 
+ Cell[TextData[{"For non-unit-lapse metrics like Bobrick\[Dash]Martire \
+or Lentz, the Eulerian energy density (",
+   mathI[RowBox[{"\[Rho]", "=", SubscriptBox["T", RowBox[{"\[Mu]",
+     "\[Nu]"}]], SuperscriptBox["n", "\[Mu]"], SuperscriptBox["n",
+     "\[Nu]"]}]], " with ",
+   mathI[RowBox[{SuperscriptBox["n", "\[Mu]"], "=",
+     RowBox[{SuperscriptBox["\[Alpha]", RowBox[{"-", "1"}]],
+       RowBox[{"(", RowBox[{"1", ",", "-", SuperscriptBox["\[Beta]", "i"]}],
+         ")"}]}]}]],
+   ") differs from the static-coordinate-observer ",
+   mathI[SubscriptBox["T", "00"]],
+   " by the lapse factor.  The package's ",
+   StyleBox["EulerianEnergyDensity", "Input"],
+   " extracts the lapse from the metric automatically:"}], "Text"],
+
+ inputCell[
+"EulerianEnergyDensity[gBM, {t, x, y, z}] /.
+   {t -> 0., x -> 1.5, y -> 0., z -> 0.}
+(*  +0.003394   <- Eulerian observer (alpha-corrected)
+    +0.004363   <- G_00/(8 pi) at the same point (static
+                   coordinate observer T_00).  The two agree
+                   only when alpha = 1 (e.g. Alcubierre); here
+                   alpha = 1.012 at the shell and they disagree
+                   by 1/alpha^2 ~= 0.976.  *)"],
+
  Cell[TextData[{"This is the clearest path forward in the \
 literature: instead of trying to engineer exotic matter, find \
 geometries which require none, even if the resulting drive is \
