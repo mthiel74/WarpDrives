@@ -1479,8 +1479,9 @@ reasonable total energy requirements\", ",
      BaseStyle -> "Hyperlink",
      ButtonData -> {URL["https://arxiv.org/abs/gr-qc/9905084"], None}],
    ".\n",
-   "\[Bullet] H. White (2011), \"Warp Field Mechanics 101\", AIAA \
-paper, NASA-JSC.\n",
+   "\[Bullet] H. White (2011), \"Warp Field Mechanics 101\", \
+presented at the 100 Year Starship Symposium (NASA Johnson Space \
+Center technical report; non-peer-reviewed conference paper).\n",
    "\[Bullet] A. Bobrick & G. Martire (2021), \"Introducing Physical \
 Warp Drives\", ",
    StyleBox["Class. Quantum Grav.", FontSlant -> Italic], " ",
