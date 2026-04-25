@@ -1047,26 +1047,29 @@ the result to ",
  Cell[TextData[{"In ADM language an Eulerian observer (the analogue \
 of a stationary one in flat space) has spatial 3-velocity ",
    mathI[RowBox[{"-", betaUp}]],
-   ", so as the bubble approaches a stationary particle from the \
-left, the particle is grabbed by the shift field and accelerated \
-forward; as the bubble passes, the particle decelerates back to \
-rest.  Particles further from the axis feel proportionally less of \
-the bubble's grip:"}], "Text"],
+   " = ", mathI[RowBox[{vsBoxed, " ", fOfRs}]],
+   " (positive, forward).  We place eight initially stationary \
+particles ahead of the bubble; as the bubble overtakes them from \
+behind, each one is grabbed by the shift field and dragged forward.  \
+Particles on the bubble axis get the deepest grip; particles \
+further off-axis are partly missed by the wall and feel \
+proportionally less drag:"}], "Text"],
 
  inputCell[
-"alcShift[t_, x_, y_] := -1.0 TanhShape[Sqrt[(x - 1.0 t)^2 + y^2], 1, 8];
+"alcShift[t_, x_, y_] := +1.0 TanhShape[Sqrt[(x - 1.0 t)^2 + y^2], 1, 8];
 
-(* Eulerian advection: dx/dt = -beta^x = +alcShift.
-   Use a fixed Euler step dt set by the time grid spacing. *)
+(* Eulerian-observer advection: dx/dt = -beta^x = +v_s f(r_s).
+   alcShift here returns the magnitude +v_s f, which is exactly
+   -beta^x for an Alcubierre bubble.  Use a fixed Euler step. *)
 sweep[{x0_, y0_}, ts_] := With[{dt = ts[[2]] - ts[[1]]},
   FoldList[
     {#1[[1]] + dt alcShift[#2, #1[[1]], y0], #1[[2]]} &,
     {x0, y0}, Rest[ts]]];
 
 ts = Range[0., 4., 0.05];
-trajs = Table[sweep[{-3., y0}, ts], {y0, Range[-1.4, 1.4, 0.35]}];
+trajs = Table[sweep[{2., y0}, ts], {y0, Range[-1.4, 1.4, 0.35]}];
 ListAnimate @ Table[
-  Show[DensityPlot[Abs[alcShift[ts[[k]], x, y]], {x, -3, 5.5},
+  Show[DensityPlot[Abs[alcShift[ts[[k]], x, y]], {x, -1, 6},
                    {y, -2, 2}, PlotPoints -> 90,
                    ColorFunction -> \"BlueGreenYellow\"],
        Graphics[{Black, Thick, Line /@ (Take[#, k] & /@ trajs),
@@ -1074,19 +1077,28 @@ ListAnimate @ Table[
   {k, 1, Length[ts], 2}]"],
 
  imgCell[loadAnim["anim_geodesic_bundle.gif", 600, 28, 7],
-   "Figure 7. Eight initially stationary test particles caught up by \
-an oncoming Alcubierre bubble.  Particles near the axis are dragged \
-fastest; off-axis particles barely move.  Black tails are the \
-trajectories so far; red dots are the current positions.  The \
-colourmap shows the shift magnitude, i.e. the local speed at which \
-the bubble \"grabs\" passing fluid."],
+   "Figure 7. Eight initially stationary test particles overtaken by \
+an Alcubierre bubble travelling left-to-right.  Each particle has \
+spatial 3-velocity ",
+"\!\(\*SubscriptBox[\(v\), \(s\)]\)f(\!\(\*SubscriptBox[\(r\), \(s\)]\))",
+" \[LongDash] the Eulerian-observer law for \[Alpha]=1.  Particles near the \
+axis (small |y|) get the deepest grip and are dragged fastest; off-axis \
+particles are partly missed by the wall and barely move.  Black tails \
+are trajectories so far; red dots are current positions; the colourmap \
+shows the shift magnitude."],
 
  Cell[TextData[{"For a real geodesic integration (full 4-velocity, \
 Christoffel-symbol-driven) the package ships ",
    StyleBox["IntegrateGeodesic", "Input"],
    " on top of ", StyleBox["NDSolve", "Input"],
-   ".  The animation above uses the Eulerian-observer shortcut, \
-which is exact for static observers in an ADM spacetime with ",
+   ".  The animation above uses the Eulerian-observer shortcut: \
+each particle is advected by its instantaneous coordinate velocity ",
+   mathI[RowBox[{"d", SuperscriptBox["x", "i"], "/", "dt"}]],
+   " = ", mathI[RowBox[{"-", betaUp}]],
+   ", which is the spatial 3-velocity of an observer whose \
+4-velocity is the unit normal to the slice.  This is a 3-velocity \
+shortcut, not a full timelike geodesic, but it captures exactly \
+the bubble's drag on test particles for ",
    mathI[RowBox[{alphaSym, "=", "1"}]], "."}], "Text"],
 
  (* ----------- Section 8: All six metrics ---------- *)

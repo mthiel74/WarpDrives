@@ -186,13 +186,16 @@ swept[v_, R_, sigma_, x0_, y0_, tList_] :=
 
 geoYs    = Range[-1.4, 1.4, 0.35];
 tGrid    = Range[0., 4., 0.05];
-trajs    = Table[swept[1., 1., 8., -3., y0, tGrid], {y0, geoYs}];
+(* Particles start ahead of the bubble (at x=2, bubble at xs=0) so
+   the bubble overtakes them as it moves left-to-right.  The shift
+   gives them a +x kick proportional to v_s f(r_s). *)
+trajs    = Table[swept[1., 1., 8., 2., y0, tGrid], {y0, geoYs}];
 
 makeGeoFrame[k_] :=
   Show[
     DensityPlot[
       alcShiftMag[1., 1., 8., tGrid[[k]], x, y],
-      {x, -3.2, 5.5}, {y, -2., 2.},
+      {x, -1., 6.}, {y, -2., 2.},
       PlotPoints -> 90, ColorFunction -> "BlueGreenYellow",
       ColorFunctionScaling -> True, PlotRangePadding -> 0,
       Frame -> True, FrameLabel -> {"x", "y"},
