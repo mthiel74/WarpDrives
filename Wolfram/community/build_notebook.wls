@@ -1258,7 +1258,7 @@ for the others, an analogous shape-function-driven proxy."}], "Text"],
 
  imgCell[loadPng["metric_comparison.png", 760],
    "Figure 8. The six warp-drive metric families side by side.  All \
-panels are slices through the y-x plane.  Top row: Alcubierre's \
+panels are slices through the x-y plane.  Top row: Alcubierre's \
 energy density, Nat\[AAcute]rio's shift-derivative proxy (no \
 expansion/contraction regions, just a wall), Van Den Broeck's \
 pocket factor.  Bottom row: White's toroidal shape, the \
