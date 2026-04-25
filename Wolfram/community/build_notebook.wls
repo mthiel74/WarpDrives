@@ -727,8 +727,13 @@ bubble wall:"}], "Text"],
 "GAt = EinsteinTensor[g, {t, x, y, z}] /.
        {t -> 0, x -> 1.0, y -> 0.2, z -> 0};
 N @ Chop @ GAt // MatrixForm
-(*  the (0,0) entry is 8\[Pi]\[Rho]_Eulerian, off-diagonal entries are
-    energy fluxes, ij-block is anisotropic stress  *)"],
+(*  GAt[[1,1]] = 8 Pi T_{00} -- the energy density measured by a
+    *static* coordinate observer (4-velocity (1,0,0,0)).  This is
+    NOT the Eulerian-observer energy density rho_Eulerian =
+    T_{mu nu} n^mu n^nu, which is contracted with the unit normal
+    n = (1, -beta^i)/alpha and is computed by EulerianEnergyDensity.
+    The (0,i) entries are momentum density components and the
+    ij-block is anisotropic stress.  *)"],
 
  Cell[TextData[{"For Alcubierre the energy density seen by a static \
 observer admits a famous closed form, derived by Alcubierre in the \
