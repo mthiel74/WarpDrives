@@ -62,7 +62,7 @@ TimelikeVelocities[n_Integer, g_?MatrixQ] :=
     If[out === {}, {{1., 0., 0., 0.}}, out]];
 
 NullVectors[n_Integer, g_?MatrixQ] :=
-  Module[{out = {}, attempts = 0, dir, a, b, c, disc, v, i, j},
+  Module[{out = {}, attempts = 0, dir, a, b, c, disc, vp, vm, i, j},
     While[Length[out] < n && attempts < 50 n,
       attempts++;
       dir = randomUnit3[];
@@ -71,8 +71,14 @@ NullVectors[n_Integer, g_?MatrixQ] :=
       c = g[[1, 1]];
       disc = b^2 - 4 a c;
       If[NumericQ[disc] && disc >= 0 && a != 0,
-        v = (-b + Sqrt[disc])/(2 a);
-        AppendTo[out, Re @ Prepend[v dir, 1.]]]];
+        (* Both roots are valid null vectors at this point;
+           include both so the sample explores both branches of
+           the light cone in this spatial direction. *)
+        vp = (-b + Sqrt[disc])/(2 a);
+        vm = (-b - Sqrt[disc])/(2 a);
+        AppendTo[out, Re @ Prepend[vp dir, 1.]];
+        If[Length[out] < n,
+          AppendTo[out, Re @ Prepend[vm dir, 1.]]]]];
     If[out === {}, {{1., 0., 0., 1.}}, out]];
 
 (* Substitute EvalAt rule (or list of rules) into a symbolic expression. *)

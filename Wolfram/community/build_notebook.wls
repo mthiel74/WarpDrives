@@ -1328,8 +1328,8 @@ CheckAllConditions[g, {t, x, y, z},
    EvalAt -> {t -> 0., x -> 1.0, y -> 0.2, z -> 0.}]
 (*
   <| WEC -> {False, -0.288},
-     NEC -> {False, -0.403},
-     SEC -> {False, -0.735},
+     NEC -> {False, -0.480},
+     SEC -> {False, -0.488},
      DEC -> {False, -Infinity} |>
   All four classical conditions are violated.  DEC reports
   -Infinity because CheckDEC short-circuits when WEC has already
@@ -1355,8 +1355,8 @@ CheckAllConditions[gBM, {t, x, y, z},
    EvalAt -> {t -> 0., x -> 1.5, y -> 0., z -> 0.}]   (* in the shell *)
 (*
   <| WEC -> {True,  +0.0032},
-     NEC -> {True,  +0.00046},
-     SEC -> {False, -0.00056},
+     NEC -> {True,  +0.00030},
+     SEC -> {False, -0.00136},
      DEC -> {True,  -1.16e-5} |>
   WEC, NEC, and DEC are satisfied -- positive-energy matter could
   in principle source this geometry.  SEC is violated, but SEC is
