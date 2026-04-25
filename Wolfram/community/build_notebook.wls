@@ -738,9 +738,9 @@ N @ Chop @ GAt // MatrixForm
     The (0,i) entries are momentum density components and the
     ij-block is anisotropic stress.  *)"],
 
- Cell[TextData[{"For Alcubierre the energy density seen by a static \
-observer admits a famous closed form, derived by Alcubierre in the \
-original paper:"}], "Text"],
+ Cell[TextData[{"For Alcubierre the energy density seen by an \
+Eulerian (slice-normal) observer admits a famous closed form, \
+derived by Alcubierre in the original paper:"}], "Text"],
 
  mathD[rhoAnalytic],
 
