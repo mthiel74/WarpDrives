@@ -61,32 +61,41 @@ loadAnim[name_, w_:480, frameCap_:30, rate_:6] :=
             AnimationRunning -> True,
             AnimationRepetitions -> Infinity]]]]];
 
-imgCell[content_, caption_String:""] :=
-  Cell[BoxData[ToBoxes[
-    If[caption === "", content,
-      Column[{content,
-              Pane[Style[caption, Italic, FontSize -> 10,
-                         FontFamily -> "Helvetica"],
-                   imgWidth, Alignment -> Center]},
-             Alignment -> Center, Spacings -> 0.6]]]],
-    "Output", ShowCellLabel -> False,
-    TextAlignment -> Center,
-    CellMargins -> {{20, 20}, {10, 14}}];
+(* imgCell: an Output cell wrapping content with an optional caption.
+   The caption is variadic so callers can mix plain strings, StyleBox
+   fragments, and inline math (\!\(...\)) without having to
+   pre-concatenate.  An empty arg list means no caption. *)
+imgCell[content_, captionParts___] :=
+  With[{caps = {captionParts}},
+    Cell[BoxData[ToBoxes[
+      If[caps === {} || caps === {""},
+        content,
+        Column[{content,
+                Pane[Style[Row[caps],
+                           FontSize -> 10, FontSlant -> Italic,
+                           FontFamily -> "Helvetica"],
+                     imgWidth, Alignment -> Center]},
+               Alignment -> Center, Spacings -> 0.6]]]],
+      "Output", ShowCellLabel -> False,
+      TextAlignment -> Center,
+      CellMargins -> {{20, 20}, {10, 14}}]];
 
-(* outputCell: embed a live Wolfram expression as an Output cell.
-   Used for Graphics3D so the reader can mouse-rotate the surface
-   directly in Mathematica or Wolfram Player. *)
-outputCell[expr_, caption_String:""] :=
-  Cell[BoxData[ToBoxes[
-    If[caption === "", expr,
-      Column[{expr,
-              Pane[Style[caption, Italic, FontSize -> 10,
-                         FontFamily -> "Helvetica"],
-                   imgWidth, Alignment -> Center]},
-             Alignment -> Center, Spacings -> 0.6]]]],
-    "Output", ShowCellLabel -> False,
-    TextAlignment -> Center,
-    CellMargins -> {{20, 20}, {10, 14}}];
+(* outputCell: same shape as imgCell but for live expressions
+   (Graphics3D, etc.) that the reader can interact with. *)
+outputCell[expr_, captionParts___] :=
+  With[{caps = {captionParts}},
+    Cell[BoxData[ToBoxes[
+      If[caps === {} || caps === {""},
+        expr,
+        Column[{expr,
+                Pane[Style[Row[caps],
+                           FontSize -> 10, FontSlant -> Italic,
+                           FontFamily -> "Helvetica"],
+                     imgWidth, Alignment -> Center]},
+               Alignment -> Center, Spacings -> 0.6]]]],
+      "Output", ShowCellLabel -> False,
+      TextAlignment -> Center,
+      CellMargins -> {{20, 20}, {10, 14}}]];
 
 (* ---------- math symbols ------------------------------------------ *)
 
