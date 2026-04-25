@@ -13,7 +13,8 @@ TimelikeVelocities::usage =
   "TimelikeVelocities[n, g] returns a list of n normalized timelike 4-velocities at a point with metric g.";
 
 NullVectors::usage =
-  "NullVectors[n, g] returns n approximate null 4-vectors (spatial direction on S^2, k^0=1).";
+  "NullVectors[n, g] returns n null 4-vectors of the metric g, sampled \
+uniformly on S^2 in spatial direction.  Each k satisfies g_{\[Mu]\[Nu]} k^\[Mu] k^\[Nu] = 0.";
 
 CheckWEC::usage =
   "CheckWEC[g, coords, opts] returns {satisfied, min T_{\[Mu]\[Nu]} u^{\[Mu]} u^{\[Nu]}} over sampled timelike observers.";
@@ -53,8 +54,19 @@ TimelikeVelocities[n_Integer, g_?MatrixQ] :=
         AppendTo[out, Re[u/Sqrt[-nrm]]]]];
     If[out === {}, {{1., 0., 0., 0.}}, out]];
 
-NullVectors[n_Integer, _] :=
-  Table[Prepend[randomUnit3[], 1.], {n}];
+NullVectors[n_Integer, g_?MatrixQ] :=
+  Module[{out = {}, attempts = 0, dir, a, b, c, disc, v, i, j},
+    While[Length[out] < n && attempts < 50 n,
+      attempts++;
+      dir = randomUnit3[];
+      a = Sum[g[[1 + i, 1 + j]] dir[[i]] dir[[j]], {i, 3}, {j, 3}];
+      b = 2 Sum[g[[1, 1 + i]] dir[[i]], {i, 3}];
+      c = g[[1, 1]];
+      disc = b^2 - 4 a c;
+      If[NumericQ[disc] && disc >= 0 && a != 0,
+        v = (-b + Sqrt[disc])/(2 a);
+        AppendTo[out, Re @ Prepend[v dir, 1.]]]];
+    If[out === {}, {{1., 0., 0., 1.}}, out]];
 
 CheckWEC[g_, coords_List, OptionsPattern[]] :=
   Module[{T, vals, gEval, n = OptionValue[NSamples], tol = OptionValue[Tolerance]},

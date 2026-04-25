@@ -135,7 +135,7 @@ AlcubierreExpansionScalar::usage =
 TimelikeVelocities::usage =
   "TimelikeVelocities[n, g] samples n normalised timelike 4-velocities.";
 NullVectors::usage =
-  "NullVectors[n, g] samples n null 4-vectors.";
+  "NullVectors[n, g] samples n null 4-vectors of the metric g (each k satisfies g.k.k = 0).";
 CheckWEC::usage =
   "CheckWEC[g, coords] -> {satisfied, min}.";
 CheckNEC::usage =
@@ -541,8 +541,19 @@ TimelikeVelocities[n_Integer, g_?MatrixQ] :=
         AppendTo[out, Re[u/Sqrt[-nrm]]]]];
     If[out === {}, {{1., 0., 0., 0.}}, out]];
 
-NullVectors[n_Integer, _] :=
-  Table[Prepend[randomUnit3[], 1.], {n}];
+NullVectors[n_Integer, g_?MatrixQ] :=
+  Module[{out = {}, attempts = 0, dir, a, b, c, disc, v, i, j},
+    While[Length[out] < n && attempts < 50 n,
+      attempts++;
+      dir = randomUnit3[];
+      a = Sum[g[[1 + i, 1 + j]] dir[[i]] dir[[j]], {i, 3}, {j, 3}];
+      b = 2 Sum[g[[1, 1 + i]] dir[[i]], {i, 3}];
+      c = g[[1, 1]];
+      disc = b^2 - 4 a c;
+      If[NumericQ[disc] && disc >= 0 && a != 0,
+        v = (-b + Sqrt[disc])/(2 a);
+        AppendTo[out, Re @ Prepend[v dir, 1.]]]];
+    If[out === {}, {{1., 0., 0., 1.}}, out]];
 
 CheckWEC[g_, coords_List, OptionsPattern[]] :=
   Module[{T, vals, gEval, n = OptionValue[NSamples],
