@@ -831,9 +831,10 @@ centre.  Plotted on a slice at ", mathI[RowBox[{"z", "=", "0"}]],
 
  imgCell[loadPng["expansion_scalar.png"],
    "Figure 2. Expansion scalar \[Theta] of Eulerian observers around \
-an Alcubierre bubble.  Blue = space contracting (front of bubble), \
-red = space expanding (back of bubble).  The y-z plane through the \
-centre is exactly neutral."],
+an Alcubierre bubble.  Red = space contracting (front of bubble, \
+\[Theta]<0), blue = space expanding (back of bubble, \[Theta]>0); \
+the RedBlueTones colour function maps low values to red and high \
+values to blue.  The y-z plane through the centre is exactly neutral."],
 
  Cell[TextData[{"So if you stand inside the bubble and look out the \
 front porthole, distant galaxies appear to be rushing towards you; \
