@@ -435,8 +435,10 @@ moving at ", mathI["v"], " = ", mathI["c"],
    " requires a wall thinner than the Planck length and a total \
 negative mass-energy of order ",
    mathI[SuperscriptBox["10", "65"]],
-   " grams \[LongDash] roughly ten billion times the mass of the \
-observable universe, with the opposite sign.  Even granting the \
+   " grams \[LongDash] of order a billion times the baryonic mass \
+of the observable universe (~",
+   mathI[SuperscriptBox["10", "56"]],
+   " g), with the opposite sign.  Even granting the \
 matter, superluminal bubbles develop horizons (Finazzi, Liberati \
 & Barcel\[OAcute] 2009) that disconnect the ship from the front \
 wall and exhibit semiclassical instabilities on timescales \
