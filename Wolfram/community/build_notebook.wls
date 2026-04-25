@@ -247,7 +247,7 @@ einsteinDefEq = RowBox[{GMnLow, "=", RowBox[{RMnLow, "-",
 (* ----- Section 4 extras (extrinsic curvature, expansion) ----- *)
 
 extrinsicEq = RowBox[{KijLow, "=",
-  RowBox[{FractionBox["1", RowBox[{"2", "\[Alpha]"}]],
+  RowBox[{"-", FractionBox["1", RowBox[{"2", "\[Alpha]"}]],
     RowBox[{"(",
       RowBox[{
         RowBox[{SubscriptBox["D", "i"], " ", SubscriptBox["\[Beta]", "j"]}],
@@ -260,7 +260,7 @@ extrinsicEq = RowBox[{KijLow, "=",
 thetaTraceEq = RowBox[{"\[Theta]", "=",
   RowBox[{SuperscriptBox["\[Gamma]", RowBox[{"i", "j"}]], " ", KijLow}],
   "=",
-  RowBox[{SubscriptBox["D", "i"], " ", SuperscriptBox["\[Beta]", "i"]}]}];
+  RowBox[{"-", SubscriptBox["D", "i"], " ", SuperscriptBox["\[Beta]", "i"]}]}];
 
 (* ----- Section 7 extras (geodesic) ----- *)
 

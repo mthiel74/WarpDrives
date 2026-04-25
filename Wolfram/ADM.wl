@@ -15,8 +15,11 @@ ADMInverse::usage =
   "ADMInverse[\[Alpha], \[Beta], \[Gamma]] returns g^{\[Mu]\[Nu]} from ADM variables.";
 
 ExtrinsicCurvatureFlat::usage =
-  "ExtrinsicCurvatureFlat[\[Beta]func, coords] returns K_{ij} = (\[PartialD]_i \[Beta]_j + \[PartialD]_j \[Beta]_i)/(2) \
-for flat spatial metric, \[Alpha]=1.";
+  "ExtrinsicCurvatureFlat[\[Beta]func, coords] returns the extrinsic curvature \
+K_{ij} = -(\[PartialD]_i \[Beta]_j + \[PartialD]_j \[Beta]_i)/(2) for flat spatial \
+metric, \[Alpha]=1, time-independent \[Gamma]_{ij} (Wald sign convention: K = \
+\[Del]_\[Mu] n^\[Mu] for the future-directed unit normal n^\[Mu], so the trace \
+\[Gamma]^{ij} K_{ij} equals the Eulerian-observer expansion scalar \[Theta]).";
 
 ExpansionScalar::usage =
   "ExpansionScalar[K, \[Gamma]inv] = \[Gamma]^{ij} K_{ij}.";
@@ -58,8 +61,10 @@ ExtrinsicCurvatureFlat[shiftFunc_, coords_List] :=
   Module[{dbeta, i, j, beta, spatial = coords[[2 ;; 4]]},
     beta = shiftFunc @@ coords;
     dbeta = Table[D[beta, spatial[[i]]], {i, 3}];
-    (* K_{ij} = (\[PartialD]_i \[Beta]_j + \[PartialD]_j \[Beta]_i)/2 *)
-    Table[(dbeta[[i, j]] + dbeta[[j, i]])/2, {i, 3}, {j, 3}]];
+    (* K_{ij} = -(\[PartialD]_i \[Beta]_j + \[PartialD]_j \[Beta]_i)/2 (Wald
+       convention with future-directed unit normal; ensures \[Theta] = trace K
+       agrees with the divergence of the Eulerian observer 4-velocity). *)
+    Table[-(dbeta[[i, j]] + dbeta[[j, i]])/2, {i, 3}, {j, 3}]];
 
 ExpansionScalar[K_?MatrixQ, gammaInv_?MatrixQ] :=
   Sum[gammaInv[[i, j]] K[[i, j]], {i, 3}, {j, 3}];

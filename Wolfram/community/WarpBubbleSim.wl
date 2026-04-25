@@ -98,7 +98,8 @@ MetricToADM::usage =
 ADMInverse::usage =
   "ADMInverse[\[Alpha], \[Beta], \[Gamma]] returns g^{\[Mu]\[Nu]} from ADM variables.";
 ExtrinsicCurvatureFlat::usage =
-  "ExtrinsicCurvatureFlat[\[Beta]func, coords] = K_{ij} for flat spatial metric, \[Alpha]=1.";
+  "ExtrinsicCurvatureFlat[\[Beta]func, coords] = -(\[PartialD]_i \[Beta]_j + \[PartialD]_j \[Beta]_i)/2 \
+for flat \[Gamma]_{ij}, \[Alpha]=1 (Wald sign so that trace K = Eulerian \[Theta]).";
 ExpansionScalar::usage =
   "ExpansionScalar[K, \[Gamma]inv] = \[Gamma]^{ij} K_{ij}.";
 ShearTensor::usage =
@@ -451,7 +452,7 @@ ExtrinsicCurvatureFlat[shiftFunc_, coords_List] :=
   Module[{dbeta, i, j, beta, spatial = coords[[2 ;; 4]]},
     beta = shiftFunc @@ coords;
     dbeta = Table[D[beta, spatial[[i]]], {i, 3}];
-    Table[(dbeta[[i, j]] + dbeta[[j, i]])/2, {i, 3}, {j, 3}]];
+    Table[-(dbeta[[i, j]] + dbeta[[j, i]])/2, {i, 3}, {j, 3}]];
 
 ExpansionScalar[K_?MatrixQ, gammaInv_?MatrixQ] :=
   Sum[gammaInv[[i, j]] K[[i, j]], {i, 3}, {j, 3}];
