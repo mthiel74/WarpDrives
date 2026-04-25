@@ -1047,10 +1047,12 @@ the bubble's grip:"}], "Text"],
  inputCell[
 "alcShift[t_, x_, y_] := -1.0 TanhShape[Sqrt[(x - 1.0 t)^2 + y^2], 1, 8];
 
-(* Eulerian advection: dx/dt = -beta^x = +alcShift *)
-sweep[{x0_, y0_}, ts_] := FoldList[
-  {#1[[1]] + (#2 - First@ts) alcShift[#2, #1[[1]], y0], #1[[2]]} &,
-  {x0, y0}, Rest[ts]];
+(* Eulerian advection: dx/dt = -beta^x = +alcShift.
+   Use a fixed Euler step dt set by the time grid spacing. *)
+sweep[{x0_, y0_}, ts_] := With[{dt = ts[[2]] - ts[[1]]},
+  FoldList[
+    {#1[[1]] + dt alcShift[#2, #1[[1]], y0], #1[[2]]} &,
+    {x0, y0}, Rest[ts]]];
 
 ts = Range[0., 4., 0.05];
 trajs = Table[sweep[{-3., y0}, ts], {y0, Range[-1.4, 1.4, 0.35]}];
