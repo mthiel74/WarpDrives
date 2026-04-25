@@ -587,7 +587,12 @@ different trade-off between wall sharpness and energy density:"}],
   PlotLegends -> {\"Tanh\", \"Gaussian\", \"Polynomial\", \"Smoothstep\"},
   Frame -> True, FrameLabel -> {\"r / R\", \"f(r)\"}]"],
 
- imgCell[loadPng["shape_functions.png"]],
+ imgCell[loadPng["shape_functions.png"],
+   "Four warp-bubble shape functions f(r) sharing the same boundary \
+conditions f(0) = 1, f(\[Infinity]) = 0.  Tanh is the original \
+Alcubierre profile; the others differ only in how sharply the wall \
+falls off and whether the support is compact (CompactPolynomial, \
+SmoothStep) or asymptotic (Tanh, Gaussian)."],
 
  Cell[TextData[{"Each profile satisfies the same boundary \
 conditions \[LongDash] ",
@@ -765,10 +770,19 @@ the bubble wall.  Note the colour scale: the values are ",
   PlotLegends -> Automatic,
   Epilog -> {Black, Thick, Circle[{0, 0}, 1]}]"],
 
- imgCell[loadPng["alcubierre_density.png"]],
+ imgCell[loadPng["alcubierre_density.png"],
+   "2D slice of the Eulerian energy density \[Rho](x, y, 0) for an \
+Alcubierre bubble with v = c, R = 1, \[Sigma] = 8.  Two negative \
+crescents in the bubble wall \[LongDash] one in front of the ship, \
+one behind \[LongDash] are where exotic matter must live.  The same \
+quantity is rendered as a 3D surface in Figure 1 below."],
 
  Cell[TextData[{"And the same energy density rendered as a 3D \
-surface brings out the wall structure:"}], "Text"],
+surface brings out the wall structure (the input cell above produces \
+a live ", StyleBox["Plot3D", "Input"],
+   ", which is rotatable with the mouse if the notebook is \
+evaluated locally; the embedded image below is a static raster of \
+the same plot for the browser viewer):"}], "Text"],
 
  imgCell[loadPng["energy_density_3d.png"],
    "Figure 1. Eulerian energy density of an Alcubierre bubble (v=c, \
