@@ -980,12 +980,18 @@ geometry is to drop a regular Cartesian grid into the spacetime and \
 let the shift field advect every grid intersection.  As the bubble \
 sweeps from left to right across the frame the grid lines \
 locally bunch up in front of it and stretch out behind it.  The \
-animation below uses a 14\[Times]14 grid, the analytic Alcubierre \
-shift field with v=c and R=1, and a simple Euler advection step:"}],
+animation below uses a 15\[Times]15 grid, the analytic Alcubierre \
+shift field with v=c and R=1, and a simple Euler advection step \
+following the Eulerian-observer law ",
+   mathI[RowBox[{"d", SuperscriptBox["x", "i"], "/", "dt"}]],
+   "=", mathI[RowBox[{"-", betaUp}]],
+   "=", mathI[RowBox[{vsBoxed, " ", fOfRs}]],
+   ":"}],
    "Text"],
 
  inputCell[
-"alcShift[t_, x_, y_] := -1.0 TanhShape[Sqrt[(x - 1.0 t)^2 + y^2], 1, 8];
+"alcShift[t_, x_, y_] := +1.0 TanhShape[Sqrt[(x - 1.0 t)^2 + y^2], 1, 8];
+(* alcShift returns +v_s f = -beta^x = Eulerian 3-velocity. *)
 
 advect[{x0_, y0_}, t_, nstep_] := Module[{x = x0, y = y0, dt = t/nstep},
   Do[{x, y} = {x + dt alcShift[k dt, x, y], y}, {k, 0, nstep - 1}];
