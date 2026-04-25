@@ -65,7 +65,7 @@ Each GIF is loaded with `Import[..., {"GIF", "ImageList"}]`, subsampled, and wra
 
 ## Package API summary
 
-`WarpBubbleSim.wl` exports 65 public symbols across nine logical sections plus one option symbol:
+`WarpBubbleSim.wl` exports 66 public symbols (64 functions across nine logical sections, plus two option symbols).  The `Tolerance` option of the `Check*` functions reuses Wolfram's built-in `System\`Tolerance` and so is not counted here:
 
 | Section | Public symbols |
 |---|---|
@@ -78,6 +78,6 @@ Each GIF is loaded with `Import[..., {"GIF", "ImageList"}]`, subsampled, and wra
 | Invariants | `KretschmannScalar`, `WeylSquared`, `RicciSquared`, `EulerDensity4D` |
 | Geodesics | `NormalizeVelocity`, `CreateInitialVelocity`, `IntegrateGeodesic`, `IntegrateGeodesicBundle` |
 | Visualize | `PlotShapeFunctions`, `PlotEnergyDensity2D`, `PlotExpansionScalar2D`, `PlotShiftField`, `PlotMetricComparison`, `PlotGridDistortion` |
-| Options | `EvalAt` (for the `Check*` functions; substitutes coordinate values before observer sampling) |
+| Options | `EvalAt`, `NSamples` (both for the `Check*` functions; `EvalAt` substitutes coordinate values before observer sampling, `NSamples` controls how many random observer directions are sampled) |
 
 All symbols live in the single `WarpBubbleSim`` context.

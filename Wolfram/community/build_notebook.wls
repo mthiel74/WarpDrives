@@ -475,7 +475,7 @@ evaluate the cell below once, and every public symbol used later \
 available:"}], "Text"],
 
  inputCell["SetDirectory[NotebookDirectory[]];
-Get[\"WarpBubbleSim.wl\"];   (* one file: 65 public symbols covering
+Get[\"WarpBubbleSim.wl\"];   (* one file: 64 public functions + 2 options covering
                                  shape functions, six warp metrics,
                                  Christoffel/Riemann/Einstein tensors,
                                  ADM tools, energy conditions,

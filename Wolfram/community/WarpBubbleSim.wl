@@ -154,6 +154,10 @@ substitution rules (e.g. EvalAt -> {t -> 0., x -> 1.}) to evaluate metric and \
 stress-energy at a numerical point before random observer sampling.  Default \
 None leaves both symbolic; sampling then degenerates to the static observer.";
 
+NSamples::usage =
+  "NSamples is an option for the Check* functions controlling the number of \
+random observer directions sampled.  Defaults: 10 for WEC/SEC/DEC, 20 for NEC.";
+
 Options[CheckWEC]           = {NSamples -> 10, Tolerance -> 10^-10, EvalAt -> None};
 Options[CheckNEC]           = {NSamples -> 20, Tolerance -> 10^-10, EvalAt -> None};
 Options[CheckSEC]           = {NSamples -> 10, Tolerance -> 10^-10, EvalAt -> None};

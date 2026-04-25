@@ -38,6 +38,12 @@ evaluate the metric and stress-energy tensor at a numerical point before \
 random observer sampling.  Default None leaves both symbolic, in which case \
 sampling degenerates to the static observer at coordinate vector (1,0,0,0).";
 
+NSamples::usage =
+  "NSamples is an option for the Check* functions controlling the number of \
+random observer (timelike or null) directions sampled.  Defaults: 10 for \
+WEC/SEC/DEC, 20 for NEC.  Higher values increase the chance of catching the \
+minimum but cost time; sampling is uniform on S^2 in the spatial direction.";
+
 Options[CheckWEC]           = {NSamples -> 10, Tolerance -> 10^-10, EvalAt -> None};
 Options[CheckNEC]           = {NSamples -> 20, Tolerance -> 10^-10, EvalAt -> None};
 Options[CheckSEC]           = {NSamples -> 10, Tolerance -> 10^-10, EvalAt -> None};
