@@ -378,13 +378,4 @@ Print["       wrote anim_hero_topdown.gif (",
       Round[FileByteCount[FileNameJoin[{resDir, "anim_hero_topdown.gif"}]]/1024],
       " KB)"];
 
-(* ----------------------------------------------------------------
-   Bonus: a single static 3D hero still, useful as a thumbnail
-   ---------------------------------------------------------------- *)
-
-Print["[+] hero still"];
-Export[FileNameJoin[{resDir, "hero_still.png"}],
-       heroFrame[2.5],
-       ImageResolution -> 144];
-
 Print["[hero] done."];

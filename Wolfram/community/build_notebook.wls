@@ -790,6 +790,13 @@ R=1, \[Sigma]=8).  Two depressions in the bubble wall \[LongDash] one \
 in front of the ship, one behind \[LongDash] is where the exotic \
 matter (\[Rho] < 0) must live."],
 
+ imgCell[loadAnim["anim_density_rotate.gif", 600, 24, 6],
+   "Figure 1b. The same 3D bubble wall, with a camera orbiting once \
+around the vertical axis so the front-back dipole and the rotational \
+symmetry around the direction-of-motion axis are both visible.  An \
+inline auto-rotation that approximates the live mouse-rotation a \
+reader would get by evaluating the input cell above."],
+
  (* ----------- Section 4: The expansion scalar ---------- *)
 
  Cell["4. Where space contracts, where space expands", "Section"],
