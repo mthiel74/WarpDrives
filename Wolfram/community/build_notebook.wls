@@ -990,7 +990,7 @@ frame[t_] := Show[
 ListAnimate[Table[frame[t], {t, 0, 2, 2/29.}]]"],
 
  imgCell[loadAnim["anim_grid_distortion.gif", 540, 30, 6],
-   "Figure 4. A regular Cartesian grid distorted by the Alcubierre \
+   "Figure 6. A regular Cartesian grid distorted by the Alcubierre \
 shift field as the bubble sweeps from left to right.  The colour \
 shows the shift magnitude.  Inside the bubble all four points of any \
 small grid cell move together \[LongDash] no internal stretching, \
@@ -1063,7 +1063,7 @@ ListAnimate @ Table[
   {k, 1, Length[ts], 2}]"],
 
  imgCell[loadAnim["anim_geodesic_bundle.gif", 600, 28, 7],
-   "Figure 5. Eight initially stationary test particles caught up by \
+   "Figure 7. Eight initially stationary test particles caught up by \
 an oncoming Alcubierre bubble.  Particles near the axis are dragged \
 fastest; off-axis particles barely move.  Black tails are the \
 trajectories so far; red dots are the current positions.  The \
@@ -1246,7 +1246,7 @@ for the others, an analogous shape-function-driven proxy."}], "Text"],
  inputCell["PlotMetricComparison[Range -> 2.5, Grid -> 90]"],
 
  imgCell[loadPng["metric_comparison.png", 760],
-   "Figure 6. The six warp-drive metric families side by side.  All \
+   "Figure 8. The six warp-drive metric families side by side.  All \
 panels are slices through the y-x plane.  Top row: Alcubierre's \
 energy density, Nat\[AAcute]rio's shift-derivative proxy (no \
 expansion/contraction regions, just a wall), Van Den Broeck's \
