@@ -1400,8 +1400,15 @@ to ~140 and removes a step-size hyperparameter.\n",
    "\[Bullet] Geodesics use ",
    StyleBox["NDSolve", "Input"],
    " against a precomputed Christoffel-symbol expression.  The \
-right-hand side gets compiled once and re-evaluated cheaply at every \
-step \[LongDash] no per-step finite differencing.\n",
+right-hand side is built once as a Wolfram pure ",
+   StyleBox["Function", "Input"],
+   " (closed-form symbolic, not byte-compiled by ",
+   StyleBox["Compile", "Input"],
+   ") so each ",
+   StyleBox["NDSolve", "Input"],
+   " step substitutes numerical values into the same expression \
+without re-running the symbolic differentiation \[LongDash] no \
+per-step finite differencing.\n",
    "\[Bullet] All animations in this notebook are pure Wolfram (no \
 Python).  They use the analytic Alcubierre formulas where possible, \
 and a simple Euler advection of the shift field for the geodesic \
