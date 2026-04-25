@@ -437,13 +437,17 @@ negative mass-energy of order ",
    mathI[SuperscriptBox["10", "65"]],
    " grams \[LongDash] roughly ten billion times the mass of the \
 observable universe, with the opposite sign.  Even granting the \
-matter, superluminal bubbles develop horizons (Coutant 2012; \
-Finazzi, Liberati & Barcel\[OAcute] 2009) that disconnect the ship \
-from the front wall and exhibit semiclassical instabilities on \
-sub-Planckian timescales.  The two subluminal proposals \
-(Bobrick\[Dash]Martire and Lentz) can in principle satisfy the \
-weak energy condition but still demand astrophysical energy \
-densities.  Treat what follows as ",
+matter, superluminal bubbles develop horizons (Finazzi, Liberati \
+& Barcel\[OAcute] 2009) that disconnect the ship from the front \
+wall and exhibit semiclassical instabilities on timescales \
+comparable to or shorter than the Planck time.  The genuinely \
+subluminal proposal in this notebook (Bobrick\[Dash]Martire 2021) \
+is the only one that can satisfy the weak and null energy \
+conditions, but it still demands astrophysical energy densities; \
+the Lentz 2021 hyper-fast soliton was originally advertised as \
+positive-energy, but subsequent analyses suggest the construction \
+still violates the classical energy conditions.  Treat what \
+follows as ",
    StyleBox["differential geometry of conceivable spacetimes",
             FontSlant -> Italic],
    ", not a propulsion roadmap."}],
