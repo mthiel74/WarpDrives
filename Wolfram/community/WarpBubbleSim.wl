@@ -826,21 +826,26 @@ PlotMetricComparison[OptionsPattern[{Range -> 3, Grid -> 80}]] :=
 PlotGridDistortion[{v0_, R_, sigma_}, t_: 0,
                    OptionsPattern[{Range -> 3, Lines -> 15, Steps -> 40}]] :=
   Module[{rng = OptionValue[Range], nLines = OptionValue[Lines],
-          nSteps = OptionValue[Steps], shiftXFn, advect, gridLines, i},
+          nSteps = OptionValue[Steps], shiftXFn, advect, step, gridLines, i},
     shiftXFn[tt_, xx_, yy_] :=
       -v0 TanhShape[Sqrt[(xx - v0 tt)^2 + yy^2], R, sigma];
+    (* Forward-Euler advect a comoving particle from (x0, y0) at t=0
+       to its position at time t under the Alcubierre x-shift. *)
     advect[{x0_, y0_}] :=
-      Module[{pts, xcur = x0, ycur = y0, dt = t/nSteps},
-        pts = Table[{xcur, ycur}, {nSteps + 1}];
-        Do[xcur = xcur + dt shiftXFn[(i - 1) dt, xcur, ycur];
-           pts[[i]] = {xcur, ycur},
-           {i, 1, nSteps + 1}];
-        pts];
+      Module[{xcur = x0, ycur = y0, dt},
+        If[t == 0, {x0, y0},
+          dt = t/nSteps;
+          Do[xcur = xcur + dt shiftXFn[(i - 1) dt, xcur, ycur],
+             {i, 1, nSteps}];
+          {xcur, ycur}]];
+    step = 2 rng/nLines;
+    (* Lines of constant initial y, advected: each curve is a row of
+       comoving particles connected after advection. *)
     gridLines = Join[
-      Table[Line[Table[{x, y}, {y, -rng, rng, 2 rng/nLines}]],
-            {x, -rng, rng, 2 rng/nLines}],
-      Table[Line[Table[{x, y}, {x, -rng, rng, 2 rng/nLines}]],
-            {y, -rng, rng, 2 rng/nLines}]];
+      Table[Line[Table[advect[{x, y}], {x, -rng, rng, step}]],
+            {y, -rng, rng, step}],
+      Table[Line[Table[advect[{x, y}], {y, -rng, rng, step}]],
+            {x, -rng, rng, step}]];
     Show[
       DensityPlot[Abs[shiftXFn[t, x, y]],
                   {x, -rng, rng}, {y, -rng, rng},

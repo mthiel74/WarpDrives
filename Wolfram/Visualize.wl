@@ -80,28 +80,31 @@ PlotShiftField[shiftFunc_, {xMin_, xMax_}, {yMin_, yMax_}] :=
                PlotLabel -> "Shift vector field \[Beta](x,y)",
                FrameLabel -> {"x", "y"}, ImageSize -> 500]];
 
-(* Grid lines under the Alcubierre shift *)
+(* Grid lines under the Alcubierre shift -- comoving particles
+   advected from a regular initial grid. *)
 PlotGridDistortion[{v0_, R_, sigma_}, t_: 0,
                    OptionsPattern[{Range -> 3, Lines -> 15, Steps -> 40}]] :=
   Module[{rng = OptionValue[Range], nLines = OptionValue[Lines],
-          nSteps = OptionValue[Steps], shiftX, advect, initialGrid},
+          nSteps = OptionValue[Steps], shiftX, advect, step, gridLines, i},
     shiftX[tt_, xx_, yy_] := -v0 TanhShape[Sqrt[(xx - v0 tt)^2 + yy^2], R, sigma];
     advect[{x0_, y0_}] :=
-      Module[{pts, xcur = x0, ycur = y0, dt = t/nSteps},
-        pts = Table[{xcur, ycur}, {nSteps + 1}];
-        Do[xcur = xcur + dt shiftX[(i - 1) dt, xcur, ycur];
-           pts[[i]] = {xcur, ycur},
-           {i, 1, nSteps + 1}];
-        pts];
-    initialGrid = Join[
-      Table[Line[Table[{x, y}, {y, -rng, rng, 2 rng/nLines}]], {x, -rng, rng, 2 rng/nLines}],
-      Table[Line[Table[{x, y}, {x, -rng, rng, 2 rng/nLines}]], {y, -rng, rng, 2 rng/nLines}]];
-    (* Simple visualization: plot the instantaneous shift as contour background *)
+      Module[{xcur = x0, ycur = y0, dt},
+        If[t == 0, {x0, y0},
+          dt = t/nSteps;
+          Do[xcur = xcur + dt shiftX[(i - 1) dt, xcur, ycur],
+             {i, 1, nSteps}];
+          {xcur, ycur}]];
+    step = 2 rng/nLines;
+    gridLines = Join[
+      Table[Line[Table[advect[{x, y}], {x, -rng, rng, step}]],
+            {y, -rng, rng, step}],
+      Table[Line[Table[advect[{x, y}], {y, -rng, rng, step}]],
+            {x, -rng, rng, step}]];
     Show[
       DensityPlot[Abs[shiftX[t, x, y]], {x, -rng, rng}, {y, -rng, rng},
                   ColorFunction -> "SunsetColors", PlotPoints -> 60, Frame -> True,
                   FrameLabel -> {"x", "y"}, PlotLegends -> Automatic],
-      Graphics[{Black, Thickness[0.002], initialGrid}],
+      Graphics[{Black, Thickness[0.002], gridLines}],
       ImageSize -> 500,
       PlotLabel -> Row[{"Alcubierre shift magnitude at t=", t}]]];
 
