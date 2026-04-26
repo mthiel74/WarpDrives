@@ -96,7 +96,18 @@ def metric_to_adm(metric: np.ndarray) -> Tuple[float, np.ndarray, np.ndarray]:
     # Compute lapse from g_{00} = -α² + β_i β^i
     beta_squared = np.dot(beta_lower, shift)
     lapse_squared = -metric[0, 0] + beta_squared
-    lapse = np.sqrt(max(lapse_squared, 0.0))  # Protect against numerical issues
+    if lapse_squared < -1e-10:
+        # Genuine non-Lorentzian point -- the metric is degenerate
+        # or has flipped signature.  Refusing to silently clamp to
+        # zero (which would propagate as 1/0 in
+        # compute_eulerian_velocity).
+        raise ValueError(
+            f"metric_to_adm: lapse² = {lapse_squared:.3e} < 0 -- the "
+            f"metric is non-Lorentzian at this point and the ADM "
+            f"decomposition is undefined.  Check the input metric "
+            f"or the parameter regime."
+        )
+    lapse = np.sqrt(max(lapse_squared, 0.0))  # Tiny FP noise -> 0
 
     return lapse, shift, gamma
 

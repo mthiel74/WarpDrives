@@ -17,7 +17,8 @@ from warpbubblesim.gr.tensors import compute_metric_inverse, BackendType
 from warpbubblesim.gr.energy import compute_stress_energy
 
 
-def _sample_timelike(g: np.ndarray) -> Optional[np.ndarray]:
+def _sample_timelike(g: np.ndarray,
+                      rng: Optional[np.random.Generator] = None) -> Optional[np.ndarray]:
     """
     Sample a unit timelike vector at a point with metric g.
 
@@ -27,14 +28,16 @@ def _sample_timelike(g: np.ndarray) -> Optional[np.ndarray]:
     g_{μν} u^μ u^ν = -1 by rescaling.  Returns None if the candidate is
     not timelike (caller should retry).
     """
-    spatial = np.random.randn(3)
+    if rng is None:
+        rng = np.random.default_rng()
+    spatial = rng.standard_normal(3)
     spatial_norm = np.sqrt(np.dot(spatial, spatial))
     if spatial_norm == 0.0:
         n_hat = np.zeros(3)
     else:
         n_hat = spatial / spatial_norm
 
-    v_mag = 0.9 * np.random.random()
+    v_mag = 0.9 * rng.random()
     u = np.array([1.0, v_mag * n_hat[0],
                        v_mag * n_hat[1],
                        v_mag * n_hat[2]])
@@ -46,18 +49,23 @@ def _sample_timelike(g: np.ndarray) -> Optional[np.ndarray]:
     return u / np.sqrt(-norm_sq)
 
 
-def _timelike_samples(g: np.ndarray, n_samples: int) -> List[np.ndarray]:
+def _timelike_samples(g: np.ndarray, n_samples: int,
+                       rng: Optional[np.random.Generator] = None) -> List[np.ndarray]:
     """
     Return up to n_samples normalised timelike 4-velocities of the
     metric g (g_{μν} u^μ u^ν = -1 each).  Always includes the
     coordinate-static observer u = (1, 0, 0, 0) / √(-g_00) if it is
     timelike, so the sample is never empty for a Lorentzian metric.
+
+    Pass ``rng=np.random.default_rng(seed)`` for reproducible samples.
     """
+    if rng is None:
+        rng = np.random.default_rng()
     out: List[np.ndarray] = []
     attempts = 0
     while len(out) < n_samples and attempts < 50 * max(n_samples, 1):
         attempts += 1
-        u = _sample_timelike(g)
+        u = _sample_timelike(g, rng=rng)
         if u is not None:
             out.append(u)
 
@@ -73,7 +81,8 @@ def check_wec(
     coords: np.ndarray,
     backend: BackendType = "finite_difference",
     h: float = 1e-6,
-    n_samples: int = 10
+    n_samples: int = 10,
+    seed: Optional[int] = None,
 ) -> Tuple[bool, float]:
     """
     Check Weak Energy Condition (WEC).
@@ -103,8 +112,9 @@ def check_wec(
     g = metric_func(*coords)
     T = compute_stress_energy(metric_func, coords, backend, h)
 
+    rng = np.random.default_rng(seed)
     min_val = np.inf
-    for u in _timelike_samples(g, n_samples):
+    for u in _timelike_samples(g, n_samples, rng=rng):
         val = float(np.einsum('mn,m,n->', T, u, u))
         min_val = min(min_val, val)
 
@@ -116,7 +126,8 @@ def check_nec(
     coords: np.ndarray,
     backend: BackendType = "finite_difference",
     h: float = 1e-6,
-    n_samples: int = 20
+    n_samples: int = 20,
+    seed: Optional[int] = None,
 ) -> Tuple[bool, float]:
     """
     Check Null Energy Condition (NEC).
@@ -146,6 +157,7 @@ def check_nec(
     g = metric_func(*coords)
     T = compute_stress_energy(metric_func, coords, backend, h)
 
+    rng = np.random.default_rng(seed)
     min_val = np.inf
 
     # Construct genuine null vectors of the curved metric.  For a
@@ -158,8 +170,8 @@ def check_nec(
     # spatial direction); we sample both.
     for _ in range(n_samples):
         # Random direction on unit sphere
-        theta = np.arccos(2 * np.random.random() - 1)
-        phi = 2 * np.pi * np.random.random()
+        theta = np.arccos(2 * rng.random() - 1)
+        phi = 2 * np.pi * rng.random()
 
         n_spatial = np.array([
             np.sin(theta) * np.cos(phi),
@@ -192,7 +204,8 @@ def check_sec(
     coords: np.ndarray,
     backend: BackendType = "finite_difference",
     h: float = 1e-6,
-    n_samples: int = 10
+    n_samples: int = 10,
+    seed: Optional[int] = None,
 ) -> Tuple[bool, float]:
     """
     Check Strong Energy Condition (SEC).
@@ -228,8 +241,9 @@ def check_sec(
     # Modified tensor: T_{μν} - (1/2) T g_{μν}
     T_sec = T - 0.5 * T_trace * g
 
+    rng = np.random.default_rng(seed)
     min_val = np.inf
-    for u in _timelike_samples(g, n_samples):
+    for u in _timelike_samples(g, n_samples, rng=rng):
         val = float(np.einsum('mn,m,n->', T_sec, u, u))
         min_val = min(min_val, val)
 
@@ -241,7 +255,8 @@ def check_dec(
     coords: np.ndarray,
     backend: BackendType = "finite_difference",
     h: float = 1e-6,
-    n_samples: int = 10
+    n_samples: int = 10,
+    seed: Optional[int] = None,
 ) -> Tuple[bool, float]:
     """
     Check Dominant Energy Condition (DEC).
@@ -276,7 +291,8 @@ def check_dec(
     T = compute_stress_energy(metric_func, coords, backend, h)
 
     # First check WEC
-    wec_ok, wec_val = check_wec(metric_func, coords, backend, h, n_samples)
+    wec_ok, wec_val = check_wec(metric_func, coords, backend, h, n_samples,
+                                  seed=seed)
 
     if not wec_ok:
         return False, wec_val
@@ -284,8 +300,9 @@ def check_dec(
     # T^μ_ν = g^{μρ} T_{ρν}
     T_mixed = np.einsum('mr,rn->mn', g_inv, T)
 
+    rng = np.random.default_rng(seed)
     max_norm = -np.inf
-    for u in _timelike_samples(g, n_samples):
+    for u in _timelike_samples(g, n_samples, rng=rng):
         # J^μ = -T^μ_ν u^ν (energy-momentum current)
         J = -np.einsum('mn,n->m', T_mixed, u)
         # Check if J is non-spacelike: g_{μν} J^μ J^ν ≤ 0
@@ -300,7 +317,8 @@ def check_energy_conditions(
     coords: np.ndarray,
     backend: BackendType = "finite_difference",
     h: float = 1e-6,
-    n_samples: int = 10
+    n_samples: int = 10,
+    seed: Optional[int] = None,
 ) -> Dict[str, Tuple[bool, float]]:
     """
     Check all classical energy conditions at a point.
@@ -325,10 +343,10 @@ def check_energy_conditions(
         (satisfied, critical_value) tuple.
     """
     return {
-        'WEC': check_wec(metric_func, coords, backend, h, n_samples),
-        'NEC': check_nec(metric_func, coords, backend, h, n_samples),
-        'SEC': check_sec(metric_func, coords, backend, h, n_samples),
-        'DEC': check_dec(metric_func, coords, backend, h, n_samples),
+        'WEC': check_wec(metric_func, coords, backend, h, n_samples, seed=seed),
+        'NEC': check_nec(metric_func, coords, backend, h, n_samples, seed=seed),
+        'SEC': check_sec(metric_func, coords, backend, h, n_samples, seed=seed),
+        'DEC': check_dec(metric_func, coords, backend, h, n_samples, seed=seed),
     }
 
 

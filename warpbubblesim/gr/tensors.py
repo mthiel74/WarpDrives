@@ -13,7 +13,6 @@ Conventions:
 
 import numpy as np
 from typing import Callable, Literal, Optional
-from functools import lru_cache
 
 # Try to import JAX, fall back gracefully
 try:

@@ -561,9 +561,21 @@ def expansion_rate_along_geodesic(
     h: float = 1e-6
 ) -> np.ndarray:
     """
-    Compute expansion rate θ along a geodesic.
+    Compute the Christoffel-trace contribution Γ^μ_{μν} u^ν along a geodesic.
 
-    θ = ∇_μ u^μ measures how a bundle of geodesics expands/contracts.
+    NOTE: this is NOT the full covariant divergence ∇_μ u^μ = ∂_μ u^μ
+    + Γ^μ_{μν} u^ν -- the ∂_μ u^μ term cannot be recovered from a single
+    trajectory's λ-samples (it requires the Jacobian of u^μ as a field,
+    not just a worldline).  For the Raychaudhuri expansion of a
+    congruence use compute_geodesic_deviation (Jacobi fields).  For the
+    Eulerian foliation expansion use compute_expansion_scalar(K, γ_inv)
+    from the ADM module, which gives θ exactly via the spatial trace
+    of the extrinsic curvature.
+
+    What this function returns is still useful: it is the volume
+    change of an infinitesimal coordinate-aligned volume element
+    carried along u^μ, i.e. ∂_μ(√(-g) u^μ) / √(-g) up to the metric-
+    determinant factor.
 
     Parameters
     ----------
@@ -579,7 +591,7 @@ def expansion_rate_along_geodesic(
     Returns
     -------
     np.ndarray
-        Expansion rate at each point along geodesic.
+        Christoffel-trace term at each point along the geodesic.
     """
     coords = geodesic_result['coords']
     velocity = geodesic_result['velocity']
@@ -587,11 +599,21 @@ def expansion_rate_along_geodesic(
     n_steps = len(coords)
     theta = np.zeros(n_steps)
 
+    # WARNING: this function returns only the Christoffel-trace term
+    #     Γ^μ_{μν} u^ν,
+    # not the full covariant divergence ∇_μ u^μ = ∂_μ u^μ + Γ^μ_{μν} u^ν.
+    # "Expansion of a congruence" is a property of a FAMILY of nearby
+    # geodesics, not of a single worldline; reconstructing it requires
+    # Jacobi fields (use compute_geodesic_deviation) or the slice-
+    # foliation extrinsic curvature trace (use ADM compute_expansion
+    # _scalar).  The Γ-trace alone is the volume change of an
+    # infinitesimal coordinate volume carried along u^μ, which is
+    # what previous callers were getting; we keep it for backward
+    # compatibility but rename the return to make clear it is NOT
+    # the Raychaudhuri θ.
     for i in range(n_steps):
         gamma = compute_christoffel(metric_func, coords[i], backend, h)
         u = velocity[i]
-
-        # θ = Γ^μ_{μν} u^ν
         theta[i] = np.einsum('mmn,n->', gamma, u)
 
     return theta
