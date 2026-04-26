@@ -12,6 +12,7 @@ import numpy as np
 from typing import Callable, Tuple, Optional
 from warpbubblesim.gr.tensors import compute_metric_inverse, BackendType
 from warpbubblesim.gr.energy import compute_stress_energy
+from warpbubblesim.gr.adm import metric_to_adm
 
 
 def eulerian_observer(
@@ -19,15 +20,21 @@ def eulerian_observer(
     coords: np.ndarray
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Construct Eulerian (coordinate-stationary) observer.
+    Construct the Eulerian (slice-normal) observer.
 
-    The Eulerian observer has zero spatial velocity in the coordinates.
-    Their 4-velocity is the unit normal to constant-t hypersurfaces.
+    The Eulerian observer's worldline is orthogonal to the constant-t
+    hypersurfaces.  Its 4-velocity is the future-directed unit normal:
 
-    For ADM metric with α=1, γ_{ij}=δ_{ij}:
-    u^μ = (1, -β^x, -β^y, -β^z) / ||...||
+        n^μ = (1/α)(1, -β^i)
 
-    For general metric, we normalize u^μ = (1, 0, 0, 0) / ||...||
+    where α is the lapse and β^i is the shift, both extracted from the
+    metric via metric_to_adm.  For α = 1, β = 0 the Eulerian observer
+    coincides with the coordinate-static observer (1, 0, 0, 0); for any
+    warp metric (β ≠ 0 in the wall) they differ materially.
+
+    Use static_observer() if you specifically want the coordinate-time
+    direction normalised — that observer is NOT the Eulerian one in any
+    metric with non-zero shift.
 
     Parameters
     ----------
@@ -39,25 +46,51 @@ def eulerian_observer(
     Returns
     -------
     tuple
-        (u_upper, u_lower) - contravariant and covariant 4-velocity.
+        (u_upper, u_lower) - contravariant and covariant 4-velocity
+        of the slice-normal observer; satisfies g_{μν} u^μ u^ν = -1.
     """
     g = metric_func(*coords)
+    lapse, shift, _ = metric_to_adm(g)
 
-    # Start with coordinate-stationary: u^μ ∝ (1, 0, 0, 0)
-    u_raw = np.array([1.0, 0.0, 0.0, 0.0])
+    if lapse <= 0.0:
+        raise ValueError(
+            f"Eulerian observer is undefined where the metric is "
+            f"non-Lorentzian (lapse = {lapse:.3e})"
+        )
 
-    # Normalize: g_{μν} u^μ u^ν = -1
-    norm_sq = np.einsum('mn,m,n->', g, u_raw, u_raw)
+    u_upper = np.empty(4)
+    u_upper[0] = 1.0 / lapse
+    u_upper[1:] = -np.asarray(shift) / lapse
 
-    # For signature (-,+,+,+), we need norm_sq < 0
-    if norm_sq >= 0:
-        raise ValueError("Coordinate time direction is not timelike at this point")
-
-    u_upper = u_raw / np.sqrt(-norm_sq)
-
-    # Lower index
+    # Lower index for callers that need it.
     u_lower = g @ u_upper
 
+    return u_upper, u_lower
+
+
+def static_observer(
+    metric_func: Callable,
+    coords: np.ndarray
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Construct the coordinate-static observer u^μ ∝ (1, 0, 0, 0).
+
+    This observer holds a fixed spatial coordinate position, not a
+    fixed slice-normal direction.  In a Minkowski metric they coincide
+    with the Eulerian observer; in a warp metric (β ≠ 0) they do not.
+
+    Use eulerian_observer() for the slice-normal observer that
+    measures the physically meaningful "Eulerian energy density".
+    """
+    g = metric_func(*coords)
+    u_raw = np.array([1.0, 0.0, 0.0, 0.0])
+    norm_sq = np.einsum('mn,m,n->', g, u_raw, u_raw)
+    if norm_sq >= 0:
+        raise ValueError(
+            "Coordinate time direction is not timelike at this point"
+        )
+    u_upper = u_raw / np.sqrt(-norm_sq)
+    u_lower = g @ u_upper
     return u_upper, u_lower
 
 
