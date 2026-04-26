@@ -1524,11 +1524,12 @@ practice, is the matter sector."}], "Text"],
 
  Cell[TextData[{
    "\[Bullet] The Wolfram port is a side-by-side translation of a \
-~5\[ThinSpace]900-line Python package.  Wolfram's symbolic ",
+~9\[ThinSpace]800-line Python package.  Wolfram's symbolic ",
    StyleBox["D[\[CenterEllipsis]]", "Input"],
    " replaces the Python finite-difference Christoffel/Riemann/Ricci \
-loops, which compresses the GR module from ~2\[ThinSpace]100 lines \
-to ~140 and removes a step-size hyperparameter.\n",
+loops, which compresses the tensor-calculus core from ~545 lines \
+(gr/tensors.py) to ~135 lines (Tensors.wl) and removes a step-size \
+hyperparameter.\n",
    "\[Bullet] Each metric is exposed as a function ",
    StyleBox["<Name>Metric[params, coords]", "Input"],
    " that returns a 4\[Times]4 symbolic ", mathI[ggMnLow],
@@ -1568,8 +1569,9 @@ Christoffel symbols vanish."}], "Text"],
             FontWeight -> Bold],
    " The whole tensor calculus chain \[LongDash] metric, \
 Christoffel, Riemann, Ricci, Einstein, Weyl, Kretschmann \[LongDash] \
-fits in 140 lines of Wolfram against ~1\[ThinSpace]100 lines of \
-NumPy with finite differences.  The symbolic answer is exact, valid \
+fits in ~200 lines of Wolfram (Tensors.wl + Invariants.wl) against \
+~880 lines of NumPy (gr/tensors.py + gr/invariants.py) with finite \
+differences.  The symbolic answer is exact, valid \
 at every point of spacetime simultaneously, and trivially \
 substituted into for numerical work.\n",
    "\[Bullet] ", StyleBox["Exotic matter is real, mathematically.",
