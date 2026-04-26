@@ -354,7 +354,8 @@ def check_conditions_on_grid(
     metric_func: Callable,
     coords_array: np.ndarray,
     backend: BackendType = "finite_difference",
-    h: float = 1e-6
+    h: float = 1e-6,
+    seed: Optional[int] = 0,
 ) -> Dict[str, np.ndarray]:
     """
     Check energy conditions on a grid of points.
@@ -371,6 +372,10 @@ def check_conditions_on_grid(
         Derivative backend.
     h : float
         Step size for finite differences.
+    seed : int, optional
+        Forwarded to the per-point check_energy_conditions call so
+        the grid-level result is reproducible.  Defaults to 0; pass
+        None for fully random sampling.
 
     Returns
     -------
@@ -391,7 +396,13 @@ def check_conditions_on_grid(
     }
 
     for i in range(n_points):
-        conds = check_energy_conditions(metric_func, coords_flat[i], backend, h, 5)
+        # Use a per-point seed derived from the global seed so each
+        # grid point uses an independent stream but the overall grid
+        # is reproducible across runs.
+        point_seed = (seed + i) if seed is not None else None
+        conds = check_energy_conditions(
+            metric_func, coords_flat[i], backend, h, 5, seed=point_seed,
+        )
         for key in ['WEC', 'NEC', 'SEC', 'DEC']:
             results[key][i] = conds[key][0]
         results['WEC_value'][i] = conds['WEC'][1]

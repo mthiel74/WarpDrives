@@ -233,14 +233,11 @@ def integrate_geodesic(
     is_timelike = norm_sq < -0.5
     is_null = abs(norm_sq) < 1e-6
 
-    step_count = [0]
-
-    def rhs_wrapper(lam, state):
-        step_count[0] += 1
+    def rhs(lam, state):
         return geodesic_rhs(lam, state, metric_func, backend, h)
 
     sol = solve_ivp(
-        rhs_wrapper,
+        rhs,
         lambda_span,
         initial_state,
         method=method,
@@ -270,7 +267,13 @@ def integrate_geodesic(
                 velocity[i] = velocity[i] * np.sqrt(norm_sq / current)
         renormalized = True
 
-    # Compute proper time for timelike geodesics
+    # Compute proper time for timelike geodesics.  This identification
+    # τ = λ − λ₀ is exact ONLY when the initial 4-velocity satisfies
+    # g_{μν} u^μ u^ν = -1 exactly; the affine parameter λ is identified
+    # with τ in that gauge.  For initial velocities with norm² ≠ -1,
+    # proper time is √(-norm²) · λ instead -- callers should rescale.
+    # Use result['initial_norm'] and result['normalization_drift'] to
+    # gauge how trustworthy 'proper_time' is.
     if is_timelike:
         proper_time = lam - lam[0]
     else:

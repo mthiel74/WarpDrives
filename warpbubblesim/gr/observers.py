@@ -135,33 +135,43 @@ def ship_comoving_observer(
 
 def warp_bubble_center_observer(
     metric_func: Callable,
-    shift_func: Callable,
-    coords: np.ndarray
+    shift_func: Optional[Callable] = None,
+    coords: Optional[np.ndarray] = None,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Construct observer at center of warp bubble.
+    Construct an observer comoving with the warp bubble.
 
-    At the bubble center (where shift β ≈ (v_s, 0, 0)),
-    an observer comoving with the bubble has 4-velocity:
-    u^μ = (1, 0, 0, 0) / ||...||
-
-    This observer experiences flat spacetime locally (equivalence principle).
+    At any point inside the bubble's flat-interior region, the
+    coordinate-static observer is the Eulerian (slice-normal) one
+    -- the bubble carries this observer along with itself, hence the
+    "comoving" label.  The shift information needed to build n^μ is
+    extracted from the metric directly via metric_to_adm; the
+    `shift_func` argument is retained only for API back-compat and
+    is no longer used.
 
     Parameters
     ----------
     metric_func : callable
         Function (t, x, y, z) -> g_{μν}.
-    shift_func : callable
-        Function (t, x, y, z) -> β^i.
     coords : np.ndarray
         Coordinates [t, x, y, z].
+    shift_func : callable, optional
+        Unused.  Kept for backward-compatibility with callers that
+        pass it positionally; will be removed in a future release.
 
     Returns
     -------
     tuple
-        (u_upper, u_lower) - 4-velocity of bubble-center observer.
+        (u_upper, u_lower) - 4-velocity of the bubble-comoving
+        (Eulerian) observer.
     """
-    # At bubble center, the comoving observer is the Eulerian observer
+    # shift_func deliberately unused -- eulerian_observer extracts
+    # lapse and shift from metric_func internally.
+    del shift_func
+    if coords is None:
+        raise TypeError(
+            "warp_bubble_center_observer: coords is required"
+        )
     return eulerian_observer(metric_func, coords)
 
 
