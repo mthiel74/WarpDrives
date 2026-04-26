@@ -154,14 +154,18 @@ def compute_extrinsic_curvature(
     h: float = 1e-6
 ) -> np.ndarray:
     """
-    Compute extrinsic curvature K_{ij} of spatial slice.
+    Compute extrinsic curvature K_{ij} of spatial slice (Wald convention).
 
-    K_{ij} = (1/2α) (D_i β_j + D_j β_i - ∂_t γ_{ij})
+    K_{ij} = -(1/2α) (D_i β_j + D_j β_i - ∂_t γ_{ij})
 
-    where D_i is the covariant derivative with respect to γ_{ij}.
+    where D_i is the covariant derivative with respect to γ_{ij}.  The
+    overall minus sign is the Wald convention with future-directed unit
+    normal n^μ; under it, the trace γ^{ij} K_{ij} equals the divergence
+    ∇_μ n^μ — the Eulerian-observer expansion scalar θ — which agrees
+    in sign with each metric's analytic expansion_scalar_analytic.
 
     For static shift (∂_t γ = 0 and time-independent shift):
-    K_{ij} = (1/2α) (D_i β_j + D_j β_i)
+    K_{ij} = -(1/2α) (D_i β_j + D_j β_i)
 
     Parameters
     ----------
@@ -254,11 +258,11 @@ def compute_extrinsic_curvature(
 
     dgamma_dt = (gamma_t_plus - gamma_t_minus) / (2 * h)
 
-    # K_{ij} = (1/2α) (D_i β_j + D_j β_i - ∂_t γ_{ij})
+    # K_{ij} = -(1/2α) (D_i β_j + D_j β_i - ∂_t γ_{ij})  [Wald sign]
     K = np.zeros((3, 3))
     for i in range(3):
         for j in range(3):
-            K[i, j] = (D_beta[i, j] + D_beta[j, i] - dgamma_dt[i, j]) / (2 * alpha)
+            K[i, j] = -(D_beta[i, j] + D_beta[j, i] - dgamma_dt[i, j]) / (2 * alpha)
 
     return K
 
@@ -278,7 +282,7 @@ def compute_extrinsic_curvature_from_shift(
     - γ_{ij} = δ_{ij}
     - ∂_t γ_{ij} = 0
 
-    Then K_{ij} = (1/2) (∂_i β_j + ∂_j β_i)
+    Then K_{ij} = -(1/2) (∂_i β_j + ∂_j β_i)  (Wald sign convention)
 
     Parameters
     ----------
@@ -312,11 +316,11 @@ def compute_extrinsic_curvature_from_shift(
 
         dbeta[i] = (beta_plus - beta_minus) / (2 * h)
 
-    # K_{ij} = (1/2α) (∂_i β_j + ∂_j β_i)
+    # K_{ij} = -(1/2α) (∂_i β_j + ∂_j β_i)  [Wald sign]
     K = np.zeros((3, 3))
     for i in range(3):
         for j in range(3):
-            K[i, j] = (dbeta[i, j] + dbeta[j, i]) / (2 * lapse)
+            K[i, j] = -(dbeta[i, j] + dbeta[j, i]) / (2 * lapse)
 
     return K
 
