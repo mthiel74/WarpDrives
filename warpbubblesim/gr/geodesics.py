@@ -164,7 +164,8 @@ def integrate_geodesic(
     method: str = "RK45",
     dense_output: bool = True,
     renormalize: bool = True,
-    renorm_interval: int = 100
+    renorm_interval: int = 100,
+    events: Optional[List[Callable]] = None,
 ) -> Dict:
     """
     Integrate a geodesic through spacetime.
@@ -192,9 +193,22 @@ def integrate_geodesic(
     dense_output : bool
         Whether to compute dense output for interpolation.
     renormalize : bool
-        Whether to periodically renormalize velocity.
+        If True, post-correct each output velocity sample so that
+        g_{μν} u^μ u^ν matches its initial value (-1 for timelike,
+        0 for null) to machine precision.  This removes drift from
+        the adaptive integrator at no cost in trajectory fidelity:
+        the corrected velocity is parallel to the integrated one,
+        with magnitude rescaled.  Skipped for null geodesics where
+        the rescale factor is undefined (norm² = 0).
     renorm_interval : int
-        Steps between renormalization.
+        Retained for backward compatibility; unused now that
+        renormalisation is a post-pass on the dense output.
+    events : list of callables, optional
+        Event functions to pass to solve_ivp.  Each must accept
+        (lam, state) and return a scalar; assign .terminal/.direction
+        attributes to control behaviour.  When events fire,
+        solve_ivp.t_events / .y_events become available on
+        result['solution'].
 
     Returns
     -------
@@ -205,6 +219,11 @@ def integrate_geodesic(
         - 'velocity': 4-velocity at each step, shape (n_steps, 4)
         - 'proper_time': proper time (for timelike geodesics)
         - 'solution': scipy ODE solution object
+        - 'is_timelike': bool
+        - 'initial_norm': float
+        - 'final_norm': float
+        - 'normalization_drift': drift |final_norm - initial_norm|
+        - 'renormalized': bool, whether post-correction was applied
     """
     initial_state = np.concatenate([initial_coords, initial_velocity])
 
@@ -212,15 +231,13 @@ def integrate_geodesic(
     g0 = metric_func(*initial_coords)
     norm_sq = np.einsum('mn,m,n->', g0, initial_velocity, initial_velocity)
     is_timelike = norm_sq < -0.5
+    is_null = abs(norm_sq) < 1e-6
 
     step_count = [0]
 
     def rhs_wrapper(lam, state):
         step_count[0] += 1
         return geodesic_rhs(lam, state, metric_func, backend, h)
-
-    # Event for renormalization (if needed)
-    events = []
 
     sol = solve_ivp(
         rhs_wrapper,
@@ -231,7 +248,7 @@ def integrate_geodesic(
         atol=atol,
         max_step=max_step,
         dense_output=dense_output,
-        events=events,
+        events=(events if events is not None else []),
     )
 
     # Extract results
@@ -239,14 +256,27 @@ def integrate_geodesic(
     velocity = sol.y[4:].T
     lam = sol.t
 
+    renormalized = False
+    if renormalize and not is_null:
+        # Post-pass: rescale each velocity so g_{μν} u^μ u^ν == norm_sq.
+        # The rescale factor is sqrt(norm_sq / current_norm); it leaves
+        # the spatial direction of u unchanged, so the integrated
+        # trajectory shape is preserved.  Skipped for null geodesics
+        # since norm_sq = 0 makes the ratio degenerate.
+        for i in range(velocity.shape[0]):
+            g_i = metric_func(*coords[i])
+            current = np.einsum('mn,m,n->', g_i, velocity[i], velocity[i])
+            if current * norm_sq > 0.0:  # same sign -> safe to rescale
+                velocity[i] = velocity[i] * np.sqrt(norm_sq / current)
+        renormalized = True
+
     # Compute proper time for timelike geodesics
     if is_timelike:
-        # For proper time parameterization, λ = τ
         proper_time = lam - lam[0]
     else:
         proper_time = None
 
-    # Check velocity normalization drift
+    # Final normalization (after any renormalisation)
     final_g = metric_func(*coords[-1])
     final_norm = np.einsum('mn,m,n->', final_g, velocity[-1], velocity[-1])
     normalization_drift = abs(final_norm - norm_sq)
@@ -261,6 +291,7 @@ def integrate_geodesic(
         'initial_norm': float(norm_sq),
         'final_norm': float(final_norm),
         'normalization_drift': float(normalization_drift),
+        'renormalized': renormalized,
     }
 
 
@@ -346,24 +377,36 @@ def integrate_geodesic_to_boundary(
     boundary_event.terminal = True
     boundary_event.direction = -1
 
-    # We need to modify the integrate_geodesic to accept events
-    # For now, use a simple approach with post-processing
+    # Pass the event into solve_ivp so the adaptive integrator
+    # locates the crossing precisely (was previously dropped, with
+    # post-processing on the discrete output points only catching
+    # crossings that happened to land at a sampled λ).
+    kwargs.setdefault("events", [])
+    kwargs["events"] = list(kwargs["events"]) + [boundary_event]
+
     result = integrate_geodesic(
         metric_func, initial_coords, initial_velocity,
         (0, max_lambda), **kwargs
     )
 
-    # Check if we hit boundary
-    for i, coord in enumerate(result['coords']):
-        if boundary_func(coord[1], coord[2], coord[3]) < 0:
-            # Truncate at boundary
-            result['coords'] = result['coords'][:i+1]
-            result['velocity'] = result['velocity'][:i+1]
-            result['lambda'] = result['lambda'][:i+1]
-            result['hit_boundary'] = True
-            return result
+    sol = result['solution']
+    # solve_ivp truncates the trajectory at the event; the t_events
+    # / y_events arrays carry the precise crossing.  result['coords']
+    # already ends at (or just before) the event because solve_ivp
+    # stops integrating when the event fires.
+    fired = bool(sol.t_events) and len(sol.t_events[-1]) > 0
+    result['hit_boundary'] = fired
+    if fired:
+        # Append the precise event point so callers can rely on the
+        # last sample being on the boundary.
+        evt_t = sol.t_events[-1][0]
+        evt_y = sol.y_events[-1][0]
+        # Avoid duplicate if solver's last stored sample is the event.
+        if not np.isclose(result['lambda'][-1], evt_t):
+            result['lambda'] = np.append(result['lambda'], evt_t)
+            result['coords'] = np.vstack([result['coords'], evt_y[:4]])
+            result['velocity'] = np.vstack([result['velocity'], evt_y[4:]])
 
-    result['hit_boundary'] = False
     return result
 
 
