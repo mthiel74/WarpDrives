@@ -33,7 +33,8 @@ pass["Det[Alcubierre] = -1",
      Simplify[detSym + 1] === 0];
 
 (* --- 4. ADM reconstruction round-trip --------------------------- *)
-<< "ADM`";
+(* MetricToADM is loaded transitively via WarpBubbleSim.wl above;
+   no separate sub-package load required. *)
 gOrig = AlcubierreMetric[{0.7, 1.2, 5.0}, {0, 0.5, 0.3, 0}];
 {alpha, beta, gamma} = MetricToADM[N[gOrig]];
 gBack = ConstantArray[0., {4, 4}];
