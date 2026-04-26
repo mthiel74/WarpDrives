@@ -254,8 +254,15 @@ class NatarioVectorPotentialMetric(WarpMetric):
         r_s = self.r_from_center(t, x, y, z)
 
         if r_s < 1e-10:
-            # At center, β ≈ (-v_s, 0, 0)
-            return np.array([-v_s, 0.0, 0.0])
+            # At the centre, the curl formula β^x = -v_s (2 g(r_s)
+            # + (y²+z²) g'(r_s) / r_s) reduces to β^x = -2 v_s g(0)
+            # because y²+z² = 0.  The previous hard-code -v_s was
+            # off by a factor of 2 g(0) and disagreed with
+            # NatarioMetric.shift's centre value for the same
+            # construction.
+            return np.array(
+                [-2.0 * v_s * self.potential_function(0.0), 0.0, 0.0]
+            )
 
         g = self.potential_function(r_s)
 

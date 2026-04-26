@@ -68,10 +68,15 @@ def test_vector_potential_metric_divergence_free(point):
 
 def test_natario_classes_agree():
     """Both Natario classes implement the same curl construction; their
-    shift vectors should agree at every point."""
+    shift vectors should agree at every point, including the bubble centre
+    where each class takes its r_s ≈ 0 branch."""
     m1 = NatarioMetric(v0=1.0, R=1.0, sigma=8.0)
     m2 = NatarioVectorPotentialMetric(v0=1.0, R=1.0, sigma=8.0)
-    for point in SAMPLE_POINTS:
+    # Original off-axis sample plus the bubble centre, which
+    # exercises each class's r_s < 1e-10 short-circuit.  Using the
+    # exact origin makes both classes hit that branch deterministically.
+    points_with_centre = SAMPLE_POINTS + [(0.0, 0.0, 0.0)]
+    for point in points_with_centre:
         b1 = m1.shift(0.0, *point)
         b2 = m2.shift(0.0, *point)
         np.testing.assert_allclose(
