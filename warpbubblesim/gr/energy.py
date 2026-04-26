@@ -188,7 +188,11 @@ def compute_momentum_density(
     coords : np.ndarray
         Coordinates [t, x, y, z].
     observer_velocity : np.ndarray, optional
-        Observer 4-velocity u^μ. If None, uses static observer.
+        Observer 4-velocity u^μ.  If None, defaults to the Eulerian
+        (slice-normal) observer n^μ = (1/α)(1, -β^i), matching the
+        default of compute_energy_density.  Pass an explicit static
+        u = (1, 0, 0, 0) if you specifically want the
+        coordinate-static decomposition.
     backend : str
         Derivative backend.
     h : float
@@ -204,7 +208,8 @@ def compute_momentum_density(
     T = compute_stress_energy(metric_func, coords, backend, h)
 
     if observer_velocity is None:
-        u = np.array([1.0, 0.0, 0.0, 0.0])
+        lapse, shift, _ = metric_to_adm(g)
+        u = compute_eulerian_velocity(shift, lapse=lapse)
     else:
         u = observer_velocity
 
@@ -327,7 +332,9 @@ def decompose_stress_energy(
     coords : np.ndarray
         Coordinates [t, x, y, z].
     observer_velocity : np.ndarray, optional
-        Observer 4-velocity u^μ.
+        Observer 4-velocity u^μ.  If None, defaults to the Eulerian
+        (slice-normal) observer n^μ = (1/α)(1, -β^i), matching the
+        default of compute_energy_density and compute_momentum_density.
     backend : str
         Derivative backend.
     h : float
@@ -343,7 +350,8 @@ def decompose_stress_energy(
     T = compute_stress_energy(metric_func, coords, backend, h)
 
     if observer_velocity is None:
-        u = np.array([1.0, 0.0, 0.0, 0.0])
+        lapse, shift, _ = metric_to_adm(g)
+        u = compute_eulerian_velocity(shift, lapse=lapse)
     else:
         u = observer_velocity
 
