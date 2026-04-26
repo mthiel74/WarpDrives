@@ -17,6 +17,57 @@ from warpbubblesim.gr.tensors import compute_metric_inverse, BackendType
 from warpbubblesim.gr.energy import compute_stress_energy
 
 
+def _sample_timelike(g: np.ndarray) -> Optional[np.ndarray]:
+    """
+    Sample a unit timelike vector at a point with metric g.
+
+    Builds a candidate u = (1, v_mag * n_hat) for a random spatial unit
+    vector n_hat and 3-velocity magnitude v_mag in (0, 0.9), then tests
+    g_{μν} u^μ u^ν < 0 in the curved metric.  If timelike, normalises to
+    g_{μν} u^μ u^ν = -1 by rescaling.  Returns None if the candidate is
+    not timelike (caller should retry).
+    """
+    spatial = np.random.randn(3)
+    spatial_norm = np.sqrt(np.dot(spatial, spatial))
+    if spatial_norm == 0.0:
+        n_hat = np.zeros(3)
+    else:
+        n_hat = spatial / spatial_norm
+
+    v_mag = 0.9 * np.random.random()
+    u = np.array([1.0, v_mag * n_hat[0],
+                       v_mag * n_hat[1],
+                       v_mag * n_hat[2]])
+
+    norm_sq = float(np.einsum('mn,m,n->', g, u, u))
+    if not np.isfinite(norm_sq) or norm_sq >= 0.0:
+        return None
+
+    return u / np.sqrt(-norm_sq)
+
+
+def _timelike_samples(g: np.ndarray, n_samples: int) -> List[np.ndarray]:
+    """
+    Return up to n_samples normalised timelike 4-velocities of the
+    metric g (g_{μν} u^μ u^ν = -1 each).  Always includes the
+    coordinate-static observer u = (1, 0, 0, 0) / √(-g_00) if it is
+    timelike, so the sample is never empty for a Lorentzian metric.
+    """
+    out: List[np.ndarray] = []
+    attempts = 0
+    while len(out) < n_samples and attempts < 50 * max(n_samples, 1):
+        attempts += 1
+        u = _sample_timelike(g)
+        if u is not None:
+            out.append(u)
+
+    g00 = float(g[0, 0])
+    if g00 < 0.0:
+        u_static = np.array([1.0, 0.0, 0.0, 0.0]) / np.sqrt(-g00)
+        out.append(u_static)
+    return out
+
+
 def check_wec(
     metric_func: Callable,
     coords: np.ndarray,
@@ -50,43 +101,12 @@ def check_wec(
         is the minimum T_{μν} u^μ u^ν found.
     """
     g = metric_func(*coords)
-    g_inv = compute_metric_inverse(g)
     T = compute_stress_energy(metric_func, coords, backend, h)
 
     min_val = np.inf
-
-    # Test with several timelike vectors
-    for _ in range(n_samples):
-        # Generate random spatial direction
-        spatial = np.random.randn(3)
-        spatial_norm = np.sqrt(np.dot(spatial, spatial))
-
-        # Create timelike vector with |v| < 1
-        v_mag = 0.9 * np.random.random()  # 3-velocity magnitude
-        if spatial_norm > 0:
-            v = v_mag * spatial / spatial_norm
-        else:
-            v = np.zeros(3)
-
-        # Construct 4-velocity (approximately, for flat spatial metric)
-        # u^0 = γ, u^i = γ v^i where γ = 1/√(1-v²)
-        gamma = 1.0 / np.sqrt(1 - v_mag**2)
-        u = np.array([gamma, gamma * v[0], gamma * v[1], gamma * v[2]])
-
-        # Verify timelike: g_{μν} u^μ u^ν < 0
-        norm_sq = np.einsum('mn,m,n->', g, u, u)
-        if norm_sq >= 0:
-            # Adjust to ensure timelike
-            u[0] = np.sqrt(1 + np.einsum('ij,i,j->', g[1:, 1:], u[1:], u[1:]))
-
-        # Compute T_{μν} u^μ u^ν
-        val = np.einsum('mn,m,n->', T, u, u)
+    for u in _timelike_samples(g, n_samples):
+        val = float(np.einsum('mn,m,n->', T, u, u))
         min_val = min(min_val, val)
-
-    # Also test the coordinate time direction
-    u_static = np.array([1.0, 0.0, 0.0, 0.0])
-    val_static = np.einsum('mn,m,n->', T, u_static, u_static)
-    min_val = min(min_val, val_static)
 
     return min_val >= -1e-10, float(min_val)
 
@@ -128,25 +148,41 @@ def check_nec(
 
     min_val = np.inf
 
-    # Test with null vectors in various directions
+    # Construct genuine null vectors of the curved metric.  For a
+    # 4-vector k = (1, v * n_hat) with n_hat a spatial unit vector,
+    # g_{μν} k^μ k^ν = 0 reduces to a quadratic in v:
+    #     a v^2 + b v + c = 0
+    # with a = g_{ij} n_i n_j, b = 2 g_{0i} n_i, c = g_{00}.
+    # For Lorentzian g, both roots correspond to genuine null vectors
+    # (the two intersections of the line with the light cone in this
+    # spatial direction); we sample both.
     for _ in range(n_samples):
         # Random direction on unit sphere
         theta = np.arccos(2 * np.random.random() - 1)
         phi = 2 * np.pi * np.random.random()
 
-        # Spatial direction
         n_spatial = np.array([
             np.sin(theta) * np.cos(phi),
             np.sin(theta) * np.sin(phi),
             np.cos(theta)
         ])
 
-        # For approximately flat spatial metric, null vector k^μ = (1, n^i)
-        k = np.array([1.0, n_spatial[0], n_spatial[1], n_spatial[2]])
+        a = np.einsum('ij,i,j->', g[1:, 1:], n_spatial, n_spatial)
+        b = 2.0 * np.einsum('i,i->', g[0, 1:], n_spatial)
+        c = g[0, 0]
+        disc = b * b - 4.0 * a * c
 
-        # Compute T_{μν} k^μ k^ν
-        val = np.einsum('mn,m,n->', T, k, k)
-        min_val = min(min_val, val)
+        if not (np.isfinite(disc) and disc >= 0.0 and a != 0.0):
+            continue
+
+        sqrt_disc = np.sqrt(disc)
+        for v in ((-b + sqrt_disc) / (2.0 * a),
+                  (-b - sqrt_disc) / (2.0 * a)):
+            k = np.array([1.0, v * n_spatial[0],
+                                v * n_spatial[1],
+                                v * n_spatial[2]])
+            val = float(np.einsum('mn,m,n->', T, k, k))
+            min_val = min(min_val, val)
 
     return min_val >= -1e-10, float(min_val)
 
@@ -193,28 +229,9 @@ def check_sec(
     T_sec = T - 0.5 * T_trace * g
 
     min_val = np.inf
-
-    # Test with timelike vectors
-    for _ in range(n_samples):
-        spatial = np.random.randn(3)
-        spatial_norm = np.sqrt(np.dot(spatial, spatial))
-
-        v_mag = 0.9 * np.random.random()
-        if spatial_norm > 0:
-            v = v_mag * spatial / spatial_norm
-        else:
-            v = np.zeros(3)
-
-        gamma = 1.0 / np.sqrt(1 - v_mag**2)
-        u = np.array([gamma, gamma * v[0], gamma * v[1], gamma * v[2]])
-
-        val = np.einsum('mn,m,n->', T_sec, u, u)
+    for u in _timelike_samples(g, n_samples):
+        val = float(np.einsum('mn,m,n->', T_sec, u, u))
         min_val = min(min_val, val)
-
-    # Static observer
-    u_static = np.array([1.0, 0.0, 0.0, 0.0])
-    val_static = np.einsum('mn,m,n->', T_sec, u_static, u_static)
-    min_val = min(min_val, val_static)
 
     return min_val >= -1e-10, float(min_val)
 
@@ -268,32 +285,12 @@ def check_dec(
     T_mixed = np.einsum('mr,rn->mn', g_inv, T)
 
     max_norm = -np.inf
-
-    for _ in range(n_samples):
-        spatial = np.random.randn(3)
-        spatial_norm = np.sqrt(np.dot(spatial, spatial))
-
-        v_mag = 0.9 * np.random.random()
-        if spatial_norm > 0:
-            v = v_mag * spatial / spatial_norm
-        else:
-            v = np.zeros(3)
-
-        gamma = 1.0 / np.sqrt(1 - v_mag**2)
-        u = np.array([gamma, gamma * v[0], gamma * v[1], gamma * v[2]])
-
+    for u in _timelike_samples(g, n_samples):
         # J^μ = -T^μ_ν u^ν (energy-momentum current)
         J = -np.einsum('mn,n->m', T_mixed, u)
-
         # Check if J is non-spacelike: g_{μν} J^μ J^ν ≤ 0
-        norm_sq = np.einsum('mn,m,n->', g, J, J)
+        norm_sq = float(np.einsum('mn,m,n->', g, J, J))
         max_norm = max(max_norm, norm_sq)
-
-    # Static observer
-    u_static = np.array([1.0, 0.0, 0.0, 0.0])
-    J_static = -np.einsum('mn,n->m', T_mixed, u_static)
-    norm_static = np.einsum('mn,m,n->', g, J_static, J_static)
-    max_norm = max(max_norm, norm_static)
 
     return max_norm <= 1e-10, float(max_norm)
 
