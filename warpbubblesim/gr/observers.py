@@ -258,40 +258,80 @@ def compute_redshift(
     emitter_coords: np.ndarray,
     receiver_coords: np.ndarray,
     emitter_velocity: Optional[np.ndarray] = None,
-    receiver_velocity: Optional[np.ndarray] = None
+    receiver_velocity: Optional[np.ndarray] = None,
 ) -> float:
     """
-    Compute gravitational + kinematic redshift between two observers.
+    Static-observer gravitational redshift between two coordinate points.
 
-    z = (λ_received - λ_emitted) / λ_emitted = ν_e / ν_r - 1
+    For two observers held at fixed spatial coordinates in a stationary
+    metric (Killing time symmetry), the ratio of their proper-time
+    rates is
 
-    For stationary observers in a static metric:
-    1 + z = √(-g_{00}(receiver)) / √(-g_{00}(emitter))
+        1 + z = √(-g_{00}(receiver)) / √(-g_{00}(emitter)),
+
+    which reduces to the familiar Schwarzschild gravitational redshift.
+
+    Limitations
+    -----------
+    This function does NOT compute the full gravitational + kinematic
+    redshift: the correct general formula
+
+        1 + z = (k_μ u^μ)_emit / (k_μ u^μ)_recv
+
+    requires parallel-transporting the photon 4-momentum k^μ along the
+    null geodesic that connects the two events.  That construction is
+    not implemented here and is non-trivial in any metric where the
+    photon path is not radial.
+
+    To prevent silent wrong answers, this function raises
+    ``NotImplementedError`` if either ``emitter_velocity`` or
+    ``receiver_velocity`` is given (those would require the kinematic
+    contribution).  Use it only for two coordinate-static observers in
+    a stationary spacetime; for warp metrics, expect at most a coarse
+    qualitative comparison.
 
     Parameters
     ----------
     metric_func : callable
         Function (t, x, y, z) -> g_{μν}.
-    emitter_coords : np.ndarray
-        Coordinates of emitter.
-    receiver_coords : np.ndarray
-        Coordinates of receiver.
-    emitter_velocity : np.ndarray, optional
-        3-velocity of emitter.
-    receiver_velocity : np.ndarray, optional
-        3-velocity of receiver.
+    emitter_coords, receiver_coords : np.ndarray
+        Coordinates of emitter / receiver.  Currently must be stationary
+        observers (no velocity argument).
 
     Returns
     -------
     float
         Redshift z (positive for redshift, negative for blueshift).
-    """
-    # Proper time rates
-    dtau_dt_e = compute_proper_time_rate(metric_func, emitter_coords, emitter_velocity)
-    dtau_dt_r = compute_proper_time_rate(metric_func, receiver_coords, receiver_velocity)
 
-    # Redshift: 1 + z = (dτ/dt)_receiver / (dτ/dt)_emitter
-    return dtau_dt_r / dtau_dt_e - 1
+    Raises
+    ------
+    NotImplementedError
+        If a non-trivial emitter or receiver velocity is supplied.
+    """
+    if emitter_velocity is not None or receiver_velocity is not None:
+        raise NotImplementedError(
+            "compute_redshift currently only supports two coordinate-"
+            "static observers in a stationary metric.  General "
+            "gravitational+kinematic redshift requires parallel-"
+            "transporting the photon 4-momentum along the connecting "
+            "null geodesic, which is not implemented in this module.  "
+            "If you need it, integrate the photon explicitly with "
+            "integrate_null_geodesic and contract the transported "
+            "k_μ with each observer's 4-velocity."
+        )
+
+    # Static-observer gravitational redshift only.
+    g_e = metric_func(*emitter_coords)
+    g_r = metric_func(*receiver_coords)
+    g00_e = float(g_e[0, 0])
+    g00_r = float(g_r[0, 0])
+    if g00_e >= 0.0 or g00_r >= 0.0:
+        raise ValueError(
+            "compute_redshift: g_{00} is non-negative at one of the "
+            "endpoints -- the coordinate-time direction is not "
+            "timelike there, so the static observer is undefined."
+        )
+    return float(np.sqrt(-g00_r) / np.sqrt(-g00_e) - 1.0)
 
 
 def project_to_observer_frame(
