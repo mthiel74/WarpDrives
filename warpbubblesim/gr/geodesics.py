@@ -452,14 +452,28 @@ def compute_geodesic_deviation(
     metric_func: Callable,
     geodesic_result: Dict,
     initial_separation: np.ndarray,
+    initial_separation_velocity: Optional[np.ndarray] = None,
     backend: BackendType = "finite_difference",
-    h: float = 1e-6
+    h: float = 1e-6,
+    rtol: float = 1e-6,
+    atol: float = 1e-9,
 ) -> np.ndarray:
     """
     Compute geodesic deviation (Jacobi field) along a geodesic.
 
-    The deviation vector ξ^μ satisfies:
-    D²ξ^μ/dλ² = -R^μ_{νρσ} u^ν u^ρ ξ^σ
+    The deviation vector ξ^μ satisfies the Jacobi equation:
+
+        D²ξ^μ/dλ² = -R^μ_{νρσ} u^ν u^ρ ξ^σ
+
+    Solved as an 8-component first-order system (ξ, dξ/dλ) using
+    scipy.integrate.solve_ivp with adaptive RK45.  The previous
+    implementation used forward Euler with the geodesic's own step
+    size, which diverges quickly under any non-trivial Riemann
+    coupling -- it was producing quantitatively wrong results
+    silently.
+
+    The trajectory (coords, velocity) is interpolated linearly along
+    λ so the integrator can query at any intermediate λ.
 
     Parameters
     ----------
@@ -468,16 +482,21 @@ def compute_geodesic_deviation(
     geodesic_result : dict
         Result from integrate_geodesic.
     initial_separation : np.ndarray
-        Initial separation vector ξ^μ(0).
+        Initial separation vector ξ^μ(λ_0), shape (4,).
+    initial_separation_velocity : np.ndarray, optional
+        Initial dξ/dλ.  Defaults to zero.
     backend : str
         Derivative backend.
     h : float
-        Step size for tensor computation.
+        Step size for the Riemann finite-difference computation.
+    rtol, atol : float
+        ODE tolerances passed through to solve_ivp.
 
     Returns
     -------
     np.ndarray
-        Separation vectors along the geodesic, shape (n_steps, 4).
+        Separation vectors along the geodesic, shape (n_steps, 4),
+        sampled at the geodesic's own λ values.
     """
     from warpbubblesim.gr.tensors import compute_riemann
 
@@ -485,27 +504,54 @@ def compute_geodesic_deviation(
     velocity = geodesic_result['velocity']
     lam = geodesic_result['lambda']
 
-    n_steps = len(lam)
-    xi = np.zeros((n_steps, 4))
-    xi[0] = initial_separation
-    xi_dot = np.zeros(4)  # Initial derivative
+    if initial_separation_velocity is None:
+        initial_separation_velocity = np.zeros(4)
 
-    # Simple forward integration
-    for i in range(1, n_steps):
-        dt = lam[i] - lam[i-1]
+    # Build linear interpolators along λ for the trajectory.  Linear
+    # is enough for a smooth solve_ivp inner loop; quadratic+ would
+    # fight the integrator's step control.
+    def _coord_at(lambda_val):
+        return np.array([
+            np.interp(lambda_val, lam, coords[:, mu]) for mu in range(4)
+        ])
 
-        # Riemann at current point
-        R = compute_riemann(metric_func, coords[i-1], backend, h)
-        u = velocity[i-1]
+    def _velocity_at(lambda_val):
+        return np.array([
+            np.interp(lambda_val, lam, velocity[:, mu]) for mu in range(4)
+        ])
 
-        # Acceleration: a^μ = -R^μ_{νρσ} u^ν u^ρ ξ^σ
-        a = -np.einsum('mnrs,n,r,s->m', R, u, u, xi[i-1])
+    def jacobi_rhs(lam_val, state):
+        xi = state[:4]
+        xi_dot = state[4:]
 
-        # Simple Euler step
-        xi_dot = xi_dot + a * dt
-        xi[i] = xi[i-1] + xi_dot * dt
+        coords_lam = _coord_at(lam_val)
+        u = _velocity_at(lam_val)
+        R = compute_riemann(metric_func, coords_lam, backend, h)
 
-    return xi
+        # D²ξ^μ/dλ² = -R^μ_{νρσ} u^ν u^ρ ξ^σ
+        a = -np.einsum('mnrs,n,r,s->m', R, u, u, xi)
+        return np.concatenate([xi_dot, a])
+
+    initial_state = np.concatenate([initial_separation,
+                                     initial_separation_velocity])
+    sol = solve_ivp(
+        jacobi_rhs,
+        (lam[0], lam[-1]),
+        initial_state,
+        t_eval=lam,
+        method="RK45",
+        rtol=rtol,
+        atol=atol,
+        dense_output=False,
+    )
+
+    if not sol.success:
+        raise RuntimeError(
+            f"Jacobi-equation integration failed: {sol.message}"
+        )
+
+    # Return ξ at each requested λ
+    return sol.y[:4].T
 
 
 def expansion_rate_along_geodesic(
