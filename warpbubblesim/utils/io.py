@@ -240,7 +240,11 @@ def import_simulation_state(filepath: str | Path) -> Dict[str, Any]:
         yaml_path = filepath / f"{key}.yaml"
 
         if npy_path.exists():
-            state[key] = np.load(npy_path)
+            # allow_pickle=False -- consistent with load_array .npz path.
+            # .npy without object arrays loads fine; if a stored array
+            # was an object array, this will raise rather than silently
+            # exec a payload from a malicious file.
+            state[key] = np.load(npy_path, allow_pickle=False)
         elif yaml_path.exists():
             state[key] = load_yaml_config(yaml_path)
 

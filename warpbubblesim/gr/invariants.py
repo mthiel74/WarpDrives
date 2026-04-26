@@ -106,16 +106,14 @@ def compute_chern_pontryagin(
     det_g = np.linalg.det(g)
 
     riemann_lower = compute_riemann_all_lower(metric_func, coords, backend, h)
-    riemann_mixed = compute_riemann(metric_func, coords, backend, h)
 
-    # Levi-Civita tensor density
+    # Permutation symbol \tilde{ε}_{αβγδ} (a tensor density of weight -1).
     epsilon = np.zeros((4, 4, 4, 4))
     for a in range(4):
         for b in range(4):
             for c in range(4):
                 for d in range(4):
-                    if len({a, b, c, d}) == 4:  # All different
-                        # Count permutations
+                    if len({a, b, c, d}) == 4:
                         perm = [a, b, c, d]
                         sign = 1
                         for i in range(4):
@@ -124,18 +122,30 @@ def compute_chern_pontryagin(
                                     sign *= -1
                         epsilon[a, b, c, d] = sign
 
-    # Epsilon tensor with metric factor: ε^{αβγδ} = ε_{αβγδ} / sqrt(-det(g))
+    # Covariant Levi-Civita TENSOR  η_{αβγδ} = sqrt(-g) * \tilde{ε}_{αβγδ}.
+    # The factor of sqrt(-g) is what distinguishes the tensor from the
+    # tensor density.  An earlier version of this routine contracted
+    # with the bare permutation symbol -- correct only for metrics with
+    # det g = -1 (Alcubierre, Natário, Van Den Broeck, White, where
+    # α=1 and γ_ij=δ_ij).  For Bobrick-Martire and Lentz, where the
+    # lapse is position-dependent and det g ≠ -1, the missing sqrt(-g)
+    # factor gave a silently wrong Chern-Pontryagin scalar.
     sqrt_neg_det = np.sqrt(np.abs(det_g))
-    epsilon_up = epsilon / sqrt_neg_det
+    eta_lower = sqrt_neg_det * epsilon
 
-    # Dual Riemann: *R_{αβγδ} = (1/2) ε_{αβμν} R^{μν}_{  γδ}
-    # First raise indices on Riemann for the contraction
-    riemann_mixed_raised = np.einsum('am,bn,mncd->abcd', g_inv, g_inv, riemann_lower)
+    # Dual Riemann:  *R_{αβγδ} = (1/2) η_{αβμν} R^{μν}{}_{γδ}.
+    riemann_mixed_raised = np.einsum(
+        'am,bn,mncd->abcd', g_inv, g_inv, riemann_lower
+    )
+    dual_riemann = 0.5 * np.einsum(
+        'abmn,mncd->abcd', eta_lower, riemann_mixed_raised
+    )
 
-    dual_riemann = 0.5 * np.einsum('abmn,mncd->abcd', epsilon, riemann_mixed_raised)
-
-    # Contract R_{αβγδ} * (*R^{αβγδ})
-    dual_raised = np.einsum('am,bn,cr,ds,mnrs->abcd', g_inv, g_inv, g_inv, g_inv, dual_riemann)
+    # Contract R_{αβγδ} *R^{αβγδ}.
+    dual_raised = np.einsum(
+        'am,bn,cr,ds,mnrs->abcd',
+        g_inv, g_inv, g_inv, g_inv, dual_riemann,
+    )
 
     chern_pontryagin = np.einsum('abcd,abcd->', riemann_lower, dual_raised)
 
