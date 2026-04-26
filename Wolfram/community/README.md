@@ -24,8 +24,8 @@ The remaining files are how the notebook is *produced*; they are not required fo
 
 | File | Role |
 |---|---|
-| `build_assets.wls` | Renders 5 PNGs and 4 GIF animations into `results/`.  Pure Wolfram. |
-| `build_hero_assets.wls` | Renders the cover spacecraft animations (3D + top-down) and `hero_still.png`.  Pure Wolfram, ports `generate_hero_animation.py` from the Python project. |
+| `build_assets.wls` | Renders 5 PNGs and 3 GIF animations into `results/`.  Pure Wolfram. |
+| `build_hero_assets.wls` | Renders the cover spacecraft animations (3D + top-down).  Pure Wolfram, ports `generate_hero_animation.py` from the Python project. |
 | `build_notebook.wls` | Assembles `warpdrives.nb` from the rendered assets, native math typesetting, and runnable Input/Output cell pairs. |
 | `results/` | Pre-rendered PNGs + GIFs that get embedded into the notebook. |
 
@@ -33,21 +33,21 @@ The remaining files are how the notebook is *produced*; they are not required fo
 
 ```bash
 cd Wolfram/community
-wolframscript -file build_assets.wls          # ~3 min: 5 PNGs + 4 GIFs
+wolframscript -file build_assets.wls          # ~3 min: 5 PNGs + 3 GIFs
 wolframscript -file build_hero_assets.wls     # ~2 min: cover spacecraft animations
 wolframscript -file build_notebook.wls        # ~10 s: assembles warpdrives.nb
 ```
 
 ## Notebook structure
 
-15 sections, ~93 cells, **5 embedded animations** at full quality plus 6 stills:
+15 sections, ~93 cells, **6 embedded animations** at full quality plus 5 stills (the cover hero animation appears in both the abstract and Section 5b, hence 6 animation cells from 5 distinct GIFs):
 
 | # | Section | Visual |
 |---|---|---|
-| 0 | Cover | `hero_still.png` (single 720 px frame) |
+| 0 | Cover | `anim_hero_3d.gif` (compact embed, ~480 px) |
 | 1 | What is a warp drive? | shape-function plot |
 | 2 | The metric in ADM form | runnable code only |
-| 3 | Einstein tensor in three lines | analytic ρ density-plot + 3D surface |
+| 3 | Einstein tensor in three lines | analytic ρ density-plot + live `Plot3D` Graphics3D (mouse-rotatable) |
 | 4 | Where space contracts/expands | expansion-scalar density plot |
 | 5 | The bubble in motion | **animation**: bubble flying through space |
 | 5b | **Putting a spacecraft inside the bubble** | **two animations**: 3D hero (cyan grid + bubble + ring + ship + engine wake + starfield + orbiting camera) and top-down (red ρ backdrop + cyan distorted grid + ship silhouette + dashed bubble + annotations) |
