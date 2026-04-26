@@ -126,7 +126,24 @@ class TestDifferentShapeFunctions:
     @pytest.mark.parametrize("shape", ["tanh", "gaussian", "polynomial", "smoothstep"])
     def test_negative_energy_exists(self, shape):
         """All shape functions should produce negative energy regions."""
-        metric = AlcubierreMetric(v0=1.0, R=1.0, sigma=0.5, shape=shape)
+        # Each shape function has a different "natural" sigma scaling.
+        # tanh:        f = (tanh(σ(r+R)) - tanh(σ(r-R))) / (2 tanh(σR))
+        #              wall width ~1/σ -- larger σ -> sharper wall.
+        # gaussian:    f = exp(-r²/(2σ²)) -- wall width ~σ -- larger σ
+        #              -> broader wall (opposite scaling to tanh).
+        # polynomial / smoothstep: compact support, wall at r=R, σ small.
+        # The original test used σ=0.5 uniformly which is correct for
+        # the compact-support shapes but produces nearly-flat tanh and
+        # gaussian profiles over the test sample range, so df/dr ≈ 0
+        # and no negative energy is detected.
+        sigma_for_shape = {
+            "tanh":       8.0,
+            "gaussian":   0.3,
+            "polynomial": 0.5,
+            "smoothstep": 0.5,
+        }
+        sigma = sigma_for_shape[shape]
+        metric = AlcubierreMetric(v0=1.0, R=1.0, sigma=sigma, shape=shape)
         metric_func = metric.get_metric_func()
 
         # Sample many points
