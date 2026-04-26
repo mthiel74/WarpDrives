@@ -191,12 +191,17 @@ def plot_expansion_scalar(
         def theta_func(t, x, y, z):
             return metric.expansion_scalar_analytic(t, x, y, z)
     else:
+        # Numerical fallback.  For an ADM metric with flat spatial slice,
+        # the Eulerian-observer expansion is theta = -D_i beta^i (the
+        # minus sign comes from n^i = -beta^i / alpha; see Wald sec 10).
+        # ShiftDivergence returns +D_i beta^i, so flip the sign here so
+        # the fallback agrees with the analytic formulas in sign.
         from warpbubblesim.gr.adm import compute_shift_divergence
         shift_func = metric.get_shift_func()
 
         def theta_func(t, x, y, z):
             coords = np.array([t, x, y, z])
-            return compute_shift_divergence(shift_func, coords)
+            return -compute_shift_divergence(shift_func, coords)
 
     return plot_field_2d(
         theta_func, x_range, y_range, nx, ny, t, z,
@@ -377,28 +382,42 @@ def plot_grid_distortion(
     x_range: Tuple[float, float] = (-5, 5),
     y_range: Tuple[float, float] = (-5, 5),
     n_lines: int = 20,
+    n_steps: int = 40,
     t: float = 0.0,
     z: float = 0.0,
     figsize: Tuple[float, float] = (8, 8),
     ax: Optional[Axes] = None,
 ) -> Tuple[Figure, Axes]:
     """
-    Plot coordinate grid distorted by the metric.
+    Plot a regular Cartesian grid cumulatively advected by the
+    metric's shift field from t=0 to time `t`.
 
-    Shows how proper distances differ from coordinate distances.
+    Each grid intersection is treated as a comoving test particle
+    integrated forward by Euler steps under
+        dx^i / dt = beta^i
+    (the comoving-coordinate advection law).  After the bubble passes
+    a grid node it does not return -- the shift field provides no
+    restoring force -- so the grid stays deformed behind the bubble.
+    For t=0 the grid is undistorted.
+
+    Mirrors the visual in Section 6 of the Wolfram Community post.
 
     Parameters
     ----------
     metric : WarpMetric
-        The warp metric.
+        The warp metric.  Must expose ``shift(t, x, y, z)`` returning
+        the 3-vector beta^i.
     x_range, y_range : tuple
         Coordinate ranges.
     n_lines : int
         Number of grid lines per direction.
+    n_steps : int
+        Number of Euler steps used to advect each grid node from
+        t=0 to t.
     t : float
-        Time coordinate.
+        Final time at which to draw the grid.
     z : float
-        Z coordinate.
+        Fixed z slice.
     figsize : tuple
         Figure size.
     ax : Axes, optional
@@ -414,40 +433,48 @@ def plot_grid_distortion(
     else:
         fig = ax.figure
 
-    # Draw coordinate grid lines
-    x_lines = np.linspace(x_range[0], x_range[1], n_lines)
-    y_lines = np.linspace(y_range[0], y_range[1], n_lines)
+    def advect(x0: float, y0: float) -> Tuple[float, float]:
+        """Forward-Euler advect (x0, y0) from time 0 to time t."""
+        if t == 0.0 or n_steps <= 0:
+            return x0, y0
+        dt = t / n_steps
+        xc, yc = x0, y0
+        for k in range(n_steps):
+            tk = k * dt
+            beta = metric.shift(tk, xc, yc, z)
+            xc = xc + dt * float(beta[0])
+            yc = yc + dt * float(beta[1])
+        return xc, yc
 
-    n_points = 100
-    xs = np.linspace(x_range[0], x_range[1], n_points)
-    ys = np.linspace(y_range[0], y_range[1], n_points)
+    # Sample resolution along each line: enough points that the
+    # advected curve looks smooth.
+    n_samples = max(n_lines, 60)
+    sample_xs = np.linspace(x_range[0], x_range[1], n_samples)
+    sample_ys = np.linspace(y_range[0], y_range[1], n_samples)
+    line_xs = np.linspace(x_range[0], x_range[1], n_lines)
+    line_ys = np.linspace(y_range[0], y_range[1], n_lines)
 
-    # Vertical lines (constant x)
-    for x0 in x_lines:
-        ax.plot([x0] * n_points, ys, 'b-', alpha=0.3, linewidth=0.5)
+    # Lines of constant initial y, swept across x
+    for y_init in line_ys:
+        pts = [advect(x_init, y_init) for x_init in sample_xs]
+        ax.plot([p[0] for p in pts], [p[1] for p in pts],
+                'b-', alpha=0.4, linewidth=0.6)
 
-    # Horizontal lines (constant y)
-    for y0 in y_lines:
-        ax.plot(xs, [y0] * n_points, 'b-', alpha=0.3, linewidth=0.5)
+    # Lines of constant initial x, swept across y
+    for x_init in line_xs:
+        pts = [advect(x_init, y_init) for y_init in sample_ys]
+        ax.plot([p[0] for p in pts], [p[1] for p in pts],
+                'b-', alpha=0.4, linewidth=0.6)
 
-    # Mark bubble center
+    # Mark bubble center at the final time t
     x_s = metric.bubble_center(t)
     ax.plot(x_s, 0, 'r*', markersize=15, label='Bubble center')
 
-    # Add colorbar for shape function
-    X, Y = np.meshgrid(xs, ys)
-    Z = np.zeros_like(X)
-    for i in range(len(ys)):
-        for j in range(len(xs)):
-            r_s = metric.r_from_center(t, xs[j], ys[i], z)
-            Z[i, j] = metric.shape_function(r_s)
-
-    im = ax.contourf(X, Y, Z, levels=20, alpha=0.3, cmap='Greys')
-    plt.colorbar(im, ax=ax, label='f(r)')
-
+    ax.set_xlim(x_range)
+    ax.set_ylim(y_range)
     ax.set_xlabel('x')
     ax.set_ylabel('y')
-    ax.set_title(f'Coordinate Grid - {metric.name}')
+    ax.set_title(f'Coordinate grid advected to t = {t} -- {metric.name}')
     ax.set_aspect('equal')
     ax.legend()
 
