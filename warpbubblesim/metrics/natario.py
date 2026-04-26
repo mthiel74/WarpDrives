@@ -91,14 +91,19 @@ class NatarioMetric(WarpMetric):
         """
         Divergence-free shift vector.
 
-        Constructed so that ∇·β = 0 (expansion-free).
+        Constructed as β = ∇ × A with the axially-symmetric vector
+        potential A = v_s g(r_s) (0, z, -y), which automatically
+        satisfies ∇·β = 0 because the divergence of any curl is
+        identically zero.
 
-        The construction follows from requiring:
-        ∂β^x/∂x + ∂β^y/∂y + ∂β^z/∂z = 0
+        Computing the curl explicitly with r_s = √((x-x_s)² + y² + z²):
 
-        We use the Natário form that has β parallel to the velocity
-        direction at the center, but with transverse components
-        to maintain zero divergence.
+            β^x = ∂A_z/∂y - ∂A_y/∂z
+                = -v_s (2 g + (y² + z²) g'(r_s) / r_s)
+            β^y = -∂A_z/∂x = v_s y (x-x_s) g'(r_s) / r_s
+            β^z =  ∂A_y/∂x = v_s z (x-x_s) g'(r_s) / r_s
+
+        At the bubble centre β reduces to (-2 v_s, 0, 0) ⋅ g(0).
 
         Parameters
         ----------
@@ -108,39 +113,34 @@ class NatarioMetric(WarpMetric):
         Returns
         -------
         np.ndarray
-            Shift vector [β^x, β^y, β^z].
+            Shift vector [β^x, β^y, β^z] with ∇·β = 0 to machine
+            precision.
+
+        Notes
+        -----
+        An earlier formula in this method gave β a non-zero
+        divergence -- the prefactor on the transverse components was
+        wrong by a factor of r_s.  The current curl-based form is
+        what NatarioVectorPotentialMetric uses; both classes now
+        compute the same shift.
         """
         v_s = self.bubble_velocity(t)
         x_s = self.bubble_center(t)
         r_s = self.r_from_center(t, x, y, z)
 
-        # Avoid singularity
         if r_s < 1e-10:
-            return np.array([-v_s, 0.0, 0.0])
+            # At the centre, the curl gives β = (-2 v_s g(0), 0, 0).
+            return np.array([-2.0 * v_s * self.shape_function(0.0), 0.0, 0.0])
 
-        n = self.shape_function(r_s)
-        dn_dr = self.shape_derivative(r_s)
+        g = self.shape_function(r_s)
+        dg_dr = self.shape_derivative(r_s)
 
         dx = x - x_s
+        rho_sq = y * y + z * z
 
-        # Divergence-free construction
-        # This specific form has ∇·β = 0
-        # β^x = -v_s * n(r_s) * (1 - 2y²/r_s² - 2z²/r_s² / 3) approximately
-        # Full form from Natário paper (adapted for our coordinates):
-
-        # Simpler approach: use a curl-based construction
-        # β = ∇ × A where A = v_s * g(r_s) * (0, z, -y) for axially symmetric
-
-        # The following is the leading-order divergence-free shift:
-        beta_x = -v_s * n
-
-        # Transverse components that make it divergence-free
-        # These arise from the requirement that the divergence vanishes
-        # Following Natário's construction:
-        factor = v_s * dn_dr / r_s
-
-        beta_y = factor * y * dx / r_s
-        beta_z = factor * z * dx / r_s
+        beta_x = -v_s * (2.0 * g + rho_sq * dg_dr / r_s)
+        beta_y = v_s * y * dx * dg_dr / r_s
+        beta_z = v_s * z * dx * dg_dr / r_s
 
         return np.array([beta_x, beta_y, beta_z])
 
