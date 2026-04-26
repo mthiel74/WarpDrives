@@ -74,7 +74,12 @@ def compute_energy_density(
     coords : np.ndarray
         Coordinates [t, x, y, z].
     observer_velocity : np.ndarray, optional
-        Observer 4-velocity u^μ. If None, uses Eulerian observer.
+        Observer 4-velocity u^μ.  If None, defaults to the Eulerian
+        (slice-normal) observer n^μ = (1/α)(1, -β^i), which is the
+        physically meaningful observer for "the energy density of
+        a warp bubble".  Pass np.array([1.0, 0.0, 0.0, 0.0]) if you
+        explicitly want the coordinate-static observer's T_00 — those
+        two differ for any metric with non-zero shift.
     backend : str
         Derivative backend.
     h : float
@@ -88,13 +93,13 @@ def compute_energy_density(
     T = compute_stress_energy(metric_func, coords, backend, h)
 
     if observer_velocity is None:
-        # Default observer is the static coordinate observer
-        # u^μ = (1, 0, 0, 0) -- NOT the Eulerian (slice-normal)
-        # observer, which is (1, -β^i)/α.  For an α=1, β=0 metric
-        # the two coincide; for any warp metric they differ.
-        # Use compute_energy_density_eulerian for the Eulerian
-        # contraction.
-        u = np.array([1.0, 0.0, 0.0, 0.0])
+        # Default to the slice-normal Eulerian observer.  For an
+        # α=1, β=0 metric this is just (1, 0, 0, 0); for any warp
+        # metric the n^i = -β^i/α components are non-zero in the
+        # wall, and the contraction with T differs from T_00.
+        g = metric_func(*coords)
+        lapse, shift, _ = metric_to_adm(g)
+        u = compute_eulerian_velocity(shift, lapse=lapse)
     else:
         u = observer_velocity
 
