@@ -19,7 +19,7 @@ from warpbubblesim.gr.tensors import (
     compute_metric_inverse,
     BackendType,
 )
-from warpbubblesim.gr.adm import compute_eulerian_velocity
+from warpbubblesim.gr.adm import compute_eulerian_velocity, metric_to_adm
 
 
 def compute_stress_energy(
@@ -88,8 +88,12 @@ def compute_energy_density(
     T = compute_stress_energy(metric_func, coords, backend, h)
 
     if observer_velocity is None:
-        # Use Eulerian observer (comoving with spatial coords)
-        # For ADM with α=1, u^μ = (1, 0, 0, 0)
+        # Default observer is the static coordinate observer
+        # u^μ = (1, 0, 0, 0) -- NOT the Eulerian (slice-normal)
+        # observer, which is (1, -β^i)/α.  For an α=1, β=0 metric
+        # the two coincide; for any warp metric they differ.
+        # Use compute_energy_density_eulerian for the Eulerian
+        # contraction.
         u = np.array([1.0, 0.0, 0.0, 0.0])
     else:
         u = observer_velocity
@@ -102,25 +106,33 @@ def compute_energy_density(
 
 def compute_energy_density_eulerian(
     metric_func: Callable,
-    shift_func: Callable,
-    coords: np.ndarray,
+    shift_func: Optional[Callable] = None,
+    coords: np.ndarray = None,
     backend: BackendType = "finite_difference",
     h: float = 1e-6
 ) -> float:
     """
     Compute energy density for Eulerian observer in ADM formalism.
 
-    The Eulerian observer has 4-velocity n^μ (the normal to hypersurfaces).
-    For α=1: n^μ = (1, -β^x, -β^y, -β^z)
+    The Eulerian observer has 4-velocity n^μ (the normal to spatial
+    hypersurfaces): n^μ = (1/α)(1, -β^i).
 
-    ρ_Eulerian = T_{μν} n^μ n^ν
+        ρ_Eulerian = T_{μν} n^μ n^ν
+
+    The lapse and shift are extracted from the metric automatically
+    via metric_to_adm, so the contraction is correct for ADM metrics
+    with non-unit lapse (Bobrick–Martire, Lentz) as well as for
+    α = 1 metrics (Alcubierre, Natário, Van Den Broeck, White).
 
     Parameters
     ----------
     metric_func : callable
         Function (t, x, y, z) -> g_{μν}.
-    shift_func : callable
-        Function (t, x, y, z) -> β^i (shift vector).
+    shift_func : callable, optional
+        Deprecated: kept for backward compatibility.  If supplied the
+        function uses shift_func(*coords) and assumes α = 1.  Otherwise
+        shift and lapse are both extracted from metric_func via
+        metric_to_adm and the lapse-aware n^μ = (1/α)(1, -β^i) is used.
     coords : np.ndarray
         Coordinates [t, x, y, z].
     backend : str
@@ -131,17 +143,22 @@ def compute_energy_density_eulerian(
     Returns
     -------
     float
-        Energy density as measured by Eulerian observer.
+        Energy density as measured by an Eulerian observer.
     """
     T = compute_stress_energy(metric_func, coords, backend, h)
-    beta = shift_func(*coords)
 
-    # Eulerian observer velocity (with α=1)
-    n = compute_eulerian_velocity(beta)
+    if shift_func is None:
+        g = metric_func(*coords)
+        lapse, shift, _ = metric_to_adm(g)
+        n = compute_eulerian_velocity(shift, lapse=lapse)
+    else:
+        # Back-compat path: assume α = 1.  Correct for Alcubierre,
+        # Natário, Van Den Broeck, White; off by 1/α^2 for
+        # Bobrick–Martire and Lentz.
+        beta = shift_func(*coords)
+        n = compute_eulerian_velocity(beta, lapse=1.0)
 
-    # ρ = T_{μν} n^μ n^ν
     rho = np.einsum('mn,m,n->', T, n, n)
-
     return float(rho)
 
 

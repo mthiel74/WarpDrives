@@ -436,26 +436,34 @@ def compute_normal_vector(lapse: float, shift: np.ndarray) -> np.ndarray:
     return n
 
 
-def compute_eulerian_velocity(shift: np.ndarray) -> np.ndarray:
+def compute_eulerian_velocity(shift: np.ndarray, lapse: float = 1.0) -> np.ndarray:
     """
     Compute 4-velocity of Eulerian observer.
 
-    For Eulerian observers (zero 3-velocity in spatial coords):
-    u^μ = n^μ where n^μ is the unit normal.
+    For Eulerian observers (slice-normal worldlines):
+    u^μ = n^μ = (1/α)(1, -β^i)
 
-    With α=1: u^μ = (1, -β^i)
+    The 1/α factor is required for proper normalisation g_{μν} u^μ u^ν
+    = -1.  For Alcubierre, Natário, Van Den Broeck, and the White
+    toroidal metric, α = 1 and the factor is trivial; for
+    Bobrick–Martire and Lentz, α is position-dependent and the lapse
+    factor matters.
 
     Parameters
     ----------
     shift : np.ndarray
         Shift vector β^i, shape (3,).
+    lapse : float, optional
+        Lapse function α at the same point.  Defaults to 1.0
+        (correct for Alcubierre and Natário; supply the actual
+        lapse for Bobrick–Martire / Lentz).
 
     Returns
     -------
     np.ndarray
-        4-velocity u^μ, shape (4,).
+        4-velocity u^μ = n^μ, shape (4,).
     """
     u = np.zeros(4)
-    u[0] = 1.0
-    u[1:] = -shift
+    u[0] = 1.0 / lapse
+    u[1:] = -np.asarray(shift) / lapse
     return u
