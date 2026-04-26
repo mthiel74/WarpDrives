@@ -175,11 +175,18 @@ def compute_momentum_density(
     h: float = 1e-6
 ) -> np.ndarray:
     """
-    Compute momentum density as measured by an observer.
+    Compute the energy-momentum current J^μ = −T^μ_ν u^ν.
 
-    j^μ = -T^μ_ν u^ν + ρ u^μ
+    This is a 4-vector with one timelike component (energy density
+    seen by u) and three spatial components (momentum density seen
+    by u).  Note that J^μ is NOT the purely-spatial momentum density
+    by itself: that is
 
-    (the spatial part gives momentum density)
+        q^μ = -T^μ_ν u^ν - ρ u^μ                       (heat-flux form)
+
+    obtained by subtracting the timelike component.  Use
+    decompose_stress_energy(...) for the full (ρ, p, q^μ, π_{μν})
+    breakdown into purely spatial parts.
 
     Parameters
     ----------
@@ -368,9 +375,10 @@ def decompose_stress_energy(
     h_inv = g_inv + np.outer(u, u)  # h^{μν}
     p = np.einsum('mn,mn->', h_inv, T) / 3.0
 
-    # Heat flux: q_μ = -h_μ^ρ T_{ρσ} u^σ
-    h_mixed = np.einsum('mr,rn->mn', g, h_inv)  # h_μ^ρ = g_{μν} h^{νρ}
-    # Actually: h_μ^ν = δ_μ^ν + u_μ u^ν
+    # Heat flux q_μ = -h_μ^ρ T_{ρσ} u^σ.  The mixed projector
+    # h_μ^ν = δ_μ^ν + u_μ u^ν follows from h_{μν} = g_{μν} + u_μ u_ν
+    # raised by g^{νρ}; both forms are equal numerically and we use
+    # the cheaper one.
     h_mixed = np.eye(4) + np.outer(u_lower, u)
     q = -np.einsum('mr,rs,s->m', h_mixed, T, u)
 

@@ -165,9 +165,16 @@ def warp_bubble_center_observer(
         (u_upper, u_lower) - 4-velocity of the bubble-comoving
         (Eulerian) observer.
     """
-    # shift_func deliberately unused -- eulerian_observer extracts
-    # lapse and shift from metric_func internally.
-    del shift_func
+    if shift_func is not None:
+        import warnings
+        warnings.warn(
+            "warp_bubble_center_observer no longer uses shift_func; "
+            "lapse and shift are extracted from metric_func via "
+            "metric_to_adm.  The shift_func argument is deprecated "
+            "and will be removed in a future release.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
     if coords is None:
         raise TypeError(
             "warp_bubble_center_observer: coords is required"

@@ -70,7 +70,23 @@ def load_array(filepath: str | Path) -> tuple[np.ndarray, Optional[Dict[str, Any
                 metadata = json.load(f)
         return data, metadata
     elif filepath.suffix == '.npz':
-        loaded = np.load(filepath, allow_pickle=True)
+        # First try the safe path (allow_pickle=False).  Fall back to
+        # allow_pickle=True ONLY if the file genuinely needs object
+        # arrays (legacy metadata), and warn the caller -- pickled
+        # object arrays from untrusted sources can execute arbitrary
+        # code on load.
+        try:
+            loaded = np.load(filepath, allow_pickle=False)
+        except ValueError:
+            import warnings
+            warnings.warn(
+                f"Loading {filepath} with allow_pickle=True because the "
+                f"file contains object-dtype arrays.  Only do this with "
+                f"files from trusted sources -- pickled payloads can "
+                f"execute arbitrary code.",
+                stacklevel=2,
+            )
+            loaded = np.load(filepath, allow_pickle=True)
         data = loaded['data']
         metadata = {k[5:]: loaded[k] for k in loaded.files if k.startswith('meta_')}
         return data, metadata if metadata else None

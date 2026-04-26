@@ -48,7 +48,12 @@ class WarpMetricParams:
     R : float
         Characteristic radius of the warp bubble.
     sigma : float
-        Wall thickness parameter (smaller = sharper transition).
+        Wall steepness parameter.  Convention is shape-function
+        dependent: for tanh the wall width scales as ~1/sigma so
+        LARGER sigma gives a sharper transition; for gaussian the
+        wall width scales as ~sigma directly so SMALLER sigma is
+        sharper.  See each shape function's docstring for the
+        precise definition.
     x0 : float
         Initial x-position of bubble center.
     """
