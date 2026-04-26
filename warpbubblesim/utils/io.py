@@ -62,7 +62,7 @@ def load_array(filepath: str | Path) -> tuple[np.ndarray, Optional[Dict[str, Any
     filepath = Path(filepath)
 
     if filepath.suffix == '.npy':
-        data = np.load(filepath)
+        data = np.load(filepath, allow_pickle=False)
         metadata = None
         meta_path = filepath.with_suffix('.json')
         if meta_path.exists():
