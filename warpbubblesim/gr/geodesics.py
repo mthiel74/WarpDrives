@@ -381,8 +381,14 @@ def integrate_geodesic_to_boundary(
     # locates the crossing precisely (was previously dropped, with
     # post-processing on the discrete output points only catching
     # crossings that happened to land at a sampled λ).
-    kwargs.setdefault("events", [])
-    kwargs["events"] = list(kwargs["events"]) + [boundary_event]
+    #
+    # If the caller already supplied events via kwargs, append the
+    # boundary event AFTER them and remember its index -- otherwise
+    # sol.t_events[-1] could refer to one of the caller's events,
+    # silently returning the wrong crossing.
+    caller_events = list(kwargs.pop("events", []) or [])
+    boundary_idx = len(caller_events)  # boundary appended at this index
+    kwargs["events"] = caller_events + [boundary_event]
 
     result = integrate_geodesic(
         metric_func, initial_coords, initial_velocity,
@@ -390,17 +396,20 @@ def integrate_geodesic_to_boundary(
     )
 
     sol = result['solution']
-    # solve_ivp truncates the trajectory at the event; the t_events
-    # / y_events arrays carry the precise crossing.  result['coords']
-    # already ends at (or just before) the event because solve_ivp
-    # stops integrating when the event fires.
-    fired = bool(sol.t_events) and len(sol.t_events[-1]) > 0
+    # solve_ivp truncates the trajectory at the first event that
+    # fires.  The boundary event lives at boundary_idx; check it
+    # explicitly rather than relying on sol.t_events[-1].
+    fired = (
+        sol.t_events is not None
+        and len(sol.t_events) > boundary_idx
+        and len(sol.t_events[boundary_idx]) > 0
+    )
     result['hit_boundary'] = fired
     if fired:
         # Append the precise event point so callers can rely on the
         # last sample being on the boundary.
-        evt_t = sol.t_events[-1][0]
-        evt_y = sol.y_events[-1][0]
+        evt_t = sol.t_events[boundary_idx][0]
+        evt_y = sol.y_events[boundary_idx][0]
         # Avoid duplicate if solver's last stored sample is the event.
         if not np.isclose(result['lambda'][-1], evt_t):
             result['lambda'] = np.append(result['lambda'], evt_t)
