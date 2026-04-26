@@ -123,10 +123,14 @@ PlotMetricComparison[OptionsPattern[{Range -> 3, Grid -> 80}]] :=
         AlcubierreAnalyticEnergyDensity[{1, 1, 8}, {0, #1, #2, 0}] &,
         "Eulerian \[Rho] (analytic)"},
       {"Natario",
-        Module[{rs = Sqrt[(#1 - 1.)^2 + #2^2 + 0.0001], dphi},
+        (* Shift magnitude; Natario's bubble has divergence-free
+           shift (theta = 0 everywhere) so no front/back crescents. *)
+        Module[{rs = Sqrt[#1^2 + #2^2 + 0.0001], dphi, bx, by},
           dphi = Evaluate[D[TanhShape[r, 1, 8], r]] /. r -> rs;
-          -1.0 dphi^2 (#2^2/rs^2)] &,
-        "Shift-derivative proxy"},
+          bx = -2 TanhShape[rs, 1, 8] - (#2^2/rs) dphi;
+          by = (#1 #2/rs) dphi;
+          Sqrt[bx^2 + by^2]] &,
+        "Shift magnitude |\[Beta]| (\[Theta]=0)"},
       {"VanDenBroeck",
         Module[{rs = Sqrt[(#1)^2 + #2^2], B},
           B = 1 + (5 - 1) TanhShape[rs, 1, 5];

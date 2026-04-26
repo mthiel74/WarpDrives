@@ -6,7 +6,7 @@ Self-contained build of a Wolfram Community post about Alcubierre / Bobrick–Ma
 
 | File | What it is | Size |
 |------|------------|------|
-| `warpdrives.nb` | The notebook itself.  Drop this into the Community post. | **17 MB** |
+| `warpdrives.nb` | The notebook itself.  Drop this into the Community post. | **~15 MB** |
 | `WarpBubbleSim.wl` | A single, self-contained Wolfram Language package containing all the GR machinery (shape functions, the six warp metrics, Christoffel/Riemann/Einstein tensors, ADM tools, energy-condition checkers, geodesics, plotting helpers).  Attach it to the post so readers can re-evaluate the Input cells locally. | ~37 KB |
 
 Readers download both, place them in the same folder, and the Input cell on page 1 of the notebook is

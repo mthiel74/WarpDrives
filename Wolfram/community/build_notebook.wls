@@ -711,7 +711,7 @@ MatrixForm @ g"],
  Cell[TextData[{"This is where Wolfram earns its keep.  In the \
 Python port we built finite-difference Christoffel symbols, then \
 finite-difference Riemann tensors, then finite-difference Ricci, all \
-~500 lines.  In Wolfram the equivalent is a literal transliteration \
+~545 lines.  In Wolfram the equivalent is a literal transliteration \
 of the textbook formula because ",
    StyleBox["D", "Input"],
    " differentiates symbolically.  Recall the Christoffel symbols of \
@@ -1374,9 +1374,12 @@ for the others, an analogous shape-function-driven proxy."}], "Text"],
  imgCell[loadPng["metric_comparison.png", 760],
    "Figure 8. The six warp-drive metric families side by side.  All \
 panels are slices through the x-y plane.  Top row: Alcubierre's \
-energy density, Nat\[AAcute]rio's shift-derivative proxy (no \
-expansion/contraction regions, just a wall), Van Den Broeck's \
-pocket factor.  Bottom row: White's toroidal shape, the \
+Eulerian energy density (the characteristic two negative crescents \
+in front of and behind the bubble); Nat\[AAcute]rio's shift \
+magnitude |\[Beta]| (note the rotationally symmetric ring concentrated \
+in the wall \[LongDash] no front/back crescent because the shift is \
+divergence-free, \[Theta]=0 everywhere); Van Den Broeck's pocket \
+factor.  Bottom row: White's toroidal shape, the \
 Bobrick\[Dash]Martire shell function (a positive-energy double-shell \
 at R_inner = 1, R_outer = 2), and Lentz's soliton intensity profile."],
 
