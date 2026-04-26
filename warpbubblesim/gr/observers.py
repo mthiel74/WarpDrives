@@ -413,8 +413,13 @@ def compute_tidal_acceleration(
 
     riemann = compute_riemann(metric_func, coords, backend, h)
 
-    # a^μ = -R^μ_{νρσ} u^ν u^ρ ξ^σ
+    # a^μ = -R^μ_{νρσ} u^ν ξ^ρ u^σ  (MTW eq. 11.10).
+    # The separation ξ goes in the third Riemann slot (between two
+    # 4-velocities), not the fourth -- Riemann is antisymmetric in the
+    # last pair, so swapping the last two arrays in einsum flips the
+    # sign of the result.  An earlier version used (u, u, ξ) and
+    # returned -1 × the correct tidal acceleration.
     a = -np.einsum('mnrs,n,r,s->m', riemann, observer_velocity,
-                   observer_velocity, separation)
+                   separation, observer_velocity)
 
     return a

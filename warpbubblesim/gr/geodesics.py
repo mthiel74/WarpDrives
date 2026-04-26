@@ -540,8 +540,15 @@ def compute_geodesic_deviation(
         u = _velocity_at(lam_val)
         R = compute_riemann(metric_func, coords_lam, backend, h)
 
-        # D²ξ^μ/dλ² = -R^μ_{νρσ} u^ν u^ρ ξ^σ
-        a = -np.einsum('mnrs,n,r,s->m', R, u, u, xi)
+        # D²ξ^μ/dλ² = -R^μ_{νρσ} u^ν ξ^ρ u^σ  (MTW eq. 11.10 / Wald
+        # eq. 3.3.18).  The deviation vector ξ goes in the THIRD index
+        # of Riemann, not the fourth -- swapping ξ and the last u
+        # picks up a sign because Riemann is antisymmetric in the last
+        # pair.  An earlier version of this einsum used (R, u, u, xi)
+        # which silently returned -1 × the correct Jacobi acceleration,
+        # an error that escaped detection because the test suite only
+        # exercises Minkowski (R=0) where the sign is irrelevant.
+        a = -np.einsum('mnrs,n,r,s->m', R, u, xi, u)
         return np.concatenate([xi_dot, a])
 
     initial_state = np.concatenate([initial_separation,
