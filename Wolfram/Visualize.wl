@@ -101,12 +101,15 @@ PlotGridDistortion[{v0_, R_, sigma_}, t_: 0,
       Table[Line[Table[advect[{x, y}], {y, -rng, rng, step}]],
             {x, -rng, rng, step}]];
     Show[
-      DensityPlot[Abs[shiftX[t, x, y]], {x, -rng, rng}, {y, -rng, rng},
-                  ColorFunction -> "SunsetColors", PlotPoints -> 60, Frame -> True,
-                  FrameLabel -> {"x", "y"}, PlotLegends -> Automatic],
+      DensityPlot[
+        AlcubierreExpansionScalar[{v0, R, sigma}, {t, x, y, 0}],
+        {x, -rng, rng}, {y, -rng, rng},
+        ColorFunction -> "RedBlueTones", PlotPoints -> 60, Frame -> True,
+        FrameLabel -> {"x", "y"}, PlotLegends -> Automatic],
       Graphics[{Black, Thickness[0.002], gridLines}],
       ImageSize -> 500,
-      PlotLabel -> Row[{"Alcubierre shift magnitude at t=", t}]]];
+      PlotLabel -> Row[{"Expansion scalar \[Theta] at t=", t,
+                        "; red=contraction, blue=expansion"}]]];
 
 (* Cheap proxy fields used by PlotMetricComparison: each function returns a
    scalar that highlights where the warp bubble is non-trivial in space.

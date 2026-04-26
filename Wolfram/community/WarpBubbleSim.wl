@@ -207,7 +207,10 @@ function) if you only have the metric.";
 PlotMetricComparison::usage =
   "PlotMetricComparison[opts] shows a 2x3 grid comparing all six metric families.";
 PlotGridDistortion::usage =
-  "PlotGridDistortion[{v0,R,\[Sigma]}, t] shows how the coordinate grid is warped.";
+  "PlotGridDistortion[{v0,R,\[Sigma]}, t] shows how a regular Cartesian grid \
+is cumulatively advected by the Alcubierre shift field at time t.  The \
+background is the signed expansion scalar \[Theta] (red = contraction in \
+front, blue = expansion behind), matching Figure 6 of the Community post.";
 
 (* ============================================================
    Implementation
@@ -861,15 +864,17 @@ PlotGridDistortion[{v0_, R_, sigma_}, t_: 0,
       Table[Line[Table[advect[{x, y}], {y, -rng, rng, step}]],
             {x, -rng, rng, step}]];
     Show[
-      DensityPlot[Abs[shiftXFn[t, x, y]],
-                  {x, -rng, rng}, {y, -rng, rng},
-                  ColorFunction -> "SunsetColors", PlotPoints -> 60,
-                  Frame -> True, FrameLabel -> {"x", "y"},
-                  PlotLegends -> Automatic],
+      DensityPlot[
+        AlcubierreExpansionScalar[{v0, R, sigma}, {t, x, y, 0}],
+        {x, -rng, rng}, {y, -rng, rng},
+        ColorFunction -> "RedBlueTones", PlotPoints -> 60,
+        Frame -> True, FrameLabel -> {"x", "y"},
+        PlotLegends -> Automatic],
       Graphics[{Black, Thickness[0.002], gridLines}],
       ImageSize -> 500,
       PlotLabel ->
-        Row[{"Alcubierre shift magnitude at t=", t}]]];
+        Row[{"Expansion scalar \[Theta] at t=", t,
+             "; red=contraction, blue=expansion"}]]];
 
 End[];
 EndPackage[];
