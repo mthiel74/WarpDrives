@@ -86,6 +86,60 @@ Bobrick & Martire (2021) showed that **subluminal** warp drives can use positive
 
 ![Subluminal vs Superluminal](images/subluminal_vs_superluminal.png)
 
+### Through the Windshield: Backward Null-Geodesic Ray Tracing
+
+What does the night sky look like from inside an Alcubierre bubble as
+the spacecraft accelerates from rest into superluminal motion?  The
+sky renderer fires past-pointing null geodesics through the warp
+metric for every pixel of a virtual front window, integrates them
+until they leave the bubble's sphere of influence, and looks up the
+asymptotic direction on a celestial-sphere background — either a
+deterministic procedural starfield or a real equirectangular sky map
+(Milky Way panorama).
+
+<p align="center">
+  <img src="images/skytest/v00.png" width="22%" alt="v=0">
+  <img src="images/skytest/v06.png" width="22%" alt="v=0.6c">
+  <img src="images/skytest/v15.png" width="22%" alt="v=1.5c">
+  <img src="images/skytest/v50.png" width="22%" alt="v=5c">
+</p>
+
+Three renderers ship with the package:
+
+| Module | Backend | When to use |
+|---|---|---|
+| `viz.skyrender` | scipy adaptive RK45, one ray at a time | exact reference, debugging |
+| `viz.skyrender_batch` | NumPy vectorised RK4 over all pixels | CPU preview-quality |
+| `viz.skyrender_jax` | JIT + vmap + lax.scan | GPU/Colab, high-resolution video |
+
+Quick CLI render:
+
+```bash
+warpsim skyview --metric alcubierre --resolution 128 \
+    --velocities 0,0.5,0.99,1.5,2.5 --sky stars --output out/
+```
+
+For high-quality animation see
+[`notebooks/07_warp_skyflight_colab.ipynb`](notebooks/07_warp_skyflight_colab.ipynb)
+— it boots a Colab GPU runtime, downloads an ESO Milky Way panorama,
+JIT-compiles the integrator, and renders a smooth 0 → multi-c
+acceleration ramp as MP4 + GIF.
+
+```python
+from warpbubblesim.metrics import AlcubierreMetric
+from warpbubblesim.viz import (
+    Camera, RenderConfig, render_sky_view,
+    make_procedural_starfield, save_frames_as_animation,
+)
+
+metric = AlcubierreMetric(v0=2.5, R=1.0, sigma=8.0)
+sky = make_procedural_starfield(n_stars=6000, star_radius_px=0.7,
+                                fov_scale=np.deg2rad(90)/256)
+cam = Camera(width=256, height=256, fov_deg=90.0)
+img = render_sky_view(metric, sky, camera=cam,
+                      config=RenderConfig(n_jobs=8))
+```
+
 ## Interactive Simulator
 
 **Try the warp drive simulator in your browser!** Open `interactive/index.html` to explore warp bubble physics interactively:
