@@ -121,10 +121,20 @@ def make_natario_metric_fn(v0: float, R: float, sigma: float, x0: float = 0.0):
     missed the factor-of-two at the bubble centre, where the correct
     shift is β = (-2 v_s n(0), 0, 0) not (-v_s n(0), 0, 0).
     """
+    # Width of the radial regulariser.  Smaller = closer to the exact
+    # Natário formula but more numerical noise near r=0.  R/100 is
+    # enough to keep finite-difference Christoffels stable while
+    # leaving the metric essentially unchanged outside the centre.
+    eps = 1e-2 * R
+
     def g(t, x, y, z):
         x_s = x0 + v0 * t
         dx = x - x_s
-        r = jnp.sqrt(dx ** 2 + y ** 2 + z ** 2 + 1e-30)
+        # Regularised r: replaces sqrt(0) with sqrt(eps²) = eps so the
+        # 1/r factors below are bounded, AND so jacfwd doesn't divide
+        # by zero at the bubble centre.  Effect on the metric is below
+        # the integration's RK4 truncation error for sensible eps.
+        r = jnp.sqrt(dx ** 2 + y ** 2 + z ** 2 + eps ** 2)
         n = jax_tanh_shape(r, R, sigma)
         # n'(r) for tanh-shaped envelope, computed from
         # d/dr [(tanh(σ(r+R)) - tanh(σ(r-R))) / (2 tanh(σR))]
@@ -135,7 +145,10 @@ def make_natario_metric_fn(v0: float, R: float, sigma: float, x0: float = 0.0):
         dn_dr = sigma * (sech_p ** 2 - sech_m ** 2) / denom
 
         rho_sq = y * y + z * z
-        # Curl-based divergence-free shift (matches NatarioMetric.shift)
+        # Curl-based divergence-free shift (matches NatarioMetric.shift).
+        # dn_dr / r is a regular limit at the centre (= -2σ²sech²(σR)·O(1)),
+        # but JAX's autodiff doesn't know that; the eps regulariser on r
+        # above makes the value finite for both autodiff and FD paths.
         beta_x = -v0 * (2.0 * n + rho_sq * dn_dr / r)
         beta_y =  v0 * y * dx * dn_dr / r
         beta_z =  v0 * z * dx * dn_dr / r
@@ -161,21 +174,55 @@ def make_natario_metric_fn(v0: float, R: float, sigma: float, x0: float = 0.0):
 # Christoffel + RHS
 # ---------------------------------------------------------------------------
 
-def make_geodesic_rhs(metric_fn):
+def make_geodesic_rhs(metric_fn, derivative_mode: str = "auto", h: float = 1e-3):
     """Return a JAX-jitted RHS for the null geodesic ODE.
 
     State has shape (8,): [t, x, y, z, k^t, k^x, k^y, k^z].
+
+    Parameters
+    ----------
+    metric_fn : callable
+        ``(t, x, y, z) -> (4, 4)`` JAX-traceable metric.
+    derivative_mode : {"auto", "finite_difference"}
+        How to compute ``∂_α g_{μν}``.
+
+        * ``"auto"`` (default) uses :func:`jax.jacfwd`.  Exact, fast for
+          smooth metrics, but can produce NaN gradients at coordinate
+          singularities even when the metric value itself is finite —
+          notably at the bubble centre of Natário's curl-based shift,
+          where ``dn_dr / r`` is a regular ``0/0`` of the form
+          ``-2σ² sech²(σR)``.
+        * ``"finite_difference"`` uses central differences with step
+          ``h``.  Slightly slower per ray (extra metric evals), but
+          robust to the kind of derivative singularities that break
+          ``jacfwd``.  Use this for Natário; ``"auto"`` is fine for
+          Alcubierre.
+    h : float
+        Finite-difference step.  Default ``1e-3``.
     """
     def metric_at(coords):
         return metric_fn(coords[0], coords[1], coords[2], coords[3])
 
-    # ∂_α g_{μν}: shape (4, 4, 4) where the *first* index is α.
-    def metric_grad(coords):
-        # jacfwd over coords (shape (4,)) of metric_at returns (4, 4, 4)
-        # with the trailing axis being the differentiated coordinate.
-        # Transpose so axis 0 is α.
-        J = jacfwd(metric_at)(coords)  # shape (4, 4, 4): (μ, ν, α)
-        return jnp.transpose(J, (2, 0, 1))  # (α, μ, ν)
+    if derivative_mode == "finite_difference":
+        # Central differences in JAX — vectorised across the 4 axes.
+        e_basis = jnp.eye(4) * h
+
+        def metric_grad(coords):
+            # Stack of 4 metric evaluations at coords + h ê_α and 4 at
+            # coords - h ê_α.  Use vmap over the basis directions.
+            def at_offset(eps):
+                return metric_at(coords + eps)
+            gp = vmap(at_offset)(e_basis)   # (4, 4, 4) — α along axis 0
+            gm = vmap(at_offset)(-e_basis)
+            return (gp - gm) / (2 * h)
+    else:
+        # ∂_α g_{μν}: shape (4, 4, 4) where the *first* index is α.
+        def metric_grad(coords):
+            # jacfwd over coords (shape (4,)) of metric_at returns (4, 4, 4)
+            # with the trailing axis being the differentiated coordinate.
+            # Transpose so axis 0 is α.
+            J = jacfwd(metric_at)(coords)  # shape (4, 4, 4): (μ, ν, α)
+            return jnp.transpose(J, (2, 0, 1))  # (α, μ, ν)
 
     def christoffel(coords):
         g = metric_at(coords)
@@ -350,6 +397,14 @@ class JaxRenderConfig:
     escape the bubble within the integration budget) and render
     them black — no causal contact with the celestial sphere."""
     horizon_safety_factor: float = 1.5
+    derivative_mode: str = "auto"
+    """``"auto"`` picks ``jacfwd`` for Alcubierre and finite-difference
+    for Natário (whose curl-based shift has a 0/0 derivative at the
+    bubble centre that breaks jacfwd).  Override to
+    ``"finite_difference"`` to force FD everywhere — slower but more
+    robust to coordinate-singularity-flavoured derivatives."""
+    fd_step: float = 1e-3
+    """Finite-difference step size when ``derivative_mode`` chooses FD."""
     """A ray whose final r_s < horizon_safety_factor * R is deemed
     trapped."""
     enable_front_wall_glow: bool = False
@@ -457,7 +512,14 @@ def render_frame_jax(
     init_states = np.concatenate([state0, k_init], axis=1)  # (P, 8)
     init_states_j = jnp.asarray(init_states)
 
-    rhs = make_geodesic_rhs(metric_fn)
+    # Natário's curl-based shift contains dn/dr / r which is a regular
+    # 0/0 limit at the bubble centre but breaks jax.jacfwd.  Use central
+    # finite differences for that metric; jacfwd is fine for Alcubierre.
+    deriv_mode = config.derivative_mode
+    if deriv_mode == "auto":
+        deriv_mode = "finite_difference" if metric_name == "natario" else "auto"
+    rhs = make_geodesic_rhs(metric_fn, derivative_mode=deriv_mode,
+                            h=config.fd_step)
     step = make_rk4_step(rhs)
     n_steps = int(config.n_steps)
     dlam = float(config.dlam)
