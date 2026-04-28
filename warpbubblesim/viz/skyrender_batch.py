@@ -343,6 +343,11 @@ class BatchRenderConfig:
     doppler_tonemap: bool = False
     enable_horizon_mask: bool = False
     horizon_safety_factor: float = 1.5
+    enable_front_wall_glow: bool = False
+    front_wall_onset_v: float = 0.85
+    front_wall_intensity: float = 0.6
+    front_wall_inner_deg: float = 5.0
+    front_wall_outer_deg: float = 35.0
 
 
 def _make_metric_fn(metric_kind, params):
@@ -447,6 +452,7 @@ def render_frame_batch(
     from warpbubblesim.viz.effects import (
         doppler_factor, apply_doppler,
         horizon_mask, horizon_color,
+        front_wall_glow,
     )
     if config.enable_doppler:
         f = doppler_factor(g0, k_init, u, k_final)
@@ -463,6 +469,15 @@ def render_frame_batch(
             safety_factor=config.horizon_safety_factor,
         )
         rgb[trapped] = horizon_color()
+    if config.enable_front_wall_glow:
+        rgb = front_wall_glow(
+            rgb, flat,
+            v_bubble=v0,
+            inner_angle_deg=config.front_wall_inner_deg,
+            outer_angle_deg=config.front_wall_outer_deg,
+            onset_v=config.front_wall_onset_v,
+            intensity=config.front_wall_intensity,
+        )
     return rgb.reshape(H, W, 3)
 
 

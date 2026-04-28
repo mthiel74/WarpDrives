@@ -12,6 +12,11 @@ sky lookup, no JAX needed):
 - :func:`horizon_mask` and :func:`horizon_color` — flag pixels whose
   ray failed to escape the bubble (front-horizon / trapped) and render
   them black (no causal contact with the celestial sphere).
+- :func:`front_wall_glow` — *stylised* (not physics) forward-cone bloom
+  approximating the McMonigal et al. matter-pileup at the leading
+  bubble wall.  Provided as an opt-in cinematic toggle so the honest-
+  physics render and the "with bloom" render can be compared
+  side-by-side; never enabled by default.
 
 Conventions
 -----------
@@ -165,6 +170,81 @@ def horizon_mask(
     dz = coords_final[..., 3]
     r_s = np.sqrt(dx ** 2 + dy ** 2 + dz ** 2)
     return r_s < (safety_factor * bubble_R)
+
+
+def front_wall_glow(
+    rgb: np.ndarray,
+    pixel_dirs: np.ndarray,
+    forward: np.ndarray = np.array([1.0, 0.0, 0.0]),
+    v_bubble: float = 0.0,
+    inner_angle_deg: float = 5.0,
+    outer_angle_deg: float = 35.0,
+    color: Tuple[float, float, float] = (0.85, 0.95, 1.0),
+    intensity: float = 0.6,
+    onset_v: float = 0.85,
+) -> np.ndarray:
+    """STYLISED forward-cone bloom approximating the McMonigal et al.
+    matter-pileup at the bubble's leading edge.
+
+    .. warning::
+       This is **not** an honest-physics output.  It's an artist's
+       proxy for a real-but-not-locally-visible effect: McMonigal,
+       Lewis & O'Byrne (2012) showed that any matter the bubble
+       encounters during a superluminal cruise piles up *outside*
+       the bubble's front wall and is released as a forward-directed
+       beam on deceleration.  *Inside* the bubble the crew don't
+       directly see this pile-up — it's beyond their forward horizon
+       — so a faithful render shows nothing there.  The bloom in
+       this function is a stylised proxy that ramps with v so the
+       leading-edge effect is at least *legible*.
+
+    Implementation: angular distance from the camera's forward axis
+    drives a smoothstep mask between ``inner_angle_deg`` (full glow)
+    and ``outer_angle_deg`` (no glow); the bloom strength ramps with
+    ``tanh(max(0, v - onset_v))``.
+
+    Parameters
+    ----------
+    rgb : np.ndarray, shape (..., 3)
+        Per-pixel RGB before the bloom.
+    pixel_dirs : np.ndarray, shape (..., 3)
+        Per-pixel local-frame unit direction.  Use the *original*
+        observer-frame pixel directions (not the asymptotic ones) so
+        the bloom stays anchored to the camera's forward axis in
+        screen space rather than swimming with aberration.
+    forward : np.ndarray, shape (3,)
+        Forward direction in the camera's local frame.  Default ``+x̂``.
+    v_bubble : float
+        Bubble velocity in c.
+    inner_angle_deg, outer_angle_deg : float
+        Bloom radial profile (full glow inside inner, fades to zero at
+        outer).
+    color : tuple
+        Bloom RGB.
+    intensity : float
+        Peak intensity at saturation.
+    onset_v : float
+        Bubble velocity below which the bloom has zero contribution.
+
+    Returns
+    -------
+    np.ndarray, same shape as ``rgb``.
+    """
+    forward = np.asarray(forward, dtype=float)
+    forward = forward / np.linalg.norm(forward)
+    cos_alpha = np.einsum("...i,i->...", pixel_dirs, forward)
+    alpha = np.arccos(np.clip(cos_alpha, -1.0, 1.0))
+    inner = np.deg2rad(inner_angle_deg)
+    outer = np.deg2rad(outer_angle_deg)
+    t = np.clip((alpha - inner) / max(outer - inner, 1e-6), 0.0, 1.0)
+    radial_mask = 1.0 - (3.0 * t ** 2 - 2.0 * t ** 3)
+
+    onset = max(0.0, abs(v_bubble) - onset_v)
+    velocity_mask = np.tanh(onset) * intensity
+
+    bloom = velocity_mask * radial_mask
+    add = bloom[..., None] * np.asarray(color, dtype=float)
+    return rgb + add
 
 
 def horizon_color() -> np.ndarray:

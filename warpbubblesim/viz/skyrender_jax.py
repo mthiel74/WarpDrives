@@ -352,6 +352,16 @@ class JaxRenderConfig:
     horizon_safety_factor: float = 1.5
     """A ray whose final r_s < horizon_safety_factor * R is deemed
     trapped."""
+    enable_front_wall_glow: bool = False
+    """Add a STYLISED forward-cone bloom approximating the McMonigal
+    et al. matter-pileup at the bubble's leading edge.  This is
+    **not** honest physics — the real pile-up is outside the front
+    horizon and the crew can't see it directly.  Provided as an
+    opt-in toggle so you can A/B against the honest-physics render."""
+    front_wall_onset_v: float = 0.85
+    front_wall_intensity: float = 0.6
+    front_wall_inner_deg: float = 5.0
+    front_wall_outer_deg: float = 35.0
 
 
 def _build_jax_metric_fn(metric_name: str, params: dict):
@@ -492,6 +502,7 @@ def render_frame_jax(
     from warpbubblesim.viz.effects import (
         doppler_factor, apply_doppler,
         horizon_mask, horizon_color,
+        front_wall_glow,
     )
 
     if config.enable_doppler:
@@ -519,6 +530,19 @@ def render_frame_jax(
         # noise, so don't blank pixels in that regime.
         if abs(v0) > 1.0:
             rgb[trapped] = horizon_color()
+
+    if config.enable_front_wall_glow:
+        # Use the local-frame pixel direction (not the asymptotic one)
+        # so the bloom stays anchored to the camera's forward axis in
+        # screen space rather than swimming with aberration.
+        rgb = front_wall_glow(
+            rgb, flat,
+            v_bubble=v0,
+            inner_angle_deg=config.front_wall_inner_deg,
+            outer_angle_deg=config.front_wall_outer_deg,
+            onset_v=config.front_wall_onset_v,
+            intensity=config.front_wall_intensity,
+        )
 
     # Reshape (H*W*S, 3) → (H, W, S, 3) and average over the S
     # supersamples per pixel.  When S=1 this is a no-op.

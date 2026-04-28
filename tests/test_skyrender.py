@@ -273,3 +273,59 @@ def test_doppler_no_color_shift():
     np.testing.assert_allclose(out[:, 1:], 0.0, atol=1e-12)
     # Red scales as f^3
     np.testing.assert_allclose(out[:, 0], f ** 3, rtol=1e-12)
+
+
+def test_front_wall_glow_off_below_onset():
+    """The bloom must contribute zero below ``onset_v``."""
+    from warpbubblesim.viz.effects import front_wall_glow
+    rgb = np.zeros((10, 3))
+    pixel_dirs = np.tile(np.array([1.0, 0.0, 0.0]), (10, 1))
+    out = front_wall_glow(rgb, pixel_dirs, v_bubble=0.5, onset_v=0.85)
+    np.testing.assert_allclose(out, 0.0, atol=1e-12)
+
+
+def test_front_wall_glow_active_above_onset_only_forward():
+    """Above ``onset_v`` the bloom adds intensity ONLY in the forward cone."""
+    from warpbubblesim.viz.effects import front_wall_glow
+    rgb = np.zeros((4, 3))
+    pixel_dirs = np.array([
+        [1.0, 0.0, 0.0],   # forward — should glow
+        [0.0, 1.0, 0.0],   # 90°  — outside outer angle, no glow
+        [-1.0, 0.0, 0.0],  # backward — no glow
+        [0.0, 0.0, 1.0],   # 90°
+    ])
+    out = front_wall_glow(rgb, pixel_dirs, v_bubble=2.0, onset_v=0.85,
+                          inner_angle_deg=5.0, outer_angle_deg=35.0,
+                          intensity=0.6)
+    assert out[0].sum() > 0.5, "forward pixel should glow"
+    np.testing.assert_allclose(out[1], 0.0, atol=1e-9)
+    np.testing.assert_allclose(out[2], 0.0, atol=1e-9)
+    np.testing.assert_allclose(out[3], 0.0, atol=1e-9)
+
+
+def test_render_bloom_toggle_changes_output():
+    """Enabling the bloom should change the rendered frame at v > onset."""
+    cfg_off = BatchRenderConfig(
+        width=8, height=8, fov_deg=90.0, n_steps=80, dlam=0.2,
+        progress=False, enable_doppler=True,
+        enable_front_wall_glow=False,
+    )
+    cfg_on = BatchRenderConfig(
+        width=8, height=8, fov_deg=90.0, n_steps=80, dlam=0.2,
+        progress=False, enable_doppler=True,
+        enable_front_wall_glow=True, front_wall_intensity=0.6,
+        front_wall_onset_v=0.5,
+    )
+    sky = make_grid_sky(spacing_deg=20.0)
+    img_off = render_frame_batch(
+        "alcubierre", {"v0": 1.5, "R": 1.0, "sigma": 8.0, "shape": "tanh"},
+        sky, cfg_off,
+    )
+    img_on = render_frame_batch(
+        "alcubierre", {"v0": 1.5, "R": 1.0, "sigma": 8.0, "shape": "tanh"},
+        sky, cfg_on,
+    )
+    # Bloom adds non-negative contribution only — `on` ≥ `off` per channel
+    assert (img_on >= img_off - 1e-9).all()
+    # And differs by a non-zero amount somewhere
+    assert (img_on > img_off + 1e-3).any()
