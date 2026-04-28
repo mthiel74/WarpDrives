@@ -338,6 +338,11 @@ class BatchRenderConfig:
     n_steps: int = 240
     dlam: float = 0.15
     progress: bool = True
+    enable_doppler: bool = False
+    doppler_intensity_power: float = 3.0
+    doppler_tonemap: bool = False
+    enable_horizon_mask: bool = False
+    horizon_safety_factor: float = 1.5
 
 
 def _make_metric_fn(metric_kind, params):
@@ -426,6 +431,7 @@ def render_frame_batch(
     for _ in iterator:
         state = _rk4_step(state, config.dlam, metric_kind, params)
 
+    coords_final = state[:, :4]
     k_final = state[:, 4:]
     spatial = k_final[:, 1:]
     norms = np.linalg.norm(spatial, axis=1, keepdims=True)
@@ -436,6 +442,27 @@ def render_frame_batch(
 
     rgb = np.asarray(sky_fn(dirs_asym))
     rgb[~valid] = np.asarray(fallback_color)
+
+    # Optional post-processing effects (Doppler / horizon mask).
+    from warpbubblesim.viz.effects import (
+        doppler_factor, apply_doppler,
+        horizon_mask, horizon_color,
+    )
+    if config.enable_doppler:
+        f = doppler_factor(g0, k_init, u, k_final)
+        rgb = apply_doppler(
+            rgb, f,
+            intensity_power=config.doppler_intensity_power,
+            tonemap=config.doppler_tonemap,
+        )
+    if config.enable_horizon_mask and abs(v0) > 1.0:
+        x_s_per_ray = x0 + v0 * coords_final[:, 0]
+        R_bubble = float(params.get("R", 1.0))
+        trapped = horizon_mask(
+            coords_final, x_s_per_ray, R_bubble,
+            safety_factor=config.horizon_safety_factor,
+        )
+        rgb[trapped] = horizon_color()
     return rgb.reshape(H, W, 3)
 
 

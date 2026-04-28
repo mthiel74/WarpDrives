@@ -332,6 +332,26 @@ class JaxRenderConfig:
     9x; ``1`` (default) is the original one-ray-per-pixel."""
     aa_seed: int = 0
     """RNG seed for sub-pixel jitter (deterministic across runs)."""
+    enable_doppler: bool = False
+    """Apply per-pixel Doppler/gravitational brightness scaling
+    f**doppler_intensity_power.  Honest physics: the only invariant
+    you can derive from the geodesic data alone is I_ν/ν³, so we
+    scale brightness by f^3 and don't fake a colour shift."""
+    doppler_intensity_power: float = 3.0
+    """Exponent on ω_obs/ω_source.  3.0 = Liouville's monochromatic
+    invariance (default).  4.0 = bolometric for thermal sources."""
+    doppler_tonemap: bool = False
+    """Reinhard-style brightness compression so the brightest
+    forward-superluminal pixels don't burn out the frame.  *Not
+    physical* — leave off for honest physics, on if you want a
+    cinematic preview."""
+    enable_horizon_mask: bool = False
+    """Detect rays trapped behind the front horizon (failed to
+    escape the bubble within the integration budget) and render
+    them black — no causal contact with the celestial sphere."""
+    horizon_safety_factor: float = 1.5
+    """A ray whose final r_s < horizon_safety_factor * R is deemed
+    trapped."""
 
 
 def _build_jax_metric_fn(metric_name: str, params: dict):
@@ -451,8 +471,9 @@ def render_frame_jax(
         finals.append(np.asarray(out))
     final_states = np.concatenate(finals, axis=0)  # (P, 8)
 
-    # Asymptotic spatial direction = spatial part of k at the end
-    k_final = final_states[:, 4:]  # (P, 4)
+    # Final coordinates and tangents
+    coords_final = final_states[:, :4]  # (P, 4)
+    k_final = final_states[:, 4:]       # (P, 4)
     spatial = k_final[:, 1:]
     norms = np.linalg.norm(spatial, axis=1, keepdims=True)
     valid = (norms[:, 0] > 1e-12) & np.isfinite(norms[:, 0])
@@ -462,6 +483,42 @@ def render_frame_jax(
 
     rgb = np.asarray(sky_fn(dirs_asym))
     rgb[~valid] = np.asarray(fallback_color)
+
+    # ------------------------------------------------------------------
+    # Optional post-processing: Doppler colour, horizon mask, front-wall
+    # glow.  All effects are NumPy and run at the per-supersample level
+    # so we can still average them inside the AA reduce below.
+    # ------------------------------------------------------------------
+    from warpbubblesim.viz.effects import (
+        doppler_factor, apply_doppler,
+        horizon_mask, horizon_color,
+    )
+
+    if config.enable_doppler:
+        f = doppler_factor(g0, init_states[:, 4:], u, k_final)
+        rgb = apply_doppler(
+            rgb, f,
+            intensity_power=config.doppler_intensity_power,
+            tonemap=config.doppler_tonemap,
+        )
+
+    if config.enable_horizon_mask:
+        # Each ray ended at its own t = coords_final[:, 0]; bubble centre
+        # at that time depends on v0, x0 and the metric's bubble_center
+        # convention.  For the JAX-supported metrics the centre is
+        # x0 + v0 * t, so we can compute it here without re-instantiating
+        # the WarpMetric class.
+        x_s_per_ray = x0 + v0 * coords_final[:, 0]
+        R_bubble = float(params.get("R", 1.0))
+        trapped = horizon_mask(
+            coords_final, x_s_per_ray, R_bubble,
+            safety_factor=config.horizon_safety_factor,
+        )
+        # Front horizon is a feature of v > 1 in Alcubierre / Natário;
+        # at sub-luminal v the trapped flag is essentially numerical
+        # noise, so don't blank pixels in that regime.
+        if abs(v0) > 1.0:
+            rgb[trapped] = horizon_color()
 
     # Reshape (H*W*S, 3) → (H, W, S, 3) and average over the S
     # supersamples per pixel.  When S=1 this is a no-op.
