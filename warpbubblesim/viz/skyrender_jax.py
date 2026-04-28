@@ -107,35 +107,40 @@ def make_alcubierre_metric_fn(v0: float, R: float, sigma: float,
 
 
 def make_natario_metric_fn(v0: float, R: float, sigma: float, x0: float = 0.0):
-    """Return a JAX-traceable Natário metric (axisymmetric, default form).
+    """Return a JAX-traceable Natário metric.
 
-    Mirrors :class:`NatarioMetric` with the divergence-free shift
-    constructed from a stream-function-like envelope ``n(r)`` ≡ tanh
-    shape.  Off-axis components are derived via numerical derivatives,
-    but here we hand-write the (closed-form) divergence-free shift
-    used in ``natario.py``.
+    Mirrors :class:`NatarioMetric.shift` (the *curl-based*, divergence-
+    free formulation):
+
+        β^x = -v_s [2 n(r) + (y² + z²) n'(r) / r]
+        β^y =  v_s y (x - x_s) n'(r) / r
+        β^z =  v_s z (x - x_s) n'(r) / r
+
+    The earlier version of this function used a different (incorrect)
+    formula and did not match the Python reference -- in particular it
+    missed the factor-of-two at the bubble centre, where the correct
+    shift is β = (-2 v_s n(0), 0, 0) not (-v_s n(0), 0, 0).
     """
     def g(t, x, y, z):
         x_s = x0 + v0 * t
         dx = x - x_s
         r = jnp.sqrt(dx ** 2 + y ** 2 + z ** 2 + 1e-30)
         n = jax_tanh_shape(r, R, sigma)
-        # df/dr for tanh shape, computed from d/dr[(tanh(σ(r+R)) - tanh(σ(r-R)))/(2 tanh(σR))]
+        # n'(r) for tanh-shaped envelope, computed from
+        # d/dr [(tanh(σ(r+R)) - tanh(σ(r-R))) / (2 tanh(σR))]
         sech_p = 1.0 / jnp.cosh(jnp.clip(sigma * (r + R), -20.0, 20.0))
         sech_m = 1.0 / jnp.cosh(jnp.clip(sigma * (r - R), -20.0, 20.0))
         denom = 2.0 * jnp.tanh(jnp.clip(sigma * R, -20.0, 20.0))
         denom = jnp.where(jnp.abs(denom) < 1e-10, 1e-10, denom)
-        dfdr = sigma * (sech_p ** 2 - sech_m ** 2) / denom
+        dn_dr = sigma * (sech_p ** 2 - sech_m ** 2) / denom
 
-        # Natário shift (axisymmetric form used in natario.py)
-        beta_x = -v0 * n
-        prefac = -v0 * dfdr * dx / (r ** 2)
-        beta_y = prefac * y
-        beta_z = prefac * z
+        rho_sq = y * y + z * z
+        # Curl-based divergence-free shift (matches NatarioMetric.shift)
+        beta_x = -v0 * (2.0 * n + rho_sq * dn_dr / r)
+        beta_y =  v0 * y * dx * dn_dr / r
+        beta_z =  v0 * z * dx * dn_dr / r
 
-        # ADM g_{μν} with α=1, γ=δ_{ij}
-        # γ_{ij} = δ → β_i = β^i.  Build via .at[...].set so JAX can trace
-        # through tracers without falling back to numpy array construction.
+        # ADM g_{μν} with α=1, γ=δ_{ij}; γ=δ → β_i = β^i.
         beta_lower = jnp.stack([beta_x, beta_y, beta_z])
         beta_upper = beta_lower
         g00 = -1.0 + jnp.dot(beta_lower, beta_upper)
@@ -256,19 +261,49 @@ def _build_orthonormal_tetrad_np(metric_fn_np, coords, u, forward=(0, 1, 0, 0),
     return np.vstack([e_t, e_x, e_y, e_z])
 
 
-def _pixel_directions_np(width, height, fov_deg):
+def _pixel_directions_np(width, height, fov_deg, supersample=1, seed=0):
+    """Pixel ray directions in the local frame.
+
+    With ``supersample > 1`` we generate that many sub-pixel samples per
+    pixel using a deterministic 2D Halton-ish jitter.  The renderer
+    averages the sky colour over those samples → standard Monte-Carlo
+    anti-aliasing.
+
+    Returns
+    -------
+    np.ndarray, shape (H, W, S, 3) where S = supersample**2
+    """
     fov = np.deg2rad(fov_deg)
     aspect = width / height
     half_w = np.tan(fov / 2)
     half_h = half_w / aspect
+    s = max(1, int(supersample))
+    rng = np.random.default_rng(seed)
+
     i = np.arange(width)
     j = np.arange(height)
-    u = (2 * (i + 0.5) / width - 1.0) * half_w
-    v = (1.0 - 2 * (j + 0.5) / height) * half_h
-    uu, vv = np.meshgrid(u, v)
-    n = np.stack([np.ones_like(uu), uu, vv], axis=-1)
+    # Sub-pixel offsets in [0, 1)^2.  s² samples per pixel arranged on a
+    # jittered s×s grid.
+    sub_idx = np.arange(s)
+    sub_u = (sub_idx + 0.5) / s
+    sub_v = (sub_idx + 0.5) / s
+    Su, Sv = np.meshgrid(sub_u, sub_v, indexing="xy")
+    Su = Su.flatten()
+    Sv = Sv.flatten()
+    if s > 1:
+        jitter = rng.uniform(-0.5 / s, 0.5 / s, size=(s * s, 2))
+        Su = np.clip(Su + jitter[:, 0], 0.0, 1.0 - 1e-6)
+        Sv = np.clip(Sv + jitter[:, 1], 0.0, 1.0 - 1e-6)
+
+    # Per-pixel + per-subsample u,v in [0,1)
+    # Shape: (H, W, S)
+    u_pix = (i[None, :, None] + Su[None, None, :]) / width
+    v_pix = (j[:, None, None] + Sv[None, None, :]) / height
+    u_loc = (2 * u_pix - 1.0) * half_w
+    v_loc = (1.0 - 2 * v_pix) * half_h
+    n = np.stack([np.ones_like(u_loc), u_loc, v_loc], axis=-1)  # (H, W, S, 3)
     n = n / np.linalg.norm(n, axis=-1, keepdims=True)
-    return n  # (H, W, 3)
+    return n
 
 
 # ---------------------------------------------------------------------------
@@ -291,6 +326,12 @@ class JaxRenderConfig:
     chunk_size: int = 4096
     """Pixels per vmap chunk — large chunks use more memory but are
     faster on GPU.  Tune per device."""
+    supersample: int = 1
+    """Sub-pixel supersample factor (anti-aliasing).  ``2`` gives 4x
+    rays per pixel and a much smoother starfield/panorama; ``3`` gives
+    9x; ``1`` (default) is the original one-ray-per-pixel."""
+    aa_seed: int = 0
+    """RNG seed for sub-pixel jitter (deterministic across runs)."""
 
 
 def _build_jax_metric_fn(metric_name: str, params: dict):
@@ -363,9 +404,15 @@ def render_frame_jax(
     tetrad = _build_orthonormal_tetrad_np(metric_np, coords0, u)
     e_t, e_x, e_y, e_z = tetrad[0], tetrad[1], tetrad[2], tetrad[3]
 
-    # Pixel directions in the local frame
-    dirs_local = _pixel_directions_np(config.width, config.height, config.fov_deg)
-    H, W, _ = dirs_local.shape
+    # Pixel directions in the local frame.  With supersample=s each
+    # pixel contributes s² rays; we average their sky-colour after
+    # tracing for anti-aliasing.
+    s = max(1, int(config.supersample))
+    dirs_local = _pixel_directions_np(
+        config.width, config.height, config.fov_deg,
+        supersample=s, seed=config.aa_seed,
+    )
+    H, W, S, _ = dirs_local.shape
     flat = dirs_local.reshape(-1, 3)
 
     # Convert to coordinate-basis past-pointing null tangents
@@ -415,7 +462,20 @@ def render_frame_jax(
 
     rgb = np.asarray(sky_fn(dirs_asym))
     rgb[~valid] = np.asarray(fallback_color)
-    return rgb.reshape(H, W, 3)
+
+    # Reshape (H*W*S, 3) → (H, W, S, 3) and average over the S
+    # supersamples per pixel.  When S=1 this is a no-op.
+    rgb = rgb.reshape(H, W, S, 3)
+    valid_g = valid.reshape(H, W, S)
+    # Anti-aliased pixel = mean of valid sub-samples; if all sub-samples
+    # in a pixel failed, leave the fallback colour in place.
+    weight = valid_g.astype(np.float32)[..., None]
+    sum_rgb = (rgb * weight).sum(axis=2)
+    n_valid = weight.sum(axis=2).clip(min=1e-6)
+    aa = sum_rgb / n_valid
+    all_invalid = (valid_g.sum(axis=2) == 0)
+    aa[all_invalid] = np.asarray(fallback_color)
+    return aa
 
 
 def render_velocity_sweep_jax(

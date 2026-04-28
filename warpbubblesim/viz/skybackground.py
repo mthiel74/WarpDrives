@@ -55,15 +55,19 @@ def make_procedural_starfield(
     fov_scale: float = 1.0,
     include_milky_way: bool = True,
     bright_star_fraction: float = 0.04,
+    soft_blend_top_k: int = 1,
 ) -> SkyFunc:
     """Build a procedural starfield as a callable sky function.
 
-    Each pixel takes the *brightest* star whose Gaussian footprint
-    covers it (winner-takes-all) rather than summing all overlapping
-    stars — that keeps stars looking like point sources and prevents
-    smearing when the angular kernel is bigger than the inter-star
-    spacing.  A subset of "bright" stars get amplified to give the
-    image visual punch.
+    Each pixel softly blends the ``soft_blend_top_k`` brightest stars
+    whose Gaussian footprints cover it (rather than picking exactly one
+    winner-takes-all).  That smooths the temporal flicker you'd
+    otherwise get when individual sub-pixel stars pop into and out of a
+    pixel between animation frames as the warp deflects rays.
+
+    Starts as point-like at small ``star_radius_px``, becomes a soft
+    glow as the kernel grows.  A subset of "bright" stars get amplified
+    to give the image visual punch.
 
     Parameters
     ----------
@@ -127,17 +131,27 @@ def make_procedural_starfield(
         out = np.tile(bg, (P, 1))
 
         # Process in chunks to bound memory.
+        k = max(1, int(soft_blend_top_k))
         chunk = max(256, 2_000_000 // max(n_stars, 1))
         for i in range(0, P, chunk):
-            cos_sim = flat[i:i + chunk] @ star_dirs.T  # (chunk, N)
-            ang_sq = 2.0 * np.clip(1.0 - cos_sim, 0.0, 2.0)  # ≈ θ²
-            kernel = np.exp(-ang_sq * inv_two_sigma2)        # (chunk, N)
-            # winner-takes-all: keep brightest contribution per pixel
-            contrib = kernel * base_brightness[None, :]      # (chunk, N)
-            best = np.argmax(contrib, axis=1)                # (chunk,)
-            best_amp = contrib[np.arange(contrib.shape[0]), best]
-            best_rgb = star_rgb[best] * best_amp[:, None]
-            out[i:i + chunk] = out[i:i + chunk] + best_rgb
+            cos_sim = flat[i:i + chunk] @ star_dirs.T          # (chunk, N)
+            ang_sq = 2.0 * np.clip(1.0 - cos_sim, 0.0, 2.0)    # ≈ θ²
+            kernel = np.exp(-ang_sq * inv_two_sigma2)          # (chunk, N)
+            contrib = kernel * base_brightness[None, :]        # (chunk, N)
+            # Soft top-k blend: take the k brightest contributions and
+            # sum them.  k=1 reproduces the old winner-takes-all; k≥3-5
+            # smooths frame-to-frame flicker as rays sweep between
+            # nearest-star Voronoi cells.
+            if k >= contrib.shape[1]:
+                top = contrib
+                top_idx = np.broadcast_to(np.arange(contrib.shape[1]),
+                                          contrib.shape)
+            else:
+                top_idx = np.argpartition(-contrib, k - 1, axis=1)[:, :k]
+                rows = np.arange(contrib.shape[0])[:, None]
+                top = contrib[rows, top_idx]                   # (chunk, k)
+            chunk_rgb = (star_rgb[top_idx] * top[..., None]).sum(axis=1)
+            out[i:i + chunk] = out[i:i + chunk] + chunk_rgb
 
         if include_milky_way:
             # Faint band centred on z = 0, slightly tilted (decorative,
@@ -167,6 +181,7 @@ def make_image_sky(
     rotation_deg: float = 0.0,
     flip_horizontal: bool = False,
     gain: float = 1.0,
+    interpolation: str = "bilinear",
 ) -> SkyFunc:
     """Equirectangular sky-image sampler.
 
@@ -182,6 +197,9 @@ def make_image_sky(
         Flip the longitude axis (some Milky Way panoramas are mirrored).
     gain : float
         Scalar multiplier applied to the sampled colour before clipping.
+    interpolation : str
+        ``"bilinear"`` (default — smooth, no temporal flicker as rays
+        shift between frames) or ``"nearest"`` (faster but aliases).
 
     Returns
     -------
@@ -206,20 +224,47 @@ def make_image_sky(
     H, W, _ = img.shape
     rot_rad = np.deg2rad(rotation_deg)
 
+    def sample_nearest(row_f: np.ndarray, col_f: np.ndarray) -> np.ndarray:
+        col = np.clip(col_f.astype(int), 0, W - 1)
+        row = np.clip(row_f.astype(int), 0, H - 1)
+        return img[row, col, :3]
+
+    def sample_bilinear(row_f: np.ndarray, col_f: np.ndarray) -> np.ndarray:
+        # Wrap longitude (col_f) so col0 = -1 maps to W-1
+        col_f = col_f % W
+        col0 = np.floor(col_f).astype(int) % W
+        col1 = (col0 + 1) % W
+        cf = col_f - np.floor(col_f)
+
+        row0 = np.clip(np.floor(row_f).astype(int), 0, H - 1)
+        row1 = np.clip(row0 + 1, 0, H - 1)
+        rf = np.clip(row_f - np.floor(row_f), 0.0, 1.0)
+
+        c00 = img[row0, col0, :3]
+        c01 = img[row0, col1, :3]
+        c10 = img[row1, col0, :3]
+        c11 = img[row1, col1, :3]
+        cf_col = cf[..., None]
+        rf_col = rf[..., None]
+        top = c00 * (1 - cf_col) + c01 * cf_col
+        bot = c10 * (1 - cf_col) + c11 * cf_col
+        return top * (1 - rf_col) + bot * rf_col
+
+    sampler = sample_bilinear if interpolation == "bilinear" else sample_nearest
+
     def sky(directions: np.ndarray) -> np.ndarray:
         theta, phi = _direction_to_spherical(np.asarray(directions))
         phi = phi + rot_rad
         if flip_horizontal:
             phi = -phi
-        # Wrap phi to [-π, π]
         phi = (phi + np.pi) % (2 * np.pi) - np.pi
 
         u = (phi + np.pi) / (2 * np.pi)
         v = theta / np.pi
 
-        col = np.clip((u * W).astype(int), 0, W - 1)
-        row = np.clip((v * H).astype(int), 0, H - 1)
-        out = img[row, col, :3] * gain
+        col_f = u * W
+        row_f = v * H
+        out = sampler(row_f, col_f) * gain
         return np.clip(out, 0.0, 1.0)
 
     return sky
