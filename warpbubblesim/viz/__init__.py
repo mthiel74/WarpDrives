@@ -33,6 +33,20 @@ from warpbubblesim.viz.animations import (
     animate_grid_distortion,
     save_animation,
 )
+from warpbubblesim.viz.skybackground import (
+    make_procedural_starfield,
+    make_image_sky,
+    make_grid_sky,
+)
+from warpbubblesim.viz.skyrender import (
+    Camera,
+    RenderConfig,
+    build_orthonormal_tetrad,
+    render_sky_view,
+    render_velocity_sweep,
+    save_frames_as_animation,
+    trace_pixel,
+)
 
 __all__ = [
     "plot_field_2d",
@@ -52,4 +66,14 @@ __all__ = [
     "animate_geodesics",
     "animate_grid_distortion",
     "save_animation",
+    "make_procedural_starfield",
+    "make_image_sky",
+    "make_grid_sky",
+    "Camera",
+    "RenderConfig",
+    "build_orthonormal_tetrad",
+    "render_sky_view",
+    "render_velocity_sweep",
+    "save_frames_as_animation",
+    "trace_pixel",
 ]
