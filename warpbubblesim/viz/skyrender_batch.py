@@ -352,7 +352,7 @@ def _make_metric_fn(metric_kind, params):
             x_s = x0 + v0 * t
             dxs = x - x_s
             r = float(np.sqrt(dxs ** 2 + y ** 2 + z ** 2 + 1e-30))
-            f = float(f_vec(np.array([r]), R, sigma))
+            f = float(f_vec(np.array([r]), R, sigma)[0])
             g = np.zeros((4, 4))
             g[0, 0] = -(1.0 - v0 ** 2 * f ** 2)
             g[0, 1] = -v0 * f
