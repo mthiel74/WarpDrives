@@ -292,6 +292,82 @@ def info(metric: str):
         click.echo(f"\nEnergy conditions: {warp_metric.energy_condition_type()}")
 
 
+@cli.command()
+@click.option('--metric', '-m', default='alcubierre', help='Metric name')
+@click.option('--velocities', '-v', default='0,0.5,0.99,1.5,2.5',
+              help='Comma-separated bubble velocities in c.')
+@click.option('--resolution', '-r', default=96, type=int, help='Image side length.')
+@click.option('--fov-deg', default=90.0, type=float, help='Camera horizontal FOV.')
+@click.option('--R', default=1.0, type=float, help='Bubble radius.')
+@click.option('--sigma', default=8.0, type=float, help='Wall steepness.')
+@click.option('--sky', default='stars',
+              type=click.Choice(['stars', 'grid', 'image']),
+              help='Celestial-sphere background.')
+@click.option('--sky-image', default=None, type=click.Path(),
+              help='Equirectangular image path (with --sky image).')
+@click.option('--jobs', default=1, type=int, help='Worker processes.')
+@click.option('--output', '-o', default='out/', help='Output directory.')
+@click.option('--gif/--no-gif', default=True, help='Write velocity-sweep GIF.')
+def skyview(metric, velocities, resolution, fov_deg, r, sigma, sky, sky_image,
+            jobs, output, gif):
+    """Render the spacecraft windshield view for one or more velocities.
+
+    For each velocity, traces backward null geodesics through the warp
+    metric and looks up the asymptotic direction on a celestial-sphere
+    background.  Produces individual PNG frames and (optionally) a GIF
+    sweep across the velocities.
+    """
+    import numpy as np
+    from pathlib import Path
+    from warpbubblesim.metrics import get_metric
+    from warpbubblesim.viz.skybackground import (
+        make_procedural_starfield, make_grid_sky, make_image_sky,
+    )
+    from warpbubblesim.viz.skyrender import (
+        Camera, RenderConfig, render_sky_view, save_frames_as_animation,
+    )
+
+    output_path = Path(output)
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    vs = [float(v.strip()) for v in velocities.split(',')]
+    cam = Camera(width=resolution, height=resolution, fov_deg=fov_deg)
+    fov_rad = np.deg2rad(fov_deg)
+
+    if sky == 'grid':
+        skyfn = make_grid_sky(spacing_deg=10.0, line_width_deg=0.3)
+    elif sky == 'image':
+        if not sky_image:
+            raise click.ClickException('--sky image requires --sky-image PATH')
+        skyfn = make_image_sky(sky_image)
+    else:
+        skyfn = make_procedural_starfield(
+            n_stars=4500, seed=42,
+            star_radius_px=1.5, fov_scale=fov_rad / resolution,
+        )
+
+    cfg = RenderConfig(
+        escape_radius_factor=5.0, lambda_max_factor=20.0,
+        rtol=3e-4, atol=3e-6, max_step=0.5, method='RK23',
+        h=2e-3, n_jobs=jobs, show_progress=True,
+    )
+
+    frames = []
+    for v in vs:
+        click.echo(f"Rendering {metric} v={v:.2f} at {resolution}x{resolution}...")
+        m = get_metric(metric, v0=v, R=r, sigma=sigma)
+        img = render_sky_view(m, skyfn, camera=cam, config=cfg)
+        frames.append(img)
+        png_path = output_path / f"skyview_{metric}_v{v:.2f}.png"
+        plt.imsave(png_path, np.clip(img, 0, 1))
+        click.echo(f"  wrote {png_path}")
+
+    if gif and len(frames) > 1:
+        gif_path = output_path / f"skyview_{metric}_sweep.gif"
+        save_frames_as_animation(frames, str(gif_path), fps=10)
+        click.echo(f"  wrote {gif_path}")
+
+
 def main():
     """Entry point for the CLI."""
     cli()

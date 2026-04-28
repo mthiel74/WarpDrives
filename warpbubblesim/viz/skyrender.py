@@ -503,10 +503,19 @@ def save_frames_as_animation(
     fps: int = 12,
     loop: int = 0,
 ) -> None:
-    """Save a list of (H, W, 3) float frames as a GIF/MP4 via imageio."""
+    """Save a list of (H, W, 3) float frames as a GIF/MP4 via imageio.
+
+    Modern imageio's Pillow backend dropped ``fps=`` in favour of
+    ``duration=`` (ms per frame); we forward whichever the installed
+    backend accepts.  MP4 still uses ``fps``.
+    """
     import imageio.v2 as iio
     arr = [np.clip(f * 255, 0, 255).astype(np.uint8) for f in frames]
     if path.lower().endswith(".gif"):
-        iio.mimsave(path, arr, fps=fps, loop=loop)
+        try:
+            iio.mimsave(path, arr, duration=1000.0 / fps, loop=loop)
+        except TypeError:
+            # Older imageio: fall back to fps=
+            iio.mimsave(path, arr, fps=fps, loop=loop)
     else:
         iio.mimsave(path, arr, fps=fps)

@@ -48,19 +48,22 @@ def _direction_to_spherical(directions: np.ndarray) -> Tuple[np.ndarray, np.ndar
 
 
 def make_procedural_starfield(
-    n_stars: int = 4000,
+    n_stars: int = 6000,
     seed: int = 1,
-    background: Tuple[float, float, float] = (0.005, 0.008, 0.02),
-    star_radius_px: float = 1.5,
+    background: Tuple[float, float, float] = (0.0, 0.0, 0.015),
+    star_radius_px: float = 0.7,
     fov_scale: float = 1.0,
     include_milky_way: bool = True,
+    bright_star_fraction: float = 0.04,
 ) -> SkyFunc:
     """Build a procedural starfield as a callable sky function.
 
-    Stars are sampled uniformly on the unit sphere with a power-law
-    magnitude distribution and modest temperature/colour scatter.  A
-    soft Gaussian "Milky Way" band is optionally drawn across the
-    equator (z ≈ 0) to give a sense of orientation in animations.
+    Each pixel takes the *brightest* star whose Gaussian footprint
+    covers it (winner-takes-all) rather than summing all overlapping
+    stars — that keeps stars looking like point sources and prevents
+    smearing when the angular kernel is bigger than the inter-star
+    spacing.  A subset of "bright" stars get amplified to give the
+    image visual punch.
 
     Parameters
     ----------
@@ -69,53 +72,48 @@ def make_procedural_starfield(
     seed : int
         RNG seed (output is deterministic).
     background : tuple
-        Sky background RGB.
+        Sky background RGB (deep, to give black-of-space feel).
     star_radius_px : float
-        Approximate visual radius of each star, in *angular* units
-        scaled by ``fov_scale``.  Stars are blurred by a 3D Gaussian on
-        the sphere, so this is a smoothing length, not a hard radius.
+        Star Gaussian sigma, in pixels.  About 0.5–1.0 is right for a
+        clean point-like look; larger values give a soft glow.
     fov_scale : float
-        Set to (rendered FOV in radians) / 1 so the angular size of
-        stars stays constant when the camera FOV changes.  Defaults to
-        1.0; a sensible choice when called from the renderer is
-        ``fov_scale = fov_radians / image_size`` so that
-        ``star_radius_px`` is genuinely "pixels".
+        Multiplier converting "pixel" units to *radians on the sphere*.
+        Pass ``fov_scale = fov_radians / image_size`` from the renderer
+        so ``star_radius_px`` literally is pixels.
     include_milky_way : bool
-        If True, add a faint Gaussian band as a background galaxy.
-
-    Returns
-    -------
-    SkyFunc
-        Callable mapping (..., 3) directions → (..., 3) RGB.
+        If True, add a faint Milky-Way-like band.
+    bright_star_fraction : float
+        Fraction of stars boosted to "bright" (~ +1.0 magnitude) so the
+        image has noticeable focal points.
     """
     rng = np.random.default_rng(seed)
 
     # Uniform points on the unit sphere via inverse CDF
     u = rng.uniform(-1, 1, size=n_stars)
-    phi = rng.uniform(-np.pi, np.pi, size=n_stars)
+    phi_s = rng.uniform(-np.pi, np.pi, size=n_stars)
     sint = np.sqrt(np.clip(1 - u**2, 0, None))
-    star_dirs = np.column_stack([sint * np.cos(phi), sint * np.sin(phi), u])
+    star_dirs = np.column_stack([sint * np.cos(phi_s), sint * np.sin(phi_s), u])
 
-    # Magnitudes: dimmer stars are vastly more numerous (rough power law).
-    # We use a brightness multiplier in [bright_min, 1].
-    log_mag = rng.exponential(scale=0.6, size=n_stars)
-    brightness = np.exp(-log_mag)  # ∈ (0, 1]
+    # Magnitudes: heavy-tailed so most stars are dim, a few are obvious.
+    base_brightness = np.exp(-rng.exponential(scale=0.7, size=n_stars))
+    bright_mask = rng.random(size=n_stars) < bright_star_fraction
+    base_brightness[bright_mask] *= rng.uniform(2.0, 5.0, size=bright_mask.sum())
+    base_brightness = np.clip(base_brightness, 0.0, 6.0)
 
-    # Colour temperature scatter — bias toward white with some red/blue tail.
-    bv = rng.normal(loc=0.0, scale=0.4, size=n_stars)  # B-V analogue
-    # Map BV to RGB heuristically: positive BV = cooler/redder
-    r_tint = np.clip(1.0 + 0.3 * bv, 0.6, 1.4)
-    g_tint = np.clip(1.0 + 0.05 * bv, 0.8, 1.2)
-    b_tint = np.clip(1.0 - 0.4 * bv, 0.4, 1.4)
-    star_rgb = np.column_stack([r_tint, g_tint, b_tint]) * brightness[:, None]
+    # Colour scatter (B-V analogue → RGB tint)
+    bv = rng.normal(loc=0.0, scale=0.5, size=n_stars)
+    r_tint = np.clip(1.0 + 0.30 * bv, 0.5, 1.6)
+    g_tint = np.clip(1.0 + 0.05 * bv, 0.8, 1.3)
+    b_tint = np.clip(1.0 - 0.35 * bv, 0.4, 1.6)
+    star_rgb = np.column_stack([r_tint, g_tint, b_tint])
 
-    # Smoothing length on the sphere, in radians.  We treat this as the
-    # 1-sigma of a 3D Gaussian in (n̂_pixel · n̂_star).
-    # cos(θ) ≈ 1 - θ²/2 → equivalent variance in cos-space is σ_θ² / 2 (approx).
-    # We expose star_radius_px as an angular scale times fov_scale.
-    sigma_ang = max(star_radius_px * fov_scale, 1e-4)
-    inv_two_sigma2 = 1.0 / (2 * sigma_ang**2)
-
+    # Star angular size on the sphere
+    sigma_ang = max(star_radius_px * fov_scale, 1e-5)
+    inv_two_sigma2 = 1.0 / (2 * sigma_ang ** 2)
+    # Effective cutoff radius at which Gaussian = exp(-half) ≈ 0.6 (still
+    # contributes); we don't actually clip but the np.where below keeps
+    # only contributions above a tiny floor so out-of-range stars drop
+    # out of the max.
     bg = np.asarray(background, dtype=float)
 
     def sky(directions: np.ndarray) -> np.ndarray:
@@ -125,29 +123,38 @@ def make_procedural_starfield(
         norm = np.where(norm < 1e-30, 1.0, norm)
         flat = flat / norm
 
-        # Cosine-similarity to every star: shape (P, N)
-        # For large N this would be a memory hog — but for n_stars≈4000 and
-        # P up to ~65k it's still fine (≈260M floats worst-case → 1 GB).
-        # We chunk over pixels to keep memory bounded.
-        out = np.tile(bg, (flat.shape[0], 1))
-        chunk = max(256, 4_000_000 // max(n_stars, 1))
-        for i in range(0, flat.shape[0], chunk):
-            cos_sim = flat[i:i + chunk] @ star_dirs.T
+        P = flat.shape[0]
+        out = np.tile(bg, (P, 1))
+
+        # Process in chunks to bound memory.
+        chunk = max(256, 2_000_000 // max(n_stars, 1))
+        for i in range(0, P, chunk):
+            cos_sim = flat[i:i + chunk] @ star_dirs.T  # (chunk, N)
             ang_sq = 2.0 * np.clip(1.0 - cos_sim, 0.0, 2.0)  # ≈ θ²
-            weights = np.exp(-ang_sq * inv_two_sigma2)
-            out[i:i + chunk] += weights @ star_rgb
+            kernel = np.exp(-ang_sq * inv_two_sigma2)        # (chunk, N)
+            # winner-takes-all: keep brightest contribution per pixel
+            contrib = kernel * base_brightness[None, :]      # (chunk, N)
+            best = np.argmax(contrib, axis=1)                # (chunk,)
+            best_amp = contrib[np.arange(contrib.shape[0]), best]
+            best_rgb = star_rgb[best] * best_amp[:, None]
+            out[i:i + chunk] = out[i:i + chunk] + best_rgb
 
         if include_milky_way:
-            # Faint Gaussian band centred on z = 0 (the "equator" of the
-            # sky), with axes tilted slightly so it doesn't overlap the
-            # +x camera direction perfectly.  This is an aesthetic prop,
-            # not a real galactic-coordinate transform.
-            tilt = 0.35
-            normal = np.array([0.0, np.sin(tilt), np.cos(tilt)])
+            # Faint band centred on z = 0, slightly tilted (decorative,
+            # not real galactic-coordinate alignment).  Uses additive
+            # falloff in offset from a great circle whose normal is the
+            # tilted +z axis.
+            tilt = 0.4
+            normal = np.array([0.05, np.sin(tilt), np.cos(tilt)])
+            normal = normal / np.linalg.norm(normal)
             offset = flat @ normal
-            band = np.exp(-(offset / 0.18) ** 2)
-            tint = np.array([0.10, 0.12, 0.18])
-            out += 0.25 * band[:, None] * tint
+            # Two-component band: a wider cool envelope plus a brighter core.
+            wide = np.exp(-(offset / 0.30) ** 2)
+            core = np.exp(-(offset / 0.10) ** 2)
+            tint_wide = np.array([0.06, 0.08, 0.14])
+            tint_core = np.array([0.18, 0.16, 0.22])
+            out = out + 0.4 * wide[:, None] * tint_wide
+            out = out + 0.5 * core[:, None] * tint_core
 
         out = np.clip(out, 0.0, 1.0)
         return out.reshape(d.shape)
