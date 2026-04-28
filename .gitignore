@@ -153,6 +153,9 @@ out/
 !images/*.png
 !images/*.gif
 !images/*.mp4
+!images/**/*.png
+!images/**/*.gif
+!images/**/*.mp4
 *.pdf
 !docs/*.pdf
 
