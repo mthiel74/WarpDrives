@@ -328,7 +328,7 @@ If you use this code in research, please cite:
 ```bibtex
 @software{warpdrives,
   title = {WarpDrives: GR Warp Bubble Spacetime Simulator},
-  year = {2024},
+  year = {2026},
   url = {https://github.com/mthiel74/WarpDrives}
 }
 ```
