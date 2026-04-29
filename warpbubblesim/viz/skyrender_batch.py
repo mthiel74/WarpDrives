@@ -339,7 +339,11 @@ class BatchRenderConfig:
     dlam: float = 0.15
     progress: bool = True
     enable_doppler: bool = False
+    doppler_mode: str = "monochromatic"
+    """'monochromatic' (default, f^3 Liouville) or 'blackbody' (thermal-
+    spectrum-aware: dims forward at high v as visible shifts to UV)."""
     doppler_intensity_power: float = 3.0
+    doppler_T_src: float = 5800.0
     doppler_tonemap: bool = False
     enable_horizon_mask: bool = False
     horizon_safety_factor: float = 1.5
@@ -450,17 +454,25 @@ def render_frame_batch(
 
     # Optional post-processing effects (Doppler / horizon mask).
     from warpbubblesim.viz.effects import (
-        doppler_factor, apply_doppler,
+        doppler_factor, apply_doppler, apply_doppler_blackbody,
         horizon_mask, horizon_color,
         front_wall_glow,
     )
     if config.enable_doppler:
         f = doppler_factor(g0, k_init, u, k_final)
-        rgb = apply_doppler(
-            rgb, f,
-            intensity_power=config.doppler_intensity_power,
-            tonemap=config.doppler_tonemap,
-        )
+        if config.doppler_mode == "blackbody":
+            rgb = apply_doppler_blackbody(
+                rgb, f,
+                T_src=config.doppler_T_src,
+                intensity_power=config.doppler_intensity_power,
+                tonemap=config.doppler_tonemap,
+            )
+        else:
+            rgb = apply_doppler(
+                rgb, f,
+                intensity_power=config.doppler_intensity_power,
+                tonemap=config.doppler_tonemap,
+            )
     if config.enable_horizon_mask and abs(v0) > 1.0:
         x_s_per_ray = x0 + v0 * coords_final[:, 0]
         R_bubble = float(params.get("R", 1.0))

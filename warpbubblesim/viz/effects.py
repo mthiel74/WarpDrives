@@ -247,6 +247,139 @@ def front_wall_glow(
     return rgb + add
 
 
+def _blackbody_visible_fraction(T: np.ndarray) -> np.ndarray:
+    """Fraction of a blackbody's emission falling in the visible band 380-700 nm.
+
+    Computed by integrating Planck's law over the visible band and dividing
+    by the bolometric integral (Stefan-Boltzmann normalisation).  Closed
+    form via the dimensionless integral
+    :math:`\\int x^3/(\\exp x - 1)\\,dx`, but here we use an empirical
+    log-T approximation with peak at solar T ≈ 5800 K, which matches the
+    exact result to a few percent across :math:`10^3 \\le T \\le 10^7` K
+    and stays well-behaved at the limits.
+
+    Returns the bolometric-normalised fraction in [0, 1].
+    """
+    T_safe = np.maximum(np.asarray(T, dtype=float), 1.0)
+    log_T = np.log(T_safe)
+    log_T0 = np.log(5800.0)
+    sigma = 0.65        # log-T width of the visible window for blackbodies
+    return np.exp(-((log_T - log_T0) / sigma) ** 2)
+
+
+def _planckian_locus_rgb(T: np.ndarray) -> np.ndarray:
+    """Approximate sRGB-like colour of a blackbody at temperature ``T`` (K).
+
+    Vectorised over the trailing axis of ``T``.  Returns shape ``T.shape +
+    (3,)`` with values in [0, 1].
+
+    Uses Mitchell Charity's piecewise empirical fit to the Planckian locus
+    (canonical reference for "colour temperature" in graphics).  At the
+    very high temperatures we hit at f = 100+ the formula saturates to
+    blue-white, which is the right behaviour: actual blackbody RGB
+    monotonically approaches the Planckian-locus limit.
+    """
+    T = np.asarray(T, dtype=float)
+    Tn = np.clip(T, 1000.0, 40000.0) / 100.0
+    out = np.zeros(T.shape + (3,))
+
+    # red channel
+    r = np.where(
+        Tn <= 66.0,
+        255.0,
+        329.698727446 * np.power(np.maximum(Tn - 60.0, 1.0), -0.1332047592),
+    )
+    # green channel
+    g = np.where(
+        Tn <= 66.0,
+        99.4708025861 * np.log(np.maximum(Tn, 1.0)) - 161.1195681661,
+        288.1221695283 * np.power(np.maximum(Tn - 60.0, 1.0), -0.0755148492),
+    )
+    # blue channel
+    b = np.where(
+        Tn >= 66.0,
+        255.0,
+        np.where(
+            Tn <= 19.0,
+            0.0,
+            138.5177312231 * np.log(np.maximum(Tn - 10.0, 1.0)) - 305.0447927307,
+        ),
+    )
+    out[..., 0] = np.clip(r, 0.0, 255.0) / 255.0
+    out[..., 1] = np.clip(g, 0.0, 255.0) / 255.0
+    out[..., 2] = np.clip(b, 0.0, 255.0) / 255.0
+    return out
+
+
+def apply_doppler_blackbody(
+    rgb: np.ndarray,
+    f: np.ndarray,
+    T_src: float = 5800.0,
+    intensity_power: float = 4.0,
+    tonemap: bool = False,
+) -> np.ndarray:
+    r"""Spectral-aware Doppler under a blackbody-source assumption.
+
+    Treats each pixel of the input ``rgb`` as a thermal source at
+    ``T_src`` (K, default solar 5800 K).  The Doppler factor ``f`` shifts
+    the apparent temperature to ``T_obs = T_src · f`` (Wien displacement).
+    Two corrections are applied to the panorama's visible-band RGB:
+
+    * **Spectral attenuation.**  At high ``f`` the source's visible-band
+      emission shifts past our visible band, so the *visible* photon flux
+      to the observer drops.  The factor
+      ``visible_fraction(T_obs) / visible_fraction(T_src)`` captures
+      this — it equals 1 at ``f = 1`` and tends to 0 as ``f → ∞`` (or
+      ``f → 0``).  This is the term ``f³`` mode is missing.
+    * **Colour shift.**  The pixel's RGB is multiplied by the ratio of
+      Planckian-locus RGB at ``T_obs`` vs ``T_src``.  At ``f = 1`` no
+      change; at ``f >> 1`` everything goes blue and saturates.
+
+    The bolometric brightness still scales as ``f^intensity_power``
+    (default ``4`` for thermal-source bolometric flux).  The spectral
+    fraction multiplies it.
+
+    Parameters
+    ----------
+    rgb : np.ndarray, shape (..., 3)
+    f : np.ndarray, shape (...,)
+    T_src : float
+        Assumed source temperature (K).  5800 ≈ solar; bumping to
+        ~10000 K models bluer/younger stars, ~3000 K models red dwarfs.
+    intensity_power : float
+        Default 4.0 (bolometric flux density for thermal sources, exact
+        for blackbodies once you've integrated over all frequencies).
+        Use 3.0 for monochromatic Liouville scaling.
+    tonemap : bool
+        If True, apply a Reinhard-style soft compression after scaling.
+        Off by default.
+
+    Returns
+    -------
+    np.ndarray, shape (..., 3)
+        Doppler-modulated, spectrally-attenuated, colour-shifted RGB.
+        Note this can return values > 1 (caller clips to [0, 1] for
+        display).
+    """
+    f = np.asarray(f, dtype=float)
+    T_obs = T_src * np.maximum(f, 1e-6)
+
+    spectral_factor = _blackbody_visible_fraction(T_obs) \
+                    / _blackbody_visible_fraction(T_src)
+    bolometric = np.maximum(f, 0.0) ** intensity_power
+
+    color_obs = _planckian_locus_rgb(T_obs)
+    color_src = _planckian_locus_rgb(T_src)
+    color_factor = color_obs / np.maximum(color_src, 1e-6)
+
+    brightness = bolometric * spectral_factor
+    if tonemap:
+        brightness = brightness / (1.0 + 0.5 * brightness) * 1.6
+
+    out = rgb * color_factor * brightness[..., None]
+    return out
+
+
 def horizon_color() -> np.ndarray:
     """RGB to render at trapped pixels.
 

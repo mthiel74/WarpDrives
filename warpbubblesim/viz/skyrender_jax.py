@@ -380,13 +380,30 @@ class JaxRenderConfig:
     aa_seed: int = 0
     """RNG seed for sub-pixel jitter (deterministic across runs)."""
     enable_doppler: bool = False
-    """Apply per-pixel Doppler/gravitational brightness scaling
-    f**doppler_intensity_power.  Honest physics: the only invariant
-    you can derive from the geodesic data alone is I_ν/ν³, so we
-    scale brightness by f^3 and don't fake a colour shift."""
+    """Apply per-pixel Doppler / gravitational brightness scaling.
+    Two physically distinct modes (see ``doppler_mode``)."""
+    doppler_mode: str = "monochromatic"
+    """``"monochromatic"`` — multiply RGB by ``f**doppler_intensity_power``,
+    no colour shift.  Exact for monochromatic intensity (Liouville's
+    ``I_ν/ν³`` invariance).  Treats the panorama brightness as
+    preserved at every frequency.  *Over-bright* in the forward beam at
+    ``f >> 1``, because in reality the source's visible-band emission
+    shifts out of our visible band.
+
+    ``"blackbody"`` — assumes each pixel is a thermal source at
+    ``doppler_T_src`` (default 5800 K, solar).  Doppler shifts the
+    apparent temperature to ``T_src · f``; brightness is rescaled by
+    ``f**intensity_power`` *and* by the ratio of visible-band emission
+    at the new vs.\ original temperature.  Goes dark at very high ``f``
+    (visible shifts to UV / X-ray).  Honest for stellar-spectrum-like
+    panoramas; recommended whenever you push ``v`` past ~3c."""
     doppler_intensity_power: float = 3.0
-    """Exponent on ω_obs/ω_source.  3.0 = Liouville's monochromatic
-    invariance (default).  4.0 = bolometric for thermal sources."""
+    """Bolometric exponent.  ``3.0`` = monochromatic Liouville (default
+    for monochromatic mode).  ``4.0`` = thermal bolometric flux density
+    (default for blackbody mode)."""
+    doppler_T_src: float = 5800.0
+    """Assumed source temperature (K) for blackbody mode. 5800 K ≈ solar.
+    Bump to 10000 K for hotter / bluer sources; 3000 K for red dwarfs."""
     doppler_tonemap: bool = False
     """Reinhard-style brightness compression so the brightest
     forward-superluminal pixels don't burn out the frame.  *Not
@@ -562,18 +579,26 @@ def render_frame_jax(
     # so we can still average them inside the AA reduce below.
     # ------------------------------------------------------------------
     from warpbubblesim.viz.effects import (
-        doppler_factor, apply_doppler,
+        doppler_factor, apply_doppler, apply_doppler_blackbody,
         horizon_mask, horizon_color,
         front_wall_glow,
     )
 
     if config.enable_doppler:
         f = doppler_factor(g0, init_states[:, 4:], u, k_final)
-        rgb = apply_doppler(
-            rgb, f,
-            intensity_power=config.doppler_intensity_power,
-            tonemap=config.doppler_tonemap,
-        )
+        if config.doppler_mode == "blackbody":
+            rgb = apply_doppler_blackbody(
+                rgb, f,
+                T_src=config.doppler_T_src,
+                intensity_power=config.doppler_intensity_power,
+                tonemap=config.doppler_tonemap,
+            )
+        else:
+            rgb = apply_doppler(
+                rgb, f,
+                intensity_power=config.doppler_intensity_power,
+                tonemap=config.doppler_tonemap,
+            )
 
     if config.enable_horizon_mask:
         # Each ray ended at its own t = coords_final[:, 0]; bubble centre

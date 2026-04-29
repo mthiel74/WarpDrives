@@ -303,6 +303,50 @@ def test_front_wall_glow_active_above_onset_only_forward():
     np.testing.assert_allclose(out[3], 0.0, atol=1e-9)
 
 
+def test_blackbody_doppler_invariant_at_unity():
+    """At f=1 the blackbody-aware Doppler must be the identity."""
+    from warpbubblesim.viz.effects import apply_doppler_blackbody
+    rgb = np.tile(np.array([0.4, 0.6, 0.8]), (10, 1))
+    f = np.ones(10)
+    out = apply_doppler_blackbody(rgb, f, T_src=5800.0, intensity_power=4.0)
+    np.testing.assert_allclose(out, rgb, atol=1e-9)
+
+
+def test_blackbody_doppler_dims_at_high_f():
+    """At very high f the visible-band emission shifts past visible —
+    the blackbody-corrected forward pixel should be DIMMER than the
+    f^4 monochromatic prediction (and dimmer than the f=1 source).
+    This is the very fix that addresses the SR-Doppler "invisible
+    forward" criticism.
+    """
+    from warpbubblesim.viz.effects import (
+        apply_doppler, apply_doppler_blackbody,
+    )
+    rgb = np.tile(np.array([0.4, 0.4, 0.4]), (5, 1))
+    f = np.array([2.0, 5.0, 10.0, 50.0, 200.0])
+    bb = apply_doppler_blackbody(rgb, f, T_src=5800.0, intensity_power=4.0)
+    mono = apply_doppler(rgb, f, intensity_power=3.0, tonemap=False)
+    bb_total = bb.sum(axis=-1)
+    mono_total = mono.sum(axis=-1)
+    # At very high f the blackbody correction should dim relative to f^3:
+    assert bb_total[-1] < mono_total[-1] * 1e-3, (
+        f"blackbody mode should be MUCH dimmer than f^3 at f=200; "
+        f"bb={bb_total[-1]:.3e} mono={mono_total[-1]:.3e}"
+    )
+    # And tend toward zero as f → very large:
+    assert bb_total[-1] < bb_total[0]
+
+
+def test_blackbody_visible_fraction_peaks_solar():
+    """The visible-fraction approximation should peak near solar T."""
+    from warpbubblesim.viz.effects import _blackbody_visible_fraction
+    T = np.array([1000.0, 3000.0, 5800.0, 10000.0, 30000.0, 100000.0])
+    fr = _blackbody_visible_fraction(T)
+    assert np.argmax(fr) == 2, f"visible fraction should peak at solar T, got {fr}"
+    # Tails decay
+    assert fr[0] < fr[2] and fr[-1] < fr[2]
+
+
 def test_render_bloom_toggle_changes_output():
     """Enabling the bloom should change the rendered frame at v > onset."""
     cfg_off = BatchRenderConfig(
