@@ -1,0 +1,484 @@
+\documentclass[11pt]{article}
+
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{microtype}
+
+\hypersetup{colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!40!black,citecolor=blue!50!black}
+
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{blue!60!black},
+  commentstyle=\color{green!40!black}\itshape,
+  stringstyle=\color{red!50!black},
+  breaklines=true,
+  frame=single,
+  framesep=4pt,
+  numbers=none,
+  xleftmargin=8pt,
+  xrightmargin=4pt,
+}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\diff}{\mathrm{d}}
+\newcommand{\me}{\mathrm{e}}
+\newcommand{\mi}{\mathrm{i}}
+\newcommand{\dd}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\Cov}{\nabla}
+\newcommand{\g}{g_{\mu\nu}}
+\newcommand{\ginv}{g^{\mu\nu}}
+\newcommand{\Christ}[3]{\Gamma^{#1}_{\,#2 #3}}
+
+\title{The mathematics behind \textsc{WarpDrives.skyrender}\\[0.4em]
+\large What you see through the windshield of an Alcubierre bubble\\
+and how the renderer computes it}
+\author{WarpDrives contributors}
+\date{}
+
+\begin{document}
+\maketitle
+\hrule
+\medskip
+
+\noindent
+\textbf{Scope.} This note documents the physics, geometry, and numerical scheme
+behind the \texttt{warpbubblesim.viz.skyrender*} pipeline.  Every formula here
+maps to a function in the Python (or JAX) renderer; cross-references are
+given at the end of each section.
+
+\tableofcontents
+\medskip\hrule\medskip
+
+\section{Setup: warp metrics in ADM form}
+
+We work in geometric units ($G=c=1$) with metric signature $(-,+,+,+)$ and
+coordinates $(t,x,y,z)$, indexed as $x^\mu$ with $\mu\in\{0,1,2,3\}$.
+
+A warp drive metric is given in 3+1 (ADM) form by a lapse $\alpha(t,\bm x)$,
+a shift $\beta^i(t,\bm x)$, and a spatial metric $\gamma_{ij}(t,\bm x)$:
+\begin{equation}
+\diff s^2 \;=\; -\alpha^2\,\diff t^2 \;+\; \gamma_{ij}\bigl(\diff x^i + \beta^i\diff t\bigr)\bigl(\diff x^j + \beta^j\diff t\bigr).
+\label{eq:adm}
+\end{equation}
+Equivalently, the 4--metric components are
+\begin{align}
+g_{tt} &= -\alpha^2 + \beta_i\beta^i, & g_{ti} &= \beta_i, & g_{ij}&=\gamma_{ij},
+\label{eq:gcomp}
+\end{align}
+with $\beta_i \equiv \gamma_{ij}\beta^j$.  All warp metrics in \texttt{warpbubblesim}
+have $\alpha=1$ and $\gamma_{ij}=\delta_{ij}$, i.e.\ ``flat slices, unit lapse, all
+the warp lives in the shift.''
+
+The bubble centre travels at coordinate velocity $v_s\equiv \diff x_s/\diff t$
+along the $x$-axis, with $x_s(t) = x_0 + v_s\,t$.  The radial coordinate from
+the bubble centre is
+\begin{equation}
+r_s(t,x,y,z) \;=\; \sqrt{(x-x_s(t))^2 + y^2 + z^2}.
+\end{equation}
+A smooth shape function $f(r)$ tapers the warp from $f(0)\!=\!1$ inside the
+bubble to $f(\infty)\!=\!0$ outside.
+
+\subsection*{Alcubierre (1994)}
+
+The shift is purely along $x$:
+\begin{equation}
+\beta^i_{\text{Alc}} \;=\; \bigl(-v_s\,f(r_s),\,0,\,0\bigr).
+\label{eq:alc-shift}
+\end{equation}
+Substituting into~\eqref{eq:gcomp} gives the explicit form
+\begin{equation}
+\diff s^2_{\text{Alc}} \;=\; -\diff t^2 + \bigl(\diff x - v_s\,f(r_s)\,\diff t\bigr)^2 + \diff y^2 + \diff z^2.
+\label{eq:alc-line}
+\end{equation}
+At the bubble centre $f=1$, so $g_{tt}=-1+v_s^2$, $g_{tx}=-v_s$, $g_{ii}=1$
+and the determinant is $\det g = -1$ for all $v_s$.  The crucial property
+that makes Alcubierre superluminally consistent is that the worldline
+$x=x_s(t)$ has tangent $u^\mu = (1, v_s, 0, 0)$ and
+\begin{align}
+g_{\mu\nu} u^\mu u^\nu \;=\; -1 + v_s^2 + 2(-v_s)v_s + v_s^2 \;=\; -1
+\end{align}
+for all $v_s$ — the bubble-centre observer is unit-timelike (proper time
+matches coordinate time) at any speed.
+
+\subsection*{Natário (2002)}
+
+Natário's expansion-free shift is divergence-free: $\nabla\cdot\bm\beta = 0$.
+Using the vector potential $\bm A = v_s\,g(r_s)\,(0,z,-y)$ and
+$\bm\beta = \nabla\times\bm A$ gives, with envelope $g(r)$ and $g'\equiv\diff g/\diff r$,
+\begin{align}
+\beta^x_{\text{Nat}} &= -v_s\Bigl(2\,g(r_s) + \frac{y^2+z^2}{r_s}\,g'(r_s)\Bigr), \nonumber\\
+\beta^y_{\text{Nat}} &= +v_s\,\frac{y\,(x-x_s)}{r_s}\,g'(r_s),\\
+\beta^z_{\text{Nat}} &= +v_s\,\frac{z\,(x-x_s)}{r_s}\,g'(r_s). \nonumber
+\label{eq:nat-shift}
+\end{align}
+At $r_s\!\to\!0$ the off-axis components vanish and
+$\beta^x \to -2 v_s\,g(0)$.  Critically, the bubble-centre worldline
+$u=(1,v_s,0,0)$ now has
+\begin{equation}
+g_{\mu\nu}u^\mu u^\nu \;=\; -(1-v_s^2),
+\end{equation}
+which is timelike only for $|v_s|<1$.  Natário's central observer
+\emph{cannot} be superluminal; the renderer caps the comparison sweep at
+$v_s = 0.95$ for that reason.
+
+\subsection*{Shape function (default: tanh)}
+\begin{equation}
+f(r) \;=\; \frac{\tanh\sigma(r+R) - \tanh\sigma(r-R)}{2\tanh(\sigma R)},
+\qquad f(0)=1,\quad f(\infty)=0,
+\label{eq:tanh-shape}
+\end{equation}
+with $R$ the bubble radius and $\sigma$ the wall-steepness parameter.  The
+analytic derivative used in the Natário formulas is
+\begin{equation}
+f'(r) \;=\; \sigma\,\frac{\operatorname{sech}^2\sigma(r+R) - \operatorname{sech}^2\sigma(r-R)}{2\tanh(\sigma R)}.
+\label{eq:tanh-shape-deriv}
+\end{equation}
+
+\smallskip
+\noindent\emph{Code: \texttt{warpbubblesim/metrics/alcubierre.py}, \texttt{natario.py}, \texttt{base.py::tanh\_shape}.}
+
+% =====================================================================
+\section{Geodesics: how light travels through the bubble}
+
+A photon's worldline in any spacetime is a null geodesic.  In coordinate
+basis the geodesic equation is
+\begin{equation}
+\frac{\diff^2 x^\mu}{\diff\lambda^2} \;+\; \Christ{\mu}{\alpha}{\beta}\,\frac{\diff x^\alpha}{\diff\lambda}\frac{\diff x^\beta}{\diff\lambda} \;=\; 0,
+\label{eq:geodesic}
+\end{equation}
+with $\lambda$ an affine parameter and the Christoffel symbols
+\begin{equation}
+\Christ{\mu}{\alpha}{\beta} \;=\; \tfrac12\,\ginv\bigl(\partial_\alpha g_{\beta\nu} + \partial_\beta g_{\alpha\nu} - \partial_\nu g_{\alpha\beta}\bigr).
+\label{eq:christoffel}
+\end{equation}
+Defining the tangent $k^\mu \equiv \diff x^\mu/\diff\lambda$, the
+\emph{null} condition is $g_{\mu\nu}k^\mu k^\nu = 0$, conserved along the
+geodesic by~\eqref{eq:geodesic}.
+
+We rewrite~\eqref{eq:geodesic} as the first-order system
+\begin{equation}
+\boxed{\quad
+\dot x^\mu = k^\mu, \qquad
+\dot k^\mu = -\Christ{\mu}{\alpha}{\beta}\,k^\alpha k^\beta,
+\quad}
+\label{eq:rhs}
+\end{equation}
+and integrate with classical Runge--Kutta.  The renderer's high-throughput
+JAX path uses fixed-step \textbf{RK4} inside \texttt{jax.lax.scan} so the
+entire trajectory unrolls into a single XLA kernel that vectorises over all
+pixels.
+
+\subsection{Computing $\partial_\alpha g_{\mu\nu}$}
+
+Two backends are supported.
+
+\paragraph{Forward-mode autodiff.}
+\texttt{jax.jacfwd(metric)(coords)} returns the Jacobian
+$\partial_\alpha g_{\mu\nu}$ exactly to machine precision, with no
+finite-difference noise.  This is the default for Alcubierre.
+
+\paragraph{Vectorised central differences.}
+For Natário the curl-based shift~\eqref{eq:nat-shift} contains
+$g'(r_s)/r_s$ factors.  The function value is regular at $r_s\!=\!0$
+(the limit equals $-2\sigma^2\operatorname{sech}^2(\sigma R)$), but the
+\emph{Jacobian} is a $0/0$ that produces NaNs under \texttt{jacfwd}.  We
+fall back to
+\begin{equation}
+\bigl(\partial_\alpha g_{\mu\nu}\bigr)(\bm x)
+\;\approx\;
+\frac{g_{\mu\nu}(\bm x + h\,\bm e_\alpha) - g_{\mu\nu}(\bm x - h\,\bm e_\alpha)}{2h},
+\qquad h \sim 10^{-3},
+\end{equation}
+vectorised over the four basis directions with \texttt{jax.vmap}.
+
+\smallskip
+\noindent\emph{Code: \texttt{warpbubblesim/viz/skyrender\_jax.py::make\_geodesic\_rhs}; \texttt{warpbubblesim/gr/tensors.py} (CPU reference).}
+
+% =====================================================================
+\section{The observer's frame: orthonormal tetrads}
+
+A pinhole camera lives in the observer's local rest frame, which is an
+orthonormal tetrad $\{e_{\hat a}^{\,\mu}\}_{a=0}^3$ such that
+\begin{equation}
+g_{\mu\nu}\,e_{\hat a}^{\,\mu} e_{\hat b}^{\,\nu} \;=\; \eta_{\hat a\hat b}
+\;=\; \mathrm{diag}(-1,+1,+1,+1).
+\end{equation}
+We always take $e_{\hat 0}\equiv u$ (the observer's 4-velocity) and build
+the spatial legs by Gram--Schmidt against the spacetime metric.  Given
+two coordinate-basis seeds $\hat{\bm f}$ (forward, default $\partial_x$)
+and $\hat{\bm u}p$ (up, default $\partial_z$), the renderer constructs
+\begin{align}
+e_{\hat 0} &= \frac{u}{\sqrt{-g(u,u)}},\\
+\tilde e_{\hat 1} &= \hat{\bm f} - g(\hat{\bm f}, e_{\hat 0})\,e_{\hat 0},\quad e_{\hat 1} = \tilde e_{\hat 1}/\!\sqrt{g(\tilde e_{\hat 1},\tilde e_{\hat 1})},\\
+\tilde e_{\hat 3} &= \hat{\bm u}p - \sum_{a<3}\!g(\hat{\bm u}p, e_{\hat a})\,e_{\hat a},\quad e_{\hat 3} = \tilde e_{\hat 3}/\!\sqrt{g(\tilde e_{\hat 3},\tilde e_{\hat 3})},\\
+e_{\hat 2} &= \text{Gram--Schmidt of }\partial_y\text{ against }\{e_{\hat 0},e_{\hat 1},e_{\hat 3}\},
+\end{align}
+with a final right-handedness flip on $e_{\hat 2}$ if the spatial 3-determinant
+is negative.
+
+\subsection*{Bubble-centre observer}
+The natural observer co-moves with the bubble centre.  For Alcubierre at
+$r_s\!=\!0$ this is $u=(1,v_s,0,0)$, exactly normalised by the centre
+metric.  In the renderer this $u$ is checked against $g(u,u)<0$ before
+proceeding; if not, a fallback to the static seed $u=(1,0,0,0)$ is tried,
+and only if that also fails do we abort with ``no timelike observer.''
+Natário rejects this fallback for $v_s\!\geq\!1$ (its central worldline is
+spacelike there), which is why the comparison sweep is sub-luminal.
+
+\smallskip
+\noindent\emph{Code: \texttt{warpbubblesim/viz/skyrender.py::build\_orthonormal\_tetrad}.}
+
+% =====================================================================
+\section{Camera model: pixels to past-pointing null tangents}
+
+A pinhole camera with horizontal field of view $\Phi$, image dimensions
+$W\!\times\!H$ pixels, and aspect $A=W/H$ produces, for pixel $(i,j)$:
+\begin{align}
+u_{ij} &= \Bigl(\tfrac{2(i+0.5)}{W} - 1\Bigr)\,\tan(\Phi/2),\\
+v_{ij} &= \Bigl(1 - \tfrac{2(j+0.5)}{H}\Bigr)\,\frac{\tan(\Phi/2)}{A}.
+\end{align}
+The camera's local-frame ray direction (along $+\hat x$ by default) is
+\begin{equation}
+\hat n_{ij} \;=\; \frac{(1,\;u_{ij},\;v_{ij})}{\sqrt{1+u_{ij}^2+v_{ij}^2}} \;\in\; S^2 \subset \R^3.
+\end{equation}
+A photon \emph{seen by} the observer arriving from direction $\hat n$ has
+future-pointing 4-momentum $(\omega, -\omega\hat n)$ in the local frame
+(it travels \emph{toward} the camera in direction $-\hat n$).  Reversing
+time gives the past-pointing tangent $(-\omega, \omega\hat n)$, and an
+affine-reparameterisation removes $\omega$.  In the coordinate basis this
+is
+\begin{equation}
+\boxed{\quad
+k^\mu_{\text{init}} \;=\; -e_{\hat 0}^{\,\mu} \;+\; \hat n^{\hat i}\,e_{\hat i}^{\,\mu}.
+\quad}
+\label{eq:k-init}
+\end{equation}
+
+\paragraph{Anti-aliasing.}
+For supersample factor $S$, each pixel contributes $S^2$ rays at
+deterministically jittered sub-pixel offsets; the final pixel colour is
+the mean over the $S^2$ samples after sky lookup.  Default $S=2$ (4
+rays/pixel) is enough to suppress sub-pixel aberration flicker for
+animations.
+
+\smallskip
+\noindent\emph{Code: \texttt{warpbubblesim/viz/skyrender.py::Camera}; \texttt{skyrender\_jax.py::\_pixel\_directions\_np}.}
+
+% =====================================================================
+\section{Mapping the asymptotic direction to the celestial sphere}
+
+The integration~\eqref{eq:rhs} is run with initial state
+$(x^\mu_{\text{init}}, k^\mu_{\text{init}}) = (\bm x_{\text{obs}}, k_{\text{init}})$ for
+$N_{\text{steps}}\,\Delta\lambda$ in affine parameter — long enough for the
+ray to leave the bubble's sphere of influence (typically $r_s \gtrsim 5R$).
+After that the metric is asymptotically Minkowski, so $k^\mu$ is parallel-
+transported = constant in coordinates, and the spatial part of the final
+tangent gives the lab-frame direction the photon came from:
+\begin{equation}
+\hat n_{\text{asy}} \;=\; \frac{(k^x_{\text{final}},\;k^y_{\text{final}},\;k^z_{\text{final}})}{\bigl|(k^x_{\text{final}},k^y_{\text{final}},k^z_{\text{final}})\bigr|}.
+\end{equation}
+We then sample a celestial-sphere texture $T:S^2\to[0,1]^3$ at $\hat n_{\text{asy}}$.
+Two backends are provided:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Procedural starfield.}  Stars sampled uniformly on $S^2$
+        with brightness drawn from a heavy-tailed distribution; a soft
+        top-$k$ Gaussian blend gives anti-aliased points.
+  \item \textbf{Equirectangular panorama.}  $(\theta,\phi)$ from
+        $\hat n_{\text{asy}}$ via $\theta=\arccos\hat n_z$, $\phi=\mathrm{atan2}(\hat n_y,\hat n_x)$;
+        bilinear interpolation in pixel-space with periodic wrap in
+        longitude.
+\end{itemize}
+
+\smallskip
+\noindent\emph{Code: \texttt{warpbubblesim/viz/skybackground.py}.}
+
+% =====================================================================
+\section{Honest physics: Doppler brightness and front horizon}
+
+\subsection{Doppler factor from Killing energy}
+
+The energy of a photon with 4-momentum $p^\mu$ measured by an observer
+with 4-velocity $u^\mu$ is $\omega = -g_{\mu\nu}p^\mu u^\nu$.  Our
+\emph{past-pointing} tangent satisfies $k = -p$, so $\omega = g_{\mu\nu}k^\mu u^\nu$
+is positive.  For a backward null ray that leaves the bubble and reaches
+the asymptotic Minkowski region, the source's static observer is
+$u_{\text{src}} = (1,0,0,0)$ in the lab frame, evaluated against
+$\eta_{\mu\nu}$, and the Doppler factor is
+\begin{equation}
+\boxed{\quad
+f \;=\; \frac{\omega_{\text{obs}}}{\omega_{\text{src}}}
+   \;=\; \frac{g_{\mu\nu}(\bm x_{\text{obs}})\,k^\mu_{\text{init}}\,u^\nu_{\text{obs}}}{\eta_{\mu\nu}\,k^\mu_{\text{final}}\,u^\nu_{\text{src}}}.
+\quad}
+\label{eq:doppler}
+\end{equation}
+$f>1$ is blueshift, $f<1$ is redshift.
+
+\subsection{Brightness scaling: Liouville's invariant}
+
+Liouville's theorem applied to the photon distribution function in vacuum
+gives the conserved invariant
+\begin{equation}
+\frac{I_\nu}{\nu^3} \;=\; \text{const along the null geodesic},
+\end{equation}
+so monochromatic specific intensity transforms as $I_\nu^{\text{obs}} = f^3\,I_\nu^{\text{src}}$.
+For a thermal (blackbody) source integrated over frequency, bolometric
+intensity goes as $f^4$.  Both are physically defensible — different
+spectrum assumptions — and the renderer exposes the exponent as
+\texttt{doppler\_intensity\_power}.  No colour shift is applied because
+the input panorama is single-band visible-light RGB and any
+``wavelength rotation'' would be invented.
+
+\subsection{Front horizon as a black region}
+
+For $|v_s|>1$ in Alcubierre, there is a region of the celestial sphere
+from which no light can reach the bubble interior — sources directly in
+front have already been overtaken by the bubble at the time their light
+would arrive.  Operationally, in the renderer:
+\begin{equation}
+\text{ray $i$ trapped} \quad\Longleftrightarrow\quad r_s\bigl(\bm x^{(i)}_{\text{final}}\bigr) \;<\; \kappa\,R,
+\end{equation}
+with default safety factor $\kappa=1.5$.  Trapped pixels are rendered
+black.  No Hawking glow is invented; computing the actual horizon
+temperature requires the surface gravity~$\kappa_H$ from the metric
+profile, which the renderer doesn't extract.
+
+\smallskip
+\noindent\emph{Code: \texttt{warpbubblesim/viz/effects.py}.}
+
+% =====================================================================
+\section{Numerical scheme summary}
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Build observer state.}  Compute $\bm x_{\text{obs}} = (t, x_s(t), 0, 0)$,
+      $u = (1, v_s, 0, 0)$ (after fallback check), tetrad $e_{\hat a}$.
+\item \textbf{Build initial null tangents.}  For each pixel sub-sample
+      $\hat n_{ij}^{(s)}$, set
+      $k^\mu_{\text{init}} = -e_{\hat 0} + \hat n^{\hat\imath}e_{\hat\imath}$.
+\item \textbf{Integrate.}  RK4 on~\eqref{eq:rhs} with step $\Delta\lambda$
+      for $N_{\text{steps}}$ steps, vectorised across all rays.  In JAX
+      the integration is jit-compiled and vmap'd; in NumPy the metric
+      Jacobian is built per RK stage and broadcast over the pixel axis.
+\item \textbf{Asymptotic direction.}  Read $\hat n_{\text{asy}}$ from the spatial
+      part of $k_{\text{final}}$.
+\item \textbf{Sky lookup.}  Sample $T(\hat n_{\text{asy}})$.
+\item \textbf{Doppler.}  Multiply by $f^p$ from~\eqref{eq:doppler}.
+\item \textbf{Horizon mask.}  Replace pixels with $r_s^{\text{final}} < \kappa R$
+      by black, only when $|v_s|>1$.
+\item \textbf{Anti-alias.}  Mean of $S^2$ sub-samples per pixel.
+\end{enumerate}
+
+\paragraph{Cost scaling.}
+A frame at $W\!\times\!H$ pixels with supersample $S$ and integration
+budget $N_{\text{steps}}$ requires
+\begin{equation}
+N_{\text{rays}}\,N_{\text{steps}}\,N_{\text{stages}}\,N_{\text{metric calls per Christoffel}}
+\end{equation}
+metric evaluations, with $N_{\text{rays}}=WHS^2$, $N_{\text{stages}}=4$ (RK4),
+and $N_{\text{metric calls}}\!=\!1$ for autodiff or $\!=\!9$ for FD-Christoffels.
+At HQ ($1280\!\times\!720$, $S=2$, $N_{\text{steps}}=280$): $\sim 10^{10}$
+metric evaluations per frame — easily a single-GPU minute.
+
+% =====================================================================
+\section{Velocity schedule}
+
+The animated ``flight'' is a sequence of independent steady-state renders
+at velocities $v_s^{(i)}$ for frame index $i\in\{0,\dots,N\!-\!1\}$.  The
+default schedule is the half-cosine ease-in-out
+\begin{equation}
+v_s^{(i)} \;=\; V_{\max}\,\frac{1-\cos(\pi\,\tau_i)}{2}, \qquad \tau_i = \frac{i}{N-1},
+\label{eq:schedule}
+\end{equation}
+which has zero acceleration at the endpoints and peak acceleration at the
+midpoint.  The assembled video is $[v=0\to V_{\max}\to 0]$ via
+$[\text{forward frames}\,\|\,\text{6 holds}\,\|\,\text{reversed frames}]$.
+
+% =====================================================================
+\section{Conventions cheatsheet}
+
+\begin{center}\small
+\begin{tabular}{ll}
+\toprule
+Symbol / object & Meaning / convention \\
+\midrule
+$g_{\mu\nu}$, signature & 4-metric, $(-,+,+,+)$ \\
+$x^\mu$, $\mu=0..3$ & $(t,x,y,z)$ \\
+$\Christ{\mu}{\alpha}{\beta}$ & Christoffel of the second kind, eq.~\eqref{eq:christoffel} \\
+$k^\mu = \diff x^\mu/\diff\lambda$ & null tangent, $g_{\mu\nu}k^\mu k^\nu=0$ \\
+$k$ in the renderer & past-pointing ($k^t<0$) \\
+$\omega = g_{\mu\nu}k^\mu u^\nu$ & observed photon energy (positive for past-pointing $k$) \\
+$f = \omega_{\text{obs}}/\omega_{\text{src}}$ & Doppler factor \\
+$f^3$ vs $f^4$ & Liouville monochromatic vs.\ bolometric \\
+``forward axis'' & $+\hat x$ in the camera's local rest frame \\
+horizon mask & $r_s^{\text{final}} < 1.5\,R$, only for $|v_s|>1$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% =====================================================================
+\section{A common misconception}
+
+A natural objection — repeated in many casual write-ups — is that
+``crossing $c$'' should imply an extreme blueshift via the SR formula
+\(f_{\text{SR}}=\sqrt{(1+v)/(1-v)}\), so the visible band would shift
+into hard X-rays / gamma rays and the cabin should ``see nothing''.
+\textbf{This is incorrect for the Alcubierre interior observer.}
+
+The SR Doppler formula governs a Lorentz-boosted inertial observer in
+flat space, where a relative velocity $v$ between source and receiver
+is meaningful and bounded by $c$.  The interior observer is, by
+construction, \emph{not} that observer — the warp metric makes them
+locally at rest with respect to the bubble; the surrounding spacetime
+is doing the moving.  Concretely, on the bubble-centre worldline
+$x = x_s(t)$ at velocity $v_s$:
+\begin{equation}
+g_{\mu\nu}\,u^\mu u^\nu \;=\; -1 \quad\text{for any }v_s,
+\end{equation}
+so the observer's local rest frame is well-defined and the photon
+energy in that frame is the standard tetrad projection
+$\omega_{\text{obs}}=g_{\mu\nu}k^\mu u^\nu$.  For an on-axis
+forward-looking ray, the null condition gives $k^x_{\text{init}} = 1-v$
+in coordinates; the Killing energy at the centre is
+$-k_t = v - 1$.  After integration through the warp wall the
+asymptotic frequency in the lab frame is finite, and the resulting
+Doppler factor
+\begin{equation}
+f \;=\; \omega_{\text{obs}}/\omega_{\text{src}}
+\end{equation}
+takes \textbf{single-digit values} at multi-c bubble velocities in
+practice (numerical traces give $f \approx 3.45$ at $v_s = 2.5\,c$ in
+our test geometry; the trend with $v_s$ is mild, not divergent).
+The visible band shifts to soft UV at the brightest forward pixels —
+some signal is lost there — but \emph{the renderer's $f^3$ scaling
+applied to a visible-band panorama still yields a clearly recognisable
+saturating forward bloom}.  ``No light at all'' would require
+$f \sim 10^5$–$10^6$ to push 500\,nm into the gamma-ray band, which
+the Alcubierre central-observer geometry simply does not produce.
+
+The genuinely non-trivial superluminal-warp effects are elsewhere:
+\begin{itemize}[leftmargin=*]
+\item the front horizon (rendered as black via the horizon mask),
+\item the matter pile-up at the leading bubble wall (McMonigal et al.\
+      2012; not visible to the interior crew during cruise — outside
+      the front horizon),
+\item Hawking-like quantum particle creation at the front horizon
+      (Finazzi--Liberati--Barceló 2009; predicted to destabilise the
+      bubble, not modelled here).
+\end{itemize}
+
+\bigskip\hrule\medskip
+\subsubsection*{See also}
+\begin{itemize}[leftmargin=*]
+  \item \texttt{notebooks/07\_warp\_skyflight\_colab.ipynb} — Drive-checkpointed Colab GPU notebook.
+  \item \texttt{Wolfram/skyrender/SkyRender.wl} — Mathematica implementation, optionally offloaded to a Wolfram Cloud GPU runtime via \texttt{RemoteBatchSubmit}.
+\end{itemize}
+
+\end{document}
