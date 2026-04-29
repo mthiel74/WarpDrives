@@ -1,9 +1,12 @@
 """
 Celestial-sphere backgrounds for warp-bubble sky rendering.
 
-A "sky" here is any callable that maps a unit 3-vector (the asymptotic
-spatial direction of an outgoing/escaping null ray) to an RGB colour in
-[0, 1]^3.  Two kinds are provided:
+A "sky" here is any callable ``sky(directions, f=None) -> RGB`` that
+maps a unit 3-vector (the asymptotic spatial direction of an outgoing /
+escaping null ray) to an RGB colour in ``[0, 1]^3``.  The optional
+``f`` argument is the per-ray Doppler factor and is consumed by
+multi-band skies (see :func:`make_multiband_sky`); single-band skies
+ignore it.  Three kinds are provided:
 
 - :func:`make_procedural_starfield` — a deterministic random star field
   with magnitudes/colours.  Useful for testing the geometry of the
@@ -12,6 +15,10 @@ spatial direction of an outgoing/escaping null ray) to an RGB colour in
   Milky Way panorama (e.g. ESO/NASA "GigaGalaxy" or any 2:1 sky map)
   and the renderer will pick up the pixel under each ray's escape
   direction.
+- :func:`make_multiband_sky` — combines several wavelength-tagged
+  panoramas (e.g. visible + 2MASS near-IR + WISE mid-IR) and selects
+  per-ray which band to sample based on the Doppler factor, capturing
+  the IR-into-visible shift that single-band sky renderers cannot.
 
 Conventions
 -----------
@@ -30,7 +37,14 @@ from pathlib import Path
 from typing import Callable, Optional, Tuple, Union
 
 
-SkyFunc = Callable[[np.ndarray], np.ndarray]
+SkyFunc = Callable[..., np.ndarray]
+"""``sky(directions, f=None)`` — directions has shape ``(..., 3)``,
+optional ``f`` has shape ``(...)`` matching the leading axes of
+``directions``, and the return is RGB in ``[0, 1]^3`` with the same
+leading axes as ``directions``."""
+
+# Visible-band edges in nanometres for multiband band-selection.
+VISIBLE_NM = (380.0, 700.0)
 
 
 def _direction_to_spherical(directions: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
@@ -120,7 +134,10 @@ def make_procedural_starfield(
     # out of the max.
     bg = np.asarray(background, dtype=float)
 
-    def sky(directions: np.ndarray) -> np.ndarray:
+    def sky(directions: np.ndarray, f: Optional[np.ndarray] = None) -> np.ndarray:
+        # f is unused for the procedural starfield (single-band by
+        # construction); accepted for SkyFunc protocol compatibility.
+        del f
         d = np.asarray(directions, dtype=float)
         flat = d.reshape(-1, 3)
         norm = np.linalg.norm(flat, axis=1, keepdims=True)
@@ -252,7 +269,8 @@ def make_image_sky(
 
     sampler = sample_bilinear if interpolation == "bilinear" else sample_nearest
 
-    def sky(directions: np.ndarray) -> np.ndarray:
+    def sky(directions: np.ndarray, f: Optional[np.ndarray] = None) -> np.ndarray:
+        del f  # single-band; no Doppler-aware band selection here
         theta, phi = _direction_to_spherical(np.asarray(directions))
         phi = phi + rot_rad
         if flip_horizontal:
@@ -301,7 +319,8 @@ def make_grid_sky(
     lc = np.asarray(line_color)
     pc = np.asarray(pole_color)
 
-    def sky(directions: np.ndarray) -> np.ndarray:
+    def sky(directions: np.ndarray, f: Optional[np.ndarray] = None) -> np.ndarray:
+        del f  # diagnostic grid; no band selection
         theta, phi = _direction_to_spherical(np.asarray(directions))
         # Distance to nearest latitude/longitude line
         d_lat = np.abs(((theta + spacing / 2) % spacing) - spacing / 2)
@@ -320,3 +339,148 @@ def make_grid_sky(
         return np.clip(out, 0.0, 1.0)
 
     return sky
+
+
+# ---------------------------------------------------------------------------
+# Multi-band sky (Doppler-aware band selection)
+# ---------------------------------------------------------------------------
+
+def make_multiband_sky(
+    bands: list,
+    visible_band_nm: Tuple[float, float] = VISIBLE_NM,
+    fallback_band_idx: int = 0,
+    smooth_blend: bool = True,
+) -> SkyFunc:
+    """Combine several wavelength-tagged sky panoramas into one Doppler-aware
+    sky function.
+
+    Each entry of ``bands`` is one of:
+
+    * ``(SkyFunc, lambda_min_nm, lambda_max_nm)``,
+    * ``(image_path: str, lambda_min_nm, lambda_max_nm)`` — the image is
+      loaded with :func:`make_image_sky` (bilinear default).
+
+    For each ray, given its Doppler factor :math:`f`, the photons that
+    arrive in the observer's visible band were emitted in the source band
+    :math:`[\\lambda_\\text{vis}^\\text{lo}/f, \\lambda_\\text{vis}^\\text{hi}/f]`.
+    We pick the input panorama whose wavelength range best contains this
+    source band, sample it at the asymptotic direction, and return its
+    colour.  When ``smooth_blend=True``, two adjacent bands are linearly
+    crossfaded near their boundaries to avoid hard banding artifacts as
+    ``f`` sweeps across band edges.
+
+    Parameters
+    ----------
+    bands : list
+        List of band entries.  Order doesn't matter; the function sorts
+        by central wavelength internally.  Common choices:
+
+        - Visible Milky Way   (380, 700) nm
+        - 2MASS J             (1140, 1370) nm   (1.25 μm)
+        - 2MASS H             (1490, 1810) nm   (1.65 μm)
+        - 2MASS K             (2000, 2310) nm   (2.16 μm)
+        - WISE W1             (3000, 3800) nm   (3.4 μm)
+        - WISE W2             (4200, 5000) nm   (4.6 μm)
+        - WISE W3             (8000, 16000) nm  (12 μm)
+        - IRAS 12 / 60 / 100  μm
+
+    visible_band_nm : tuple
+        Observer's visible band edges (default 380–700 nm).
+    fallback_band_idx : int
+        Band to return when ``f`` is None (i.e. the renderer didn't pass
+        a Doppler factor) or when the shifted source band falls outside
+        every input band's coverage.
+    smooth_blend : bool
+        Linearly blend two adjacent bands across their boundaries.
+
+    Returns
+    -------
+    SkyFunc
+        ``sky(directions, f=None) -> RGB``.
+    """
+    parsed = []
+    for entry in bands:
+        sky_or_path, lmin, lmax = entry
+        if isinstance(sky_or_path, (str, Path)):
+            sky_fn = make_image_sky(sky_or_path)
+        elif callable(sky_or_path):
+            sky_fn = sky_or_path
+        else:
+            raise TypeError(
+                f"band entry's first element must be a SkyFunc or path, "
+                f"got {type(sky_or_path).__name__}"
+            )
+        parsed.append((sky_fn, float(lmin), float(lmax)))
+
+    # Sort by central wavelength so band 0 is the bluest.
+    parsed.sort(key=lambda b: 0.5 * (b[1] + b[2]))
+    n_bands = len(parsed)
+    band_centers = np.array([0.5 * (b[1] + b[2]) for b in parsed])
+    band_los = np.array([b[1] for b in parsed])
+    band_his = np.array([b[2] for b in parsed])
+
+    vis_lo, vis_hi = visible_band_nm
+    vis_centre = 0.5 * (vis_lo + vis_hi)
+
+    def multiband(directions: np.ndarray, f: Optional[np.ndarray] = None) -> np.ndarray:
+        d = np.asarray(directions, dtype=float)
+        flat = d.reshape(-1, 3)
+        P = flat.shape[0]
+
+        # If no f provided, fall back to the chosen default band.
+        if f is None:
+            return parsed[fallback_band_idx][0](d).reshape(d.shape)
+
+        f_flat = np.broadcast_to(np.asarray(f, dtype=float), d.shape[:-1]).reshape(-1)
+        f_safe = np.maximum(f_flat, 1e-6)
+
+        # Source-frame centre wavelength corresponding to observer's visible.
+        src_centre = vis_centre / f_safe
+
+        # Find the band whose range contains src_centre, falling back to the
+        # nearest band when src_centre lies outside every band.
+        in_band = (src_centre[:, None] >= band_los[None, :]) & \
+                  (src_centre[:, None] <= band_his[None, :])
+        nearest = np.argmin(np.abs(np.log(src_centre[:, None] / band_centers[None, :])), axis=1)
+        any_in = in_band.any(axis=1)
+        primary = np.where(any_in, np.argmax(in_band, axis=1), nearest)
+
+        if smooth_blend and n_bands > 1:
+            # Crossfade between primary and secondary band.  Secondary is
+            # the band whose centre lies on the opposite side of src_centre
+            # from primary (i.e. the next-best fit).
+            log_src = np.log(src_centre)
+            log_centres = np.log(band_centers)
+            d_to_primary = np.abs(log_src - log_centres[primary])
+            # Secondary = neighbouring band toward src_centre's offset
+            sign = np.sign(log_src - log_centres[primary])  # ±1, 0 if exact
+            secondary = np.clip(primary + sign.astype(int), 0, n_bands - 1)
+            d_to_secondary = np.abs(log_src - log_centres[secondary])
+            # Blend weight for secondary in [0, 0.5]; primary always >= secondary
+            total = d_to_primary + d_to_secondary
+            w_secondary = np.where(total > 1e-9, d_to_primary / total, 0.0)
+            w_secondary = np.clip(w_secondary, 0.0, 0.5)
+            # When primary == secondary (boundary case) → no blend
+            w_secondary = np.where(primary == secondary, 0.0, w_secondary)
+            w_primary = 1.0 - w_secondary
+        else:
+            w_secondary = np.zeros(P)
+            w_primary = np.ones(P)
+            secondary = primary
+
+        # Sample each unique band's panorama at all rays once, then gather.
+        unique_bands = np.unique(np.concatenate([primary, secondary]))
+        cache = {b: parsed[b][0](flat) for b in unique_bands}
+
+        out = np.zeros((P, 3))
+        for b in unique_bands:
+            mask_p = (primary == b)
+            mask_s = (secondary == b) & (w_secondary > 0)
+            if mask_p.any():
+                out[mask_p] += w_primary[mask_p, None] * cache[b][mask_p]
+            if mask_s.any():
+                out[mask_s] += w_secondary[mask_s, None] * cache[b][mask_s]
+
+        return np.clip(out, 0.0, 1.0).reshape(d.shape)
+
+    return multiband

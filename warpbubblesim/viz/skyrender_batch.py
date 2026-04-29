@@ -449,7 +449,14 @@ def render_frame_batch(
     dirs_asym = spatial / safe
     dirs_asym[~valid] = np.array([1.0, 0.0, 0.0])
 
-    rgb = np.asarray(sky_fn(dirs_asym))
+    # Doppler factor for multiband band selection AND brightness scaling.
+    from warpbubblesim.viz.effects import doppler_factor as _doppler_factor
+    f_pix = _doppler_factor(g0, k_init, u, k_final)
+
+    try:
+        rgb = np.asarray(sky_fn(dirs_asym, f=f_pix))
+    except TypeError:
+        rgb = np.asarray(sky_fn(dirs_asym))
     rgb[~valid] = np.asarray(fallback_color)
 
     # Optional post-processing effects (Doppler / horizon mask).
@@ -459,17 +466,16 @@ def render_frame_batch(
         front_wall_glow,
     )
     if config.enable_doppler:
-        f = doppler_factor(g0, k_init, u, k_final)
         if config.doppler_mode == "blackbody":
             rgb = apply_doppler_blackbody(
-                rgb, f,
+                rgb, f_pix,
                 T_src=config.doppler_T_src,
                 intensity_power=config.doppler_intensity_power,
                 tonemap=config.doppler_tonemap,
             )
         else:
             rgb = apply_doppler(
-                rgb, f,
+                rgb, f_pix,
                 intensity_power=config.doppler_intensity_power,
                 tonemap=config.doppler_tonemap,
             )

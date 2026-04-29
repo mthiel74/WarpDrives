@@ -37,6 +37,7 @@ from warpbubblesim.viz.skybackground import (
     make_procedural_starfield,
     make_image_sky,
     make_grid_sky,
+    make_multiband_sky,
 )
 from warpbubblesim.viz.skyrender import (
     Camera,
@@ -69,6 +70,7 @@ __all__ = [
     "make_procedural_starfield",
     "make_image_sky",
     "make_grid_sky",
+    "make_multiband_sky",
     "Camera",
     "RenderConfig",
     "build_orthonormal_tetrad",
